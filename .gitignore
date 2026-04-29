@@ -1,38 +1,11 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-.venv/
-venv/
-env/
-*.egg-info/
-dist/
-.pytest_cache/
-.mypy_cache/
-
-# Variables de entorno — NUNCA subir al repo
 .env
-.env.local
-.env.*.local
-
-# Node / Frontend
+__pycache__/
 node_modules/
-dist/
-build/
-.next/
-*.local
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
-
-# Alembic
+.venv/
 *.pyc
-
-# Logs
-*.log
-logs/
+dist/
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
