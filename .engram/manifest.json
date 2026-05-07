@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "chunks": [
+    {
+      "id": "4262e48c",
+      "created_by": "Titix",
+      "created_at": "2026-05-06T14:11:05Z",
+      "sessions": 5,
+      "memories": 8,
+      "prompts": 45
+    }
+  ]
+}
