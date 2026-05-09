@@ -6,8 +6,14 @@ from sqlalchemy import create_engine
 from alembic import context
 
 # Importar modelos SQLModel para que autogenerate detecte los metadatos
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from sqlmodel import SQLModel
 from app.modules.usuarios.model import Usuario, Role, UsuarioRole, RefreshToken  # noqa: F401
+from app.modules.categorias.model import Categoria
+from app.modules.ingredientes.model import Ingrediente
 from app.core.config import settings
 
 # this is the Alembic Config object, which provides
