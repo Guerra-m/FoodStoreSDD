@@ -5,6 +5,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.core.exceptions import global_exception_handler
 from app.modules.usuarios.router import router as auth_router
 from app.modules.categorias.router import router as categorias_router
+from app.modules.ingredientes.router import router as ingredientes_router
 from dotenv import load_dotenv
 import os
 
@@ -32,6 +33,7 @@ app.add_middleware(
 # Routers
 app.include_router(auth_router)
 app.include_router(categorias_router)
+app.include_router(ingredientes_router)
 
 @app.get("/health")
 async def health_check():
