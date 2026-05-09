@@ -24,6 +24,7 @@ class CategoriaResponse(BaseModel):
     nombre: str
     padre_id: Optional[int] = None
     posicion: int
+    product_count: int = 0
     creado_en: datetime
     actualizado_en: datetime
 
@@ -37,6 +38,7 @@ class CategoriaTreeResponse(BaseModel):
     nombre: str
     padre_id: Optional[int] = None
     posicion: int
+    product_count: int = 0
     hijos: List["CategoriaTreeResponse"] = []
 
     class Config:
