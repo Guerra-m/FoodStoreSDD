@@ -77,7 +77,7 @@ class IngredienteService:
             return IngredienteResponse.model_validate(updated)
 
     async def delete(self, ingrediente_id: int) -> None:
-        """Elimina un ingrediente."""
+        """Elimina un ingrediente con validación de productos asociados."""
         with UnitOfWork() as uow:
             repo = IngredienteRepository(uow.session)
             ingrediente = repo.get_by_id(ingrediente_id)
@@ -87,5 +87,14 @@ class IngredienteService:
                     detail="Ingrediente no encontrado",
                 )
 
-            # Aquí podríamos agregar validación para ver si se usa en productos
+            # Verificar si tiene productos asociados
+            from app.modules.productos.repository import ProductoRepository
+            repo_prod = ProductoRepository(uow.session)
+            productos_count = repo_prod.count_by_ingrediente(ingrediente_id)
+            if productos_count > 0:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"No se puede eliminar el ingrediente porque está siendo usado por {productos_count} productos",
+                )
+
             repo.delete(ingrediente)

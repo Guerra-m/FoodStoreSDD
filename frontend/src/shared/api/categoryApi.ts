@@ -5,6 +5,7 @@ export interface Categoria {
   nombre: string;
   padre_id: number | null;
   posicion: number;
+  product_count: number;
   creado_en: string;
   actualizado_en: string;
 }

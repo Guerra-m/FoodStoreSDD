@@ -18,6 +18,12 @@ from app.modules.categorias.repository import CategoriaRepository
 class CategoriaService:
     """Servicio de gestión de categorías con validaciones de negocio."""
 
+    def _get_product_count(self, categoria_id: int, session) -> int:
+        """Obtiene el conteo de productos asociados a una categoría."""
+        from app.modules.productos.repository import ProductoRepository
+        repo = ProductoRepository(session)
+        return repo.count_by_categoria(categoria_id)
+
     async def create(self, data: CategoriaCreate) -> CategoriaResponse:
         """Crea una nueva categoría con validaciones."""
         with UnitOfWork() as uow:
@@ -50,6 +56,7 @@ class CategoriaService:
                 nombre=created.nombre,
                 padre_id=created.padre_id,
                 posicion=created.posicion,
+                product_count=self._get_product_count(created.id, uow.session),
                 creado_en=created.creado_en,
                 actualizado_en=created.actualizado_en,
             )
@@ -72,6 +79,7 @@ class CategoriaService:
                 nombre=categoria.nombre,
                 padre_id=categoria.padre_id,
                 posicion=categoria.posicion,
+                product_count=self._get_product_count(categoria.id, uow.session),
                 creado_en=categoria.creado_en,
                 actualizado_en=categoria.actualizado_en,
             )
@@ -92,6 +100,7 @@ class CategoriaService:
                     nombre=c.nombre,
                     padre_id=c.padre_id,
                     posicion=c.posicion,
+                    product_count=self._get_product_count(c.id, uow.session),
                     creado_en=c.creado_en,
                     actualizado_en=c.actualizado_en,
                 )
@@ -106,30 +115,36 @@ class CategoriaService:
             todas = repo.get_all()
             # Construir índice por ID
             index = {c.id: c for c in todas}
+            # Pre-cargar conteos de productos para todas las categorías
+            product_counts = {
+                c.id: self._get_product_count(c.id, uow.session)
+                for c in todas
+            }
             # Construir árbol desde las raíces
             resultado = []
 
             for cat in todas:
                 if cat.padre_id is None:
-                    resultado.append(self._build_tree(cat, index))
+                    resultado.append(self._build_tree(cat, index, product_counts))
 
             return resultado
 
     def _build_tree(
-        self, categoria: Categoria, index: dict
+        self, categoria: Categoria, index: dict, product_counts: dict
     ) -> CategoriaTreeResponse:
         """Construye recursivamente el árbol de categorías."""
         hijos = []
         # Buscar hijos en el índice
         for cat in index.values():
             if cat.padre_id == categoria.id:
-                hijos.append(self._build_tree(cat, index))
+                hijos.append(self._build_tree(cat, index, product_counts))
 
         return CategoriaTreeResponse(
             id=categoria.id,
             nombre=categoria.nombre,
             padre_id=categoria.padre_id,
             posicion=categoria.posicion,
+            product_count=product_counts.get(categoria.id, 0),
             hijos=hijos,
         )
 
@@ -183,6 +198,7 @@ class CategoriaService:
                 nombre=updated.nombre,
                 padre_id=updated.padre_id,
                 posicion=updated.posicion,
+                product_count=self._get_product_count(updated.id, uow.session),
                 creado_en=updated.creado_en,
                 actualizado_en=updated.actualizado_en,
             )
@@ -207,18 +223,14 @@ class CategoriaService:
                     detail="No se puede eliminar una categoría que tiene subcategorías",
                 )
 
-            # Verificar si tiene productos asociados (placeholder - implementar cuando exista modelo productos)
-            # productos_count = self._get_productos_count(categoria_id)
-            # if productos_count > 0:
-            #     raise HTTPException(
-            #         status_code=status.HTTP_409_CONFLICT,
-            #         detail=f"No se puede eliminar la categoría porque tiene {productos_count} productos asociados",
-            #     )
+            # Verificar si tiene productos asociados
+            from app.modules.productos.repository import ProductoRepository
+            repo_prod = ProductoRepository(uow.session)
+            productos_count = repo_prod.count_by_categoria(categoria_id)
+            if productos_count > 0:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"No se puede eliminar la categoría porque tiene {productos_count} productos asociados",
+                )
 
             repo.delete(categoria)
-
-    def _get_productos_count(self, categoria_id: int) -> int:
-        """Placeholder - implementar cuando exista modelo de productos."""
-        # TODO: Cuando exista el modelo de productos, implementar esta función
-        # usando el repositorio de productos
-        return 0

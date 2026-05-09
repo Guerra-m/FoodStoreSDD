@@ -61,7 +61,7 @@ The system SHALL allow deleting a category, with validation to prevent deletion 
 - **THEN** system deletes the category and returns 204
 
 #### Scenario: Delete category with products
-- **WHEN** admin sends DELETE /api/v1/categories/{id} for a category that has products
+- **WHEN** admin sends DELETE /api/v1/categories/{id} for a category that has associated products (via producto_categorias)
 - **THEN** system returns 409 conflict error indicating category has associated products
 
 #### Scenario: Delete category with subcategories
@@ -78,3 +78,10 @@ The system SHALL allow categories to be ordered via a position field that respec
 #### Scenario: Category position defaults to end of list
 - **WHEN** a new category is created without specifying position
 - **THEN** system assigns position as (max position + 1) of siblings
+
+### Requirement: Product count per category
+The system SHALL expose the count of products associated with each category in list responses.
+
+#### Scenario: Category list includes product count
+- **WHEN** admin requests GET /api/v1/categories
+- **THEN** each category in the response includes a `product_count` field with the number of associated active products
