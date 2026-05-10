@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException, status
 
 from app.core.security import get_current_user
 from app.modules.usuarios.schema import (
@@ -7,11 +7,14 @@ from app.modules.usuarios.schema import (
     RefreshRequest,
     TokenResponse,
     UserResponse,
+    ClientePerfilUpdate,
 )
 from app.modules.usuarios.service import AuthService
+from app.modules.usuarios.cliente_service import ClienteService
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 auth_service = AuthService()
+cliente_service = ClienteService()
 
 
 @router.post("/register", response_model=UserResponse, status_code=201)
@@ -50,7 +53,6 @@ async def get_me(payload: dict = Depends(get_current_user)):
         repo = UsuarioRepository(session)
         usuario = repo.get_with_roles(usuario_id)
         if not usuario:
-            from fastapi import HTTPException, status
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Usuario no encontrado",
@@ -61,7 +63,30 @@ async def get_me(payload: dict = Depends(get_current_user)):
             nombre=usuario.nombre,
             email=usuario.email,
             telefono=usuario.telefono,
+            foto_url=usuario.foto_url,
+            fecha_nacimiento=usuario.fecha_nacimiento,
             roles=roles,
             creado_en=usuario.creado_en,
             actualizado_en=usuario.actualizado_en,
         )
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_me(
+    data: ClientePerfilUpdate,
+    payload: dict = Depends(get_current_user),
+):
+    """Actualiza el perfil del usuario autenticado. No permite cambiar email."""
+    usuario_id = int(payload.get("sub"))
+    result = await cliente_service.actualizar_perfil(usuario_id, data)
+    return UserResponse(
+        id=result["id"],
+        nombre=result["nombre"],
+        email=result["email"],
+        telefono=result.get("telefono"),
+        foto_url=result.get("foto_url"),
+        fecha_nacimiento=result.get("fecha_nacimiento"),
+        roles=result["roles"],
+        creado_en=result["creado_en"],
+        actualizado_en=result["actualizado_en"],
+    )
