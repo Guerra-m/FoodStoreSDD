@@ -1,0 +1,30 @@
+.button {
+  padding: 0.5rem 1rem;
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover:not(:disabled) {
+  background: #d9363e;
+}
+
+.button:disabled {
+  background: #bfbfbf;
+  cursor: not-allowed;
+}
+
+.errorAlert {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #f5222d;
+  border-radius: 4px;
+  background: #fff1f0;
+  color: #f5222d;
+  font-size: 0.75rem;
+}
