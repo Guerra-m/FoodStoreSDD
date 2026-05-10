@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
@@ -36,9 +36,19 @@ class UserResponse(BaseModel):
     nombre: str
     email: str
     telefono: Optional[str] = None
+    foto_url: Optional[str] = None
+    fecha_nacimiento: Optional[date] = None
     roles: List[str] = []
     creado_en: datetime
     actualizado_en: datetime
 
     class Config:
         from_attributes = True
+
+
+class ClientePerfilUpdate(BaseModel):
+    """Schema para actualización de perfil del cliente."""
+    nombre: Optional[str] = None
+    telefono: Optional[str] = None
+    foto_url: Optional[str] = None
+    fecha_nacimiento: Optional[date] = None

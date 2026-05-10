@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List
 
 """
@@ -41,6 +41,8 @@ class Usuario(SQLModel, table=True):
     email: str = Field(index=True, unique=True)
     password_hash: str
     telefono: Optional[str] = None
+    foto_url: Optional[str] = None
+    fecha_nacimiento: Optional[date] = None
     creado_en: datetime = Field(default_factory=datetime.utcnow)
     actualizado_en: datetime = Field(default_factory=datetime.utcnow)
     # Fecha de eliminación para borrado lógico (Soft Delete)

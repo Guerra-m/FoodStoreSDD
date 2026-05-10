@@ -5,6 +5,7 @@ import Categorias from './pages/Categorias';
 import Productos from './pages/Productos';
 import Catalogo from './pages/Catalogo';
 import ProductoDetalle from './pages/ProductoDetalle';
+import MiPerfil from './pages/MiPerfil';
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
           <a href="/" style={{ marginRight: '15px' }}>Home</a>
           <a href="/categorias" style={{ marginRight: '15px' }}>Categorías (Admin)</a>
           <a href="/admin/products" style={{ marginRight: '15px' }}>Productos (Admin)</a>
-          <a href="/catalog">Catálogo</a>
+          <a href="/catalog" style={{ marginRight: '15px' }}>Catálogo</a>
+          <a href="/perfil">Mi Perfil</a>
         </nav>
         <Routes>
           <Route path="/" element={<h1>Food Store Home</h1>} />
@@ -22,6 +24,7 @@ function App() {
           <Route path="/admin/products" element={<Productos />} />
           <Route path="/catalog" element={<Catalogo />} />
           <Route path="/catalog/:id" element={<ProductoDetalle />} />
+          <Route path="/perfil" element={<MiPerfil />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
