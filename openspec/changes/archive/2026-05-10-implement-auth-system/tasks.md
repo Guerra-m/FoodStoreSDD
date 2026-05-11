@@ -39,11 +39,11 @@
 
 ## 6. Backend - Validación de seguridad
 
-- [ ] 6.1 Asegurar que passwords nunca se loguean o retornan en responses
-- [ ] 6.2 Validar que email es único antes de crear usuario (constraint en BD + validación en app)
-- [ ] 6.3 Implementar validación de formato de email
-- [ ] 6.4 Verificar que errores 401 no revelan si email existe o contraseña es inválida (respuesta genérica)
-- [ ] 6.5 Agregar CORS configuration para permitir requests desde frontend (especificar origin, no usar *)
+- [x] 6.1 Asegurar que passwords nunca se loguean o retornan en responses
+- [x] 6.2 Validar que email es único antes de crear usuario (constraint en BD + validación en app)
+- [x] 6.3 Implementar validación de formato de email
+- [x] 6.4 Verificar que errores 401 no revelan si email existe o contraseña es inválida (respuesta genérica)
+- [x] 6.5 Agregar CORS configuration para permitir requests desde frontend (especificar origin, no usar *)
 
 ## 7. Frontend - Setup y tipos
 
@@ -76,17 +76,17 @@
 
 ## 11. Validación e integración
 
-- [ ] 11.1 Testear flujo completo: registro → login → acceso a /auth/me → logout
-- [ ] 11.2 Testear que refresh token rotation funciona (modificar duraciones en .env para probar)
-- [ ] 11.3 Testear detección de robo: usar refresh token revocado, verificar que se revocan todos
-- [ ] 11.4 Testear errores: email duplicado, contraseña débil, credenciales inválidas
-- [ ] 11.5 Testear seguridad: verificar headers CORS, que passwords no se loguean, responses no revelan info sensible
-- [ ] 11.6 Testear en navegador: local storage limpio, cookies configuradas correctamente, sesión persiste en recarga
+- [x] 11.1 Testear flujo completo: registro → login → acceso a /auth/me → logout
+- [x] 11.2 Testear que refresh token rotation funciona (modificar duraciones en .env para probar)
+- [x] 11.3 Testear detección de robo: usar refresh token revocado, verificar que se revocan todos
+- [x] 11.4 Testear errores: email duplicado, contraseña débil, credenciales inválidas
+- [x] 11.5 Testear seguridad: verificar headers CORS, que passwords no se loguean, responses no revelan info sensible
+- [x] 11.6 Testear en navegador: local storage limpio, cookies configuradas correctamente, sesión persiste en recarga
 
 ## 12. Documentación y cleanup
 
-- [ ] 12.1 Documentar estructura de carpetas en README.md
-- [ ] 12.2 Agregar ejemplos de uso en comentarios de código
-- [ ] 12.3 Crear archivo SECURITY.md con notas sobre autenticación (no loguear passwords, refresh token rotation, etc.)
-- [ ] 12.4 Limpiar console.logs de debugging
-- [ ] 12.5 Revisar que no hay credenciales en código (JWT secret debe venir de .env)
+- [x] 12.1 Documentar estructura de carpetas en README.md
+- [x] 12.2 Agregar ejemplos de uso en comentarios de código
+- [x] 12.3 Crear archivo SECURITY.md con notas sobre autenticación (no loguear passwords, refresh token rotation, etc.)
+- [x] 12.4 Limpiar console.logs de debugging
+- [x] 12.5 Revisar que no hay credenciales en código (JWT secret debe venir de .env)
