@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlmodel import Session
 from app.core.database import get_session
 from app.core.config import settings
@@ -24,7 +24,7 @@ def get_auth_service(session: Session = Depends(get_session)) -> AuthService:
 
 
 def get_current_user(
-    credentials: Optional[HTTPAuthCredentials] = Depends(security),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     auth_service: AuthService = Depends(get_auth_service)
 ) -> UserResponse:
     """
