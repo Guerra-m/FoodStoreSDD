@@ -3,7 +3,8 @@ from typing import Optional, List
 
 from sqlmodel import Session, select
 
-from app.modules.usuarios.model import Usuario, RefreshToken
+from app.modules.usuarios.model import Usuario
+from app.auth.models import RefreshToken
 
 
 class UsuarioRepository:

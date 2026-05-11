@@ -4,6 +4,7 @@ from typing import Optional, List
 
 
 class User(SQLModel, table=True):
+    __table_args__ = {'extend_existing': True}
     """Usuario del sistema con soporte para múltiples roles."""
     __tablename__ = "usuario"
 
@@ -23,6 +24,7 @@ class User(SQLModel, table=True):
 
 
 class RefreshToken(SQLModel, table=True):
+    __table_args__ = {'extend_existing': True}
     """Refresh token para rotación segura de sesiones."""
     __tablename__ = "refresh_token"
 
