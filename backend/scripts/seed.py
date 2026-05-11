@@ -4,8 +4,9 @@ Ejecuta: python -m scripts.seed
 """
 from sqlmodel import Session, select
 from app.core.database import engine
-from app.modules.usuarios.model import Usuario, Role, UsuarioRole
-from app.core.security import hash_password
+from app.auth.models import User
+from app.modules.usuarios.model import Role, UsuarioRole
+from app.auth.security import hash_password
 
 ROLES = [
     {"nombre": "Cliente", "descripcion": "Usuario comprador"},
@@ -38,7 +39,7 @@ def seed_roles(session: Session):
 def seed_admin(session: Session):
     """Crea un usuario Admin por defecto si no existe (solo desarrollo)."""
     existing = session.exec(
-        select(Usuario).where(Usuario.email == ADMIN_DEFAULT["email"])
+        select(User).where(User.email == ADMIN_DEFAULT["email"])
     ).first()
     if existing:
         print("  - Usuario Admin ya existe")
@@ -51,7 +52,7 @@ def seed_admin(session: Session):
         print("  [ERR] Rol Admin no encontrado. Ejecutar seed_roles primero.")
         return
 
-    admin = Usuario(
+    admin = User(
         nombre=ADMIN_DEFAULT["nombre"],
         email=ADMIN_DEFAULT["email"],
         password_hash=hash_password(ADMIN_DEFAULT["password"]),
