@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 import secrets
@@ -167,3 +167,57 @@ def extract_token_from_header(authorization_header: Optional[str]) -> Optional[s
         return None
     
     return parts[1]
+
+
+def extract_roles_from_token(payload: dict) -> List[str]:
+    """
+    Extrae la lista de roles del payload decodificado de un JWT.
+    
+    Args:
+        payload: Payload decodificado del JWT (resultado de verify_jwt_token)
+        
+    Returns:
+        Lista de roles. Si no existen o no es lista, retorna []
+    """
+    if not payload:
+        return []
+    
+    roles = payload.get("roles", [])
+    
+    # Asegurar que es una lista
+    if isinstance(roles, list):
+        return roles
+    
+    return []
+
+
+def create_access_token_with_roles(
+    data: dict,
+    roles: List[str],
+    secret_key: str,
+    expires_delta: Optional[timedelta] = None
+) -> str:
+    """
+    Crea un access token JWT con claim de roles incluido.
+    
+    Args:
+        data: Claims base a incluir (e.g., {"sub": user_id})
+        roles: Lista de nombres de roles del usuario
+        secret_key: Clave secreta para firmar
+        expires_delta: Duración del token
+        
+    Returns:
+        JWT token firmado con roles incluido
+    """
+    to_encode = data.copy()
+    to_encode["roles"] = roles  # Agregar roles como claim
+    
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    
+    to_encode.update({"exp": expire})
+    
+    encoded_jwt = jwt.encode(to_encode, secret_key, algorithm="HS256")
+    return encoded_jwt

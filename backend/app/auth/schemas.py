@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 
 # === Request Schemas ===
@@ -66,7 +66,7 @@ class UserResponse(BaseModel):
     id: int
     email: str
     nombre: str
-    rol: Optional[str] = "Cliente"  # Valor por defecto si no está definido
+    roles: List[str] = ["Cliente"]  # Lista de nombres de roles asignados
     creado_en: datetime
     
     class Config:
@@ -76,7 +76,7 @@ class UserResponse(BaseModel):
                 "id": 1,
                 "email": "usuario@example.com",
                 "nombre": "Juan García",
-                "rol": "Cliente",
+                "roles": ["Cliente"],
                 "creado_en": "2024-05-10T12:00:00Z"
             }
         }
@@ -115,7 +115,7 @@ class LoginResponse(BaseModel):
                     "id": 1,
                     "email": "usuario@example.com",
                     "nombre": "Juan García",
-                    "rol": "Cliente",
+                    "roles": ["Cliente"],
                     "creado_en": "2024-05-10T12:00:00Z"
                 },
                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",

@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 from sqlmodel import Session, select
 from app.auth.models import User, RefreshToken
 from app.auth.schemas import UserResponse, LoginResponse
+from app.auth.roles import ROLE_CLIENTE
 from app.auth.security import (
     hash_password,
     verify_password,
@@ -11,8 +12,11 @@ from app.auth.security import (
     validate_email_format,
     validate_password_strength,
     create_access_token,
+    create_access_token_with_roles,
+    extract_roles_from_token,
     verify_jwt_token,
 )
+from app.modules.usuarios.model import UsuarioRole, Role
 from fastapi import HTTPException, status
 
 
@@ -25,9 +29,26 @@ class AuthService:
         self.access_token_expire_minutes = access_token_expire_minutes
         self.refresh_token_expire_days = refresh_token_expire_days
 
+    def _get_user_roles(self, user_id: int) -> List[str]:
+        """
+        Obtiene la lista de nombres de roles asignados a un usuario.
+        
+        Args:
+            user_id: ID del usuario
+            
+        Returns:
+            Lista de nombres de roles
+        """
+        # Buscar roles asociados al usuario
+        user_roles = self.session.exec(
+            select(Role).join(UsuarioRole).where(UsuarioRole.usuario_id == user_id)
+        ).all()
+        
+        return [role.nombre for role in user_roles]
+
     def register(self, email: str, nombre: str, password: str) -> UserResponse:
         """
-        Registra un nuevo usuario.
+        Registra un nuevo usuario y asigna rol "Cliente" automáticamente.
         
         Args:
             email: Email del usuario
@@ -35,7 +56,7 @@ class AuthService:
             password: Contraseña en texto plano
             
         Returns:
-            UserResponse sin contraseña
+            UserResponse con roles incluidos
             
         Raises:
             HTTPException 400: Si validación falla
@@ -76,21 +97,41 @@ class AuthService:
         )
         
         self.session.add(new_user)
+        self.session.flush()  # Flush para obtener el ID
+        
+        # Asignar rol "Cliente" automáticamente
+        user_roles = []
+        cliente_role = self.session.exec(
+            select(Role).where(Role.nombre == ROLE_CLIENTE)
+        ).first()
+        
+        if cliente_role:
+            user_role = UsuarioRole(usuario_id=new_user.id, role_id=cliente_role.id)
+            self.session.add(user_role)
+            user_roles.append(ROLE_CLIENTE)
+        
         self.session.commit()
         self.session.refresh(new_user)
         
-        return UserResponse.from_orm(new_user)
+        # Retornar UserResponse con roles
+        return UserResponse(
+            id=new_user.id,
+            email=new_user.email,
+            nombre=new_user.nombre,
+            roles=user_roles,
+            creado_en=new_user.creado_en
+        )
 
     def login(self, email: str, password: str) -> LoginResponse:
         """
-        Autentica un usuario y retorna access + refresh token.
+        Autentica un usuario y retorna access + refresh token con roles incluidos.
         
         Args:
             email: Email del usuario
             password: Contraseña en texto plano
             
         Returns:
-            LoginResponse con tokens
+            LoginResponse con tokens (JWT contiene "roles" claim)
             
         Raises:
             HTTPException 401: Si credenciales son inválidas
@@ -107,9 +148,13 @@ class AuthService:
                 detail="Credenciales inválidas"
             )
         
-        # Generar access token
-        access_token = create_access_token(
+        # Obtener roles del usuario
+        user_roles = self._get_user_roles(user.id)
+        
+        # Generar access token con roles como claim
+        access_token = create_access_token_with_roles(
             data={"sub": str(user.id)},
+            roles=user_roles,
             secret_key=self.secret_key,
             expires_delta=timedelta(minutes=self.access_token_expire_minutes)
         )
@@ -127,8 +172,17 @@ class AuthService:
         self.session.add(db_refresh_token)
         self.session.commit()
         
+        # Construir UserResponse con roles
+        user_response = UserResponse(
+            id=user.id,
+            email=user.email,
+            nombre=user.nombre,
+            roles=user_roles,
+            creado_en=user.creado_en
+        )
+        
         return LoginResponse(
-            user=UserResponse.from_orm(user),
+            user=user_response,
             access_token=access_token,
             refresh_token=refresh_token,
             expires_in=self.access_token_expire_minutes * 60  # segundos
@@ -138,12 +192,13 @@ class AuthService:
         """
         Renueva el access token usando un refresh token (con rotación).
         Si el refresh token fue revocado (robo detectado), revoca todos los tokens del usuario.
+        Los roles se obtienen frescos de la BD para reflejar cambios.
         
         Args:
             refresh_token: Refresh token opaco
             
         Returns:
-            LoginResponse con nuevos tokens
+            LoginResponse con nuevos tokens (JWT incluye roles actuales)
             
         Raises:
             HTTPException 401: Si refresh token es inválido o revocado
@@ -198,12 +253,16 @@ class AuthService:
                 detail="Usuario no encontrado"
             )
         
+        # Obtener roles actuales del usuario
+        user_roles = self._get_user_roles(user.id)
+        
         # Revocar refresh token antiguo
         db_refresh_token.revocado_en = datetime.utcnow()
         
-        # Generar nuevos tokens
-        new_access_token = create_access_token(
+        # Generar nuevos tokens con roles actuales
+        new_access_token = create_access_token_with_roles(
             data={"sub": str(user.id)},
+            roles=user_roles,
             secret_key=self.secret_key,
             expires_delta=timedelta(minutes=self.access_token_expire_minutes)
         )
@@ -220,8 +279,17 @@ class AuthService:
         self.session.add(new_db_refresh_token)
         self.session.commit()
         
+        # Construir UserResponse con roles actuales
+        user_response = UserResponse(
+            id=user.id,
+            email=user.email,
+            nombre=user.nombre,
+            roles=user_roles,
+            creado_en=user.creado_en
+        )
+        
         return LoginResponse(
-            user=UserResponse.from_orm(user),
+            user=user_response,
             access_token=new_access_token,
             refresh_token=new_refresh_token,
             expires_in=self.access_token_expire_minutes * 60
@@ -265,15 +333,16 @@ class AuthService:
         
         return {"message": "Logout exitoso"}
 
-    def get_current_user(self, access_token: str) -> UserResponse:
+    def get_current_user(self, access_token: str) -> dict:
         """
         Obtiene el usuario actual validando el access token.
+        Extrae roles del JWT claim (no necesita consulta a BD).
         
         Args:
             access_token: JWT token
             
         Returns:
-            UserResponse del usuario autenticado
+            Dict con user_id, email, nombre y roles extraídos del JWT
             
         Raises:
             HTTPException 401: Si token inválido o expirado
@@ -312,4 +381,13 @@ class AuthService:
                 detail="Usuario no encontrado"
             )
         
-        return UserResponse.from_orm(user)
+        # Extraer roles del JWT claim (lista de strings)
+        roles = payload.get("roles", [])
+        
+        return {
+            "user_id": user.id,
+            "email": user.email,
+            "nombre": user.nombre,
+            "roles": roles,
+            "creado_en": user.creado_en
+        }
