@@ -66,7 +66,7 @@ class UserResponse(BaseModel):
     id: int
     email: str
     nombre: str
-    rol: str
+    rol: Optional[str] = "Cliente"  # Valor por defecto si no está definido
     creado_en: datetime
     
     class Config:
