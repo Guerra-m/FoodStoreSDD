@@ -24,16 +24,8 @@ class Role(SQLModel, table=True):
     creado_en: datetime = Field(default_factory=datetime.utcnow)
 
 
-class RefreshToken(SQLModel, table=True):
-    """Refresh token opaco almacenado como hash SHA256 para rotación y revocación."""
-    __tablename__ = "refresh_token"
-    id: Optional[int] = Field(default=None, primary_key=True)
-    token_hash: str = Field(index=True, unique=True)
-    usuario_id: int = Field(foreign_key="usuario.id")
-    expires_at: datetime
-    revocado_en: Optional[datetime] = None
-    creado_en: datetime = Field(default_factory=datetime.utcnow)
-
+# RefreshToken se importa desde app.auth.models para evitar duplicación en el registry
+# Ver: backend/app/auth/models.py
 
 class Usuario(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

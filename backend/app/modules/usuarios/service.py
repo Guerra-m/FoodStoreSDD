@@ -12,7 +12,8 @@ from app.core.security import (
 )
 from app.core.config import settings
 from app.core.unit_of_work import UnitOfWork
-from app.modules.usuarios.model import Usuario, Role, UsuarioRole, RefreshToken
+from app.modules.usuarios.model import Usuario, Role, UsuarioRole
+from app.auth.models import RefreshToken
 from app.modules.usuarios.schema import (
     RegisterRequest,
     LoginRequest,

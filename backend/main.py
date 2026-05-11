@@ -8,6 +8,7 @@ from app.modules.categorias.router import router as categorias_router
 from app.modules.ingredientes.router import router as ingredientes_router
 from app.modules.productos.router import router as productos_router
 from app.modules.direcciones.router import router as clientes_router
+from app.auth.routes import router as auth_routes_router
 from dotenv import load_dotenv
 import os
 
@@ -33,6 +34,7 @@ app.add_middleware(
 )
 
 # Routers
+app.include_router(auth_routes_router)  # Nuevos endpoints de autenticación JWT
 app.include_router(auth_router)
 app.include_router(categorias_router)
 app.include_router(ingredientes_router)
