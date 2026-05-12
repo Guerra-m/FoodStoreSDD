@@ -19,12 +19,28 @@ from app.modules.usuarios.schema import (
     LoginRequest,
     TokenResponse,
     UserResponse,
+    ChangePasswordRequest,
 )
 from app.modules.usuarios.repository import UsuarioRepository, RefreshTokenRepository
 
 
 class AuthService:
     """Servicio de autenticación: registro, login, refresh token rotation, logout."""
+
+    async def change_password(self, usuario_id: int, data: ChangePasswordRequest) -> None:
+        """Cambia la contraseña del usuario."""
+        with UnitOfWork() as uow:
+            usuario_repo = UsuarioRepository(uow.session)
+            usuario = usuario_repo.get_by_id(usuario_id)
+            
+            if not usuario or not verify_password(data.current_password, usuario.password_hash):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Contraseña actual incorrecta",
+                )
+            
+            usuario.password_hash = hash_password(data.new_password)
+            uow.session.add(usuario)
 
     async def register(self, data: RegisterRequest) -> UserResponse:
         """Registra un nuevo usuario con rol Cliente por defecto."""

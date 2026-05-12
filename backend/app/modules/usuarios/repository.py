@@ -18,6 +18,11 @@ class UsuarioRepository:
         statement = select(Usuario).where(Usuario.email == email)
         return self.session.exec(statement).first()
 
+    def get_by_id(self, usuario_id: int) -> Optional[Usuario]:
+        """Obtiene un usuario por su ID."""
+        statement = select(Usuario).where(Usuario.id == usuario_id)
+        return self.session.exec(statement).first()
+
     def get_with_roles(self, usuario_id: int) -> Optional[Usuario]:
         """Obtiene un usuario con sus roles cargados."""
         statement = select(Usuario).where(Usuario.id == usuario_id)

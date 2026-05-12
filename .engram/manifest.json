@@ -40,6 +40,14 @@
       "sessions": 1,
       "memories": 1,
       "prompts": 7
+    },
+    {
+      "id": "9e945576",
+      "created_by": "Titix",
+      "created_at": "2026-05-12T14:38:07Z",
+      "sessions": 5,
+      "memories": 5,
+      "prompts": 17
     }
   ]
 }

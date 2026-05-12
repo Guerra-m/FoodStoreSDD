@@ -1,3 +1,4 @@
+import { UnauthorizedPage } from './pages/auth/UnauthorizedPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import '../index.css';
@@ -28,8 +29,23 @@ function App() {
             <Route path="/" element={<h1>Food Store Home</h1>} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/categorias" element={<Categorias />} />
-            <Route path="/admin/products" element={<Productos />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route
+              path="/categorias"
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <Categorias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/products"
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <Productos />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/catalog" element={<Catalogo />} />
             <Route path="/catalog/:id" element={<ProductoDetalle />} />
             <Route

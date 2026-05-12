@@ -8,6 +8,7 @@ from app.modules.usuarios.schema import (
     TokenResponse,
     UserResponse,
     ClientePerfilUpdate,
+    ChangePasswordRequest,
 )
 from app.modules.usuarios.service import AuthService
 from app.modules.usuarios.cliente_service import ClienteService
@@ -71,22 +72,13 @@ async def get_me(payload: dict = Depends(get_current_user)):
         )
 
 
-@router.patch("/me", response_model=UserResponse)
-async def update_me(
-    data: ClientePerfilUpdate,
+
+@router.put("/me/password", status_code=status.HTTP_200_OK)
+async def change_password(
+    data: ChangePasswordRequest,
     payload: dict = Depends(get_current_user),
 ):
-    """Actualiza el perfil del usuario autenticado. No permite cambiar email."""
+    """Cambia la contraseña del usuario autenticado."""
     usuario_id = int(payload.get("sub"))
-    result = await cliente_service.actualizar_perfil(usuario_id, data)
-    return UserResponse(
-        id=result["id"],
-        nombre=result["nombre"],
-        email=result["email"],
-        telefono=result.get("telefono"),
-        foto_url=result.get("foto_url"),
-        fecha_nacimiento=result.get("fecha_nacimiento"),
-        roles=result["roles"],
-        creado_en=result["creado_en"],
-        actualizado_en=result["actualizado_en"],
-    )
+    await auth_service.change_password(usuario_id, data)
+    return {"message": "Contraseña actualizada exitosamente"}

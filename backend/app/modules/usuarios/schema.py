@@ -52,3 +52,9 @@ class ClientePerfilUpdate(BaseModel):
     telefono: Optional[str] = None
     foto_url: Optional[str] = None
     fecha_nacimiento: Optional[date] = None
+
+
+class ChangePasswordRequest(BaseModel):
+    """Schema para cambio de contraseña."""
+    current_password: str
+    new_password: str  # Validar mínimo 8 caracteres
