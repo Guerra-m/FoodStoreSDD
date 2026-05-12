@@ -1,0 +1,1 @@
+Antes de cada change, desde esta ruta ".\FoodStoreSDD\ROADMAP.md" revisa cual es la ruta de changes correcta actual y siguiente.

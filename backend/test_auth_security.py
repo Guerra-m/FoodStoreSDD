@@ -18,16 +18,16 @@ BLUE = "\033[94m"
 RESET = "\033[0m"
 
 def print_test(name: str):
-    print(f"\n{BLUE}▶ {name}{RESET}")
+    print(f"\n{BLUE}> {name}{RESET}")
 
 def print_pass(msg: str):
-    print(f"{GREEN}✓ {msg}{RESET}")
+    print(f"{GREEN}OK - {msg}{RESET}")
 
 def print_fail(msg: str):
-    print(f"{RED}✗ {msg}{RESET}")
+    print(f"{RED}FAIL - {msg}{RESET}")
 
 def print_info(msg: str):
-    print(f"{YELLOW}ℹ {msg}{RESET}")
+    print(f"{YELLOW}INFO - {msg}{RESET}")
 
 class AuthTester:
     def __init__(self):
@@ -533,9 +533,9 @@ class AuthTester:
         print(f"\n{BLUE}Total: {passed}/{total} tests pasaron{RESET}")
         
         if passed == total:
-            print(f"{GREEN}✓ TODOS LOS TESTS PASARON{RESET}\n")
+            print(f"{GREEN}TESTS COMPLETADOS CON EXITO{RESET}\n")
         else:
-            print(f"{RED}✗ {total - passed} tests fallaron{RESET}\n")
+            print(f"{RED}{total - passed} tests fallaron{RESET}\n")
         
         return passed == total
 
