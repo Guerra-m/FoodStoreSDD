@@ -8,7 +8,7 @@ from app.auth.services import AuthService
 from app.auth.security import extract_token_from_header
 from app.auth.schemas import UserResponse
 
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 
 def get_auth_service(session: Session = Depends(get_session)) -> AuthService:

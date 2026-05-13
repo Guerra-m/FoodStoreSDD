@@ -9,7 +9,7 @@ class User(SQLModel, table=True):
     __tablename__ = "usuario"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    email: str = Field(index=True, unique=True)
+    email: str = Field()  # Índice y unique definidos en Usuario (misma tabla)
     nombre: str
     password_hash: str  # Campo de contraseña
     telefono: Optional[str] = None

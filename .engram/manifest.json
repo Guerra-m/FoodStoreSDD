@@ -64,6 +64,14 @@
       "sessions": 1,
       "memories": 1,
       "prompts": 9
+    },
+    {
+      "id": "3822c850",
+      "created_by": "marti",
+      "created_at": "2026-05-13T18:13:59Z",
+      "sessions": 2,
+      "memories": 1,
+      "prompts": 13
     }
   ]
 }

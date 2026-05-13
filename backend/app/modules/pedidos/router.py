@@ -12,10 +12,11 @@ from app.modules.pedidos.schema import (
     PedidoResponse,
     PedidoListResponse,
     PedidoHistorialResponse,
+    TransicionRequest,
 )
 from app.modules.pedidos.service import PedidoService
 from app.auth.dependencies import get_current_user
-from app.modules.usuarios.model import Usuario
+from app.auth.schemas import UserResponse
 
 
 router = APIRouter(prefix="/api/v1/pedidos", tags=["pedidos"])
@@ -29,7 +30,7 @@ def get_pedido_service(session: Session = Depends(get_session)) -> PedidoService
 @router.post("", response_model=PedidoResponse, status_code=status.HTTP_201_CREATED)
 async def crear_pedido(
     pedido_data: PedidoCreate,
-    current_user: Usuario = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_current_user),
     pedido_service: PedidoService = Depends(get_pedido_service),
 ):
     """
@@ -53,7 +54,7 @@ async def crear_pedido(
 async def listar_pedidos(
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    current_user: Usuario = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_current_user),
     pedido_service: PedidoService = Depends(get_pedido_service),
 ):
     """
@@ -71,7 +72,7 @@ async def listar_pedidos(
 @router.get("/{pedido_id}", response_model=PedidoResponse)
 async def obtener_pedido(
     pedido_id: int,
-    current_user: Usuario = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_current_user),
     pedido_service: PedidoService = Depends(get_pedido_service),
 ):
     """
@@ -92,10 +93,50 @@ async def obtener_pedido(
     return resultado
 
 
+@router.post("/{pedido_id}/transicion", response_model=PedidoResponse)
+async def transicionar_estado(
+    pedido_id: int,
+    transicion_data: TransicionRequest,
+    current_user: UserResponse = Depends(get_current_user),
+    pedido_service: PedidoService = Depends(get_pedido_service),
+):
+    """
+    Transiciona un pedido a un nuevo estado.
+
+    Acciones válidas: pagar, preparar, enviar, entregar, cancelar.
+    Requiere autenticación. Las acciones están sujetas al rol del usuario
+    y al estado actual del pedido según la FSM.
+
+    - **Cliente**: solo puede cancelar pedidos propios en estado "pendiente"
+    - **Admin**: puede ejecutar todas las acciones válidas
+    - **Sistema**: puede ejecutar "pagar" (para integración con webhooks)
+    """
+    from fastapi import HTTPException
+
+    # Determinar el rol efectivo: si tiene "Admin", se comporta como admin
+    # Caso contrario, se comporta como cliente
+    usuario_rol = "Admin" if "Admin" in current_user.roles else "Cliente"
+
+    resultado, error, status_code = pedido_service.transicionar_estado(
+        pedido_id=pedido_id,
+        accion=transicion_data.accion,
+        usuario_id=current_user.id,
+        usuario_rol=usuario_rol,
+    )
+
+    if error:
+        raise HTTPException(
+            status_code=status_code or 400,
+            detail=error,
+        )
+
+    return resultado
+
+
 @router.get("/{pedido_id}/historial", response_model=List[PedidoHistorialResponse])
 async def obtener_historial(
     pedido_id: int,
-    current_user: Usuario = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_current_user),
     pedido_service: PedidoService = Depends(get_pedido_service),
 ):
     """

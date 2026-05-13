@@ -67,3 +67,8 @@ class PedidoListResponse(BaseModel):
     total: int
     page: int
     per_page: int
+
+
+class TransicionRequest(BaseModel):
+    """Schema para solicitar una transición de estado en un pedido"""
+    accion: str
