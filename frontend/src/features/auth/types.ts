@@ -52,3 +52,6 @@ export interface TokenPayload {
   sub: string; // user_id
   exp: number; // timestamp de expiración
 }
+
+// Alias for backward compatibility - same as User
+export type UserResponse = User;

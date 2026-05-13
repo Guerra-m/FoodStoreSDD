@@ -11,6 +11,7 @@ import Productos from './pages/Productos';
 import Catalogo from './pages/Catalogo';
 import ProductoDetalle from './pages/ProductoDetalle';
 import MiPerfil from './pages/MiPerfil';
+import MisPedidos from './pages/MisPedidos';
 import CartDrawer from '../features/shopping-cart/components/CartDrawer';
 import { useCartCrossTabSync } from '../features/shopping-cart/hooks/useCartCrossTabSync';
 import { useCartStore, selectCartItemsCount } from '../shared/stores/cartStore';
@@ -28,6 +29,7 @@ function Navbar() {
       <a href="/categorias" style={{ marginRight: '15px' }}>Categorías (Admin)</a>
       <a href="/admin/products" style={{ marginRight: '15px' }}>Productos (Admin)</a>
       <a href="/perfil" style={{ marginRight: '15px' }}>Mi Perfil</a>
+      <a href="/mis-pedidos" style={{ marginRight: '15px' }}>Mis Pedidos</a>
       <a href="/login" style={{ marginRight: '15px' }}>Login</a>
 
       {/* Cart button with badge */}
@@ -108,6 +110,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MiPerfil />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mis-pedidos"
+              element={
+                <ProtectedRoute>
+                  <MisPedidos />
                 </ProtectedRoute>
               }
             />
