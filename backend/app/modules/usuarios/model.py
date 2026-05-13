@@ -28,6 +28,7 @@ class Role(SQLModel, table=True):
 # Ver: backend/app/auth/models.py
 
 class Usuario(SQLModel, table=True):
+    __table_args__ = {'extend_existing': True}
     id: Optional[int] = Field(default=None, primary_key=True)
     nombre: str
     email: str = Field(index=True, unique=True)

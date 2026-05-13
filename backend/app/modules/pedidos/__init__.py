@@ -6,6 +6,7 @@ from app.modules.pedidos.schema import (
     PedidoListResponse,
     PedidoItemResponse,
     PedidoHistorialResponse,
+    TransicionRequest,
 )
 from app.modules.pedidos.service import PedidoService
 from app.modules.pedidos.repository import PedidoRepository
@@ -21,6 +22,7 @@ __all__ = [
     "PedidoListResponse",
     "PedidoItemResponse",
     "PedidoHistorialResponse",
+    "TransicionRequest",
     "PedidoService",
     "PedidoRepository",
     "router",

@@ -1,11 +1,12 @@
 """
 Service para el módulo de Pedidos
 Implementa Unit of Work para creación atómica de pedidos
+y FSM para transiciones de estado.
 """
 from typing import Optional, List, Tuple
 from datetime import datetime
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.modules.pedidos.model import Pedido, PedidoItem, PedidoHistorial, EstadoPedido
 from app.modules.pedidos.schema import (
@@ -16,10 +17,11 @@ from app.modules.pedidos.schema import (
     PedidoHistorialResponse,
 )
 from app.modules.pedidos.repository import PedidoRepository
+from app.modules.pedidos.fsm import OrderFSM
 
 
 class PedidoService:
-    """Servicio de pedidos con Unit of Work para atomicidad."""
+    """Servicio de pedidos con Unit of Work para atomicidad y FSM para transiciones."""
 
     def __init__(self, session: Session):
         self.session = session
@@ -198,6 +200,102 @@ class PedidoService:
             )
             for h in historial
         ], None
+
+    def transicionar_estado(
+        self, pedido_id: int, accion: str, usuario_id: int, usuario_rol: str
+    ) -> Tuple[Optional[PedidoResponse], Optional[str], Optional[int]]:
+        """
+        Transiciona un pedido a un nuevo estado usando la FSM.
+
+        Valida que la transición sea permitida según el estado actual,
+        que el usuario tenga el rol adecuado, y que el pedido exista
+        (y pertenezca al cliente si es cliente quien solicita).
+
+        Args:
+            pedido_id: ID del pedido a transicionar.
+            accion: Acción a ejecutar (pagar, preparar, enviar, entregar, cancelar).
+            usuario_id: ID del usuario que solicita la transición.
+            usuario_rol: Rol del usuario ("Cliente", "Admin", "Sistema").
+
+        Returns:
+            (PedidoResponse, None, None) si exitoso.
+            (None, mensaje_error, status_code) si falla.
+        """
+        # 1. Validar que la acción existe en el sistema
+        if not OrderFSM.is_action_valid(accion):
+            return None, (
+                f"Acción no válida: '{accion}'. "
+                f"Acciones permitidas: {', '.join(OrderFSM.VALID_ACTIONS)}"
+            ), 400
+
+        # 2. Obtener pedido con lock pesimista (SELECT FOR UPDATE)
+        statement = select(Pedido).where(Pedido.id == pedido_id).with_for_update()
+        pedido = self.session.exec(statement).first()
+
+        if not pedido:
+            return None, "Pedido no encontrado", 404
+
+        # 3. Si es cliente, verificar que el pedido le pertenezca
+        if usuario_rol == "Cliente" and pedido.cliente_id != usuario_id:
+            return None, "Pedido no encontrado", 404
+
+        # 4. Validar que el estado actual no sea terminal
+        if OrderFSM.is_terminal_state(pedido.estado):
+            return None, (
+                f"El pedido se encuentra en un estado terminal "
+                f"('{pedido.estado}') y no admite más transiciones"
+            ), 400
+
+        # 5. Validar que la transición esté permitida desde el estado actual
+        if not OrderFSM.can_transition(pedido.estado, accion):
+            return None, (
+                f"La acción '{accion}' no está permitida desde "
+                f"el estado '{pedido.estado}'"
+            ), 400
+
+        # 6. Validar que el rol del usuario tenga permiso para esta transición
+        allowed_actions = OrderFSM.get_allowed_actions(pedido.estado, usuario_rol)
+        if accion not in allowed_actions:
+            return None, (
+                f"No tienes permisos para ejecutar '{accion}' "
+                f"desde el estado '{pedido.estado}'"
+            ), 403
+
+        try:
+            # 7. Obtener estado destino
+            nuevo_estado = OrderFSM.get_next_state(pedido.estado, accion)
+
+            # 8. Si es cancelación, restaurar stock primero
+            if accion == "cancelar":
+                for item in pedido.items:
+                    self.repo.restore_stock(item.producto_id, item.cantidad)
+
+            # 9. Actualizar estado del pedido
+            pedido.estado = nuevo_estado
+            pedido.actualizado_en = datetime.utcnow()
+
+            # 10. Registrar en historial
+            descripcion = OrderFSM.get_description_for_action(accion, pedido.estado)
+            historial_entry = PedidoHistorial(
+                pedido_id=pedido.id,
+                estado=nuevo_estado,
+                timestamp=datetime.utcnow(),
+                usuario_id=usuario_id if usuario_rol != "Sistema" else None,
+                descripcion=descripcion,
+            )
+            self.session.add(historial_entry)
+
+            # 11. Commit
+            self.session.commit()
+            self.session.refresh(pedido)
+
+            # 12. Retornar pedido actualizado con relaciones
+            pedido_completo = self.repo.get_by_id_with_relations(pedido.id)
+            return self._to_response(pedido_completo), None, None
+
+        except Exception as e:
+            self.session.rollback()
+            return None, f"Error al transicionar el pedido: {str(e)}", 500
 
     def _to_response(self, pedido: Pedido) -> PedidoResponse:
         """Convierte un modelo Pedido a PedidoResponse."""

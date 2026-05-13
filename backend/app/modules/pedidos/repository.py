@@ -171,7 +171,7 @@ class PedidoRepository:
         
         statement = select(Direccion).where(
             Direccion.id == direccion_id,
-            Direccion.cliente_id == cliente_id,
+            Direccion.usuario_id == cliente_id,
         )
         direccion = self.session.exec(statement).first()
         
@@ -180,10 +180,8 @@ class PedidoRepository:
                 "id": direccion.id,
                 "calle": direccion.calle,
                 "numero": direccion.numero,
-                "piso": direccion.piso,
-                "departamento": direccion.departamento,
                 "ciudad": direccion.ciudad,
+                "provincia": direccion.provincia,
                 "codigo_postal": direccion.codigo_postal,
-                "observaciones": direccion.observaciones,
             }
         return None
