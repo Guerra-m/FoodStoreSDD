@@ -1,5 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { usePublicProductById } from '../../shared/hooks/useProducts';
+import AddToCartButton from '../../features/shopping-cart/components/AddToCartButton';
+import type { IngredientOption } from '../../features/shopping-cart/components/AddToCartButton';
 
 export default function ProductoDetalle() {
   const { id } = useParams<{ id: string }>();
@@ -9,6 +11,11 @@ export default function ProductoDetalle() {
 
   if (isLoading) return <div>Cargando producto...</div>;
   if (error || !product) return <div>Producto no encontrado</div>;
+
+  const ingredientes: IngredientOption[] = (product.ingredientes ?? []).map((ing) => ({
+    ingredienteId: ing.ingrediente_id,
+    nombre: ing.nombre,
+  }));
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
@@ -64,6 +71,16 @@ export default function ProductoDetalle() {
           <h2 style={{ fontSize: '28px', color: '#007bff' }}>
             {formatPrice(product.price_in_cents)}
           </h2>
+
+          {/* Add to cart */}
+          <div style={{ marginTop: '20px' }}>
+            <AddToCartButton
+              productoId={product.id}
+              nombre={product.nombre}
+              priceInCents={product.price_in_cents}
+              ingredientes={ingredientes}
+            />
+          </div>
 
           {/* Ingredients with allergens */}
           {product.ingredientes && product.ingredientes.length > 0 && (

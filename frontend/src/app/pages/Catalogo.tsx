@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePublicProducts } from '../../shared/hooks/useProducts';
 import { useCategories } from '../../shared/hooks/useCategories';
+import { useCartStore } from '../../shared/stores/cartStore';
 
 export default function Catalogo() {
   const [filters, setFilters] = useState({
@@ -18,6 +19,7 @@ export default function Catalogo() {
     search: filters.search || undefined,
   });
   const { data: categorias } = useCategories();
+  const addItem = useCartStore((state) => state.addItem);
 
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
@@ -175,19 +177,42 @@ export default function Catalogo() {
                   <strong style={{ fontSize: '18px' }}>
                     {formatPrice(product.price_in_cents)}
                   </strong>
-                  <Link
-                    to={`/catalog/${product.id}`}
-                    style={{
-                      padding: '6px 12px',
-                      background: '#007bff',
-                      color: 'white',
-                      textDecoration: 'none',
-                      borderRadius: '4px',
-                      fontSize: '14px',
-                    }}
-                  >
-                    Ver detalle
-                  </Link>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                      onClick={() =>
+                        addItem({
+                          productoId: product.id,
+                          nombre: product.nombre,
+                          priceInCents: product.price_in_cents,
+                          cantidad: 1,
+                        })
+                      }
+                      style={{
+                        padding: '6px 12px',
+                        background: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Agregar
+                    </button>
+                    <Link
+                      to={`/catalog/${product.id}`}
+                      style={{
+                        padding: '6px 12px',
+                        background: '#007bff',
+                        color: 'white',
+                        textDecoration: 'none',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                      }}
+                    >
+                      Ver detalle
+                    </Link>
+                  </div>
                 </div>
                 {product.ingredientes.length > 0 && (
                   <div style={{ marginTop: '8px', fontSize: '12px', color: '#888' }}>
