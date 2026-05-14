@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useCartStore } from '../../../shared/stores/cartStore';
+import { useCartStore } from '../../../stores/cartStore';
 import { CART_STORAGE_KEY } from '../types';
 
 /**

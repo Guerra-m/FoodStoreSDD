@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './app/App'
+import App from './App'
 import './index.css' // Asumiendo que crearás un archivo CSS básico
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

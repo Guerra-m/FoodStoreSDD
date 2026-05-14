@@ -4,7 +4,7 @@
  * O desde la consola del navegador en desarrollo.
  */
 
-import { useCartStore, selectCartTotal, selectCartItemsCount } from '../../../shared/stores/cartStore';
+import { useCartStore, selectCartTotal, selectCartItemsCount } from '../../../stores/cartStore';
 
 console.log('=== CART STORE INTEGRATION TESTS ===\n');
 
