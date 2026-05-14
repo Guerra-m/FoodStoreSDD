@@ -58,6 +58,8 @@ export interface OrderResponse {
   };
   total: number;
   estado: string;
+  estado_pago?: string | null;
+  preferencia_pago_url?: string | null;
   creado_en: string;
   actualizado_en: string;
   items: OrderItemResponse[];
@@ -70,6 +72,19 @@ export interface OrderListResponse {
   total: number;
   page: number;
   per_page: number;
+}
+
+// Tipos para pago
+export interface PreferenciaPagoResponse {
+  preference_id: string;
+  init_point: string;
+}
+
+export interface PagoEstadoResponse {
+  estado_pago: string | null;
+  metodo_pago: string;
+  preferencia_pago_url: string | null;
+  mercadopago_preference_id: string | null;
 }
 
 // API
@@ -105,6 +120,18 @@ export const orderApi = {
   // Obtener historial de un pedido
   getHistorial: async (orderId: number): Promise<OrderHistorialResponse[]> => {
     const response = await api.get(`/api/v1/pedidos/${orderId}/historial`);
+    return response.data;
+  },
+
+  // Crear preferencia de pago en MercadoPago
+  crearPreferenciaPago: async (pedidoId: number): Promise<PreferenciaPagoResponse> => {
+    const response = await api.post(`/api/v1/pedidos/${pedidoId}/preferencia-pago`);
+    return response.data;
+  },
+
+  // Consultar estado de pago de un pedido
+  getEstadoPago: async (pedidoId: number): Promise<PagoEstadoResponse> => {
+    const response = await api.get(`/api/v1/pedidos/${pedidoId}/pago/status`);
     return response.data;
   },
 };

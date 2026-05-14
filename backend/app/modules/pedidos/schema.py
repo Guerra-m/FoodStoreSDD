@@ -52,6 +52,8 @@ class PedidoResponse(BaseModel):
     direccion_snapshot: dict
     total: int
     estado: str
+    estado_pago: Optional[str] = None
+    preferencia_pago_url: Optional[str] = None
     creado_en: datetime
     actualizado_en: datetime
     items: List[PedidoItemResponse]

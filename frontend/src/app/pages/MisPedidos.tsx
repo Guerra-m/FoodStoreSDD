@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders, useOrderById } from '../../shared/hooks/useOrders';
 import { formatPrice, formatDate, getEstadoLabel, getEstadoColor } from '../../shared/api/orderApi';
+import PaymentButton from '../../features/payments/PaymentButton';
+import PaymentStatusBadge from '../../features/payments/PaymentStatusBadge';
 
 export default function MisPedidos() {
   const [page, setPage] = useState(1);
@@ -77,6 +79,8 @@ export default function MisPedidos() {
                   >
                     {getEstadoLabel(pedido.estado)}
                   </span>
+                  
+                  <PaymentStatusBadge estadoPago={pedido.estado_pago} />
                   
                   <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
                     {formatPrice(pedido.total)}
@@ -185,6 +189,8 @@ export default function MisPedidos() {
                   >
                     {getEstadoLabel(orderDetail.estado)}
                   </span>
+                  {' '}
+                  <PaymentStatusBadge estadoPago={orderDetail.estado_pago} />
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>
@@ -255,6 +261,13 @@ export default function MisPedidos() {
                       ))}
                     </div>
                   </>
+                )}
+
+                {/* Botón de pago para pedidos pendientes */}
+                {orderDetail.estado === 'pendiente' && (
+                  <div style={{ marginTop: '20px' }}>
+                    <PaymentButton pedidoId={orderDetail.id} />
+                  </div>
                 )}
               </>
             ) : (

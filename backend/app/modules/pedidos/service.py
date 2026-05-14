@@ -322,6 +322,20 @@ class PedidoService:
             for h in getattr(pedido, 'historial', [])
         ]
 
+        # Obtener estado de pago (lazy import para evitar circular imports)
+        estado_pago = None
+        preferencia_pago_url = None
+        try:
+            from app.modules.payments.repository import PagoRepository
+            pago_repo = PagoRepository(self.session)
+            ultima_transaccion = pago_repo.get_ultima_by_pedido(pedido.id)
+            if ultima_transaccion:
+                estado_pago = ultima_transaccion.estado
+                preferencia_pago_url = ultima_transaccion.metadata.get("init_point")
+        except Exception:
+            # Si el módulo de payments no está disponible, ignoramos
+            pass
+
         return PedidoResponse(
             id=pedido.id,
             cliente_id=pedido.cliente_id,
@@ -329,6 +343,8 @@ class PedidoService:
             direccion_snapshot=pedido.direccion_snapshot,
             total=pedido.total,
             estado=pedido.estado,
+            estado_pago=estado_pago,
+            preferencia_pago_url=preferencia_pago_url,
             creado_en=pedido.creado_en,
             actualizado_en=pedido.actualizado_en,
             items=items_response,
