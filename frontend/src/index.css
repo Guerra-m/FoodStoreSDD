@@ -1,1 +1,12 @@
 body { margin: 0; font-family: sans-serif; }
+
+/* ─── Skeleton animation ───────────────────────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-skeleton {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background-color: #e5e7eb;
+}

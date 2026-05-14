@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCartStore } from '../../../shared/stores/cartStore';
+import { toast } from 'react-toastify';
 
 export interface IngredientOption {
   ingredienteId: number;
@@ -39,6 +40,7 @@ export default function AddToCartButton({
       cantidad: 1,
       excludedIngredientIds: excludedIds,
     });
+    toast.success(`${nombre} agregado al carrito`);
     setShowModal(false);
     setExcludedIds([]);
   };
@@ -47,6 +49,7 @@ export default function AddToCartButton({
     if (ingredientes.length === 0) {
       // Sin ingredientes, agregar directo
       addItem({ productoId, nombre, priceInCents, cantidad: 1 });
+      toast.success(`${nombre} agregado al carrito`);
       return;
     }
     setExcludedIds([]);

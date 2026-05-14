@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type PaymentStatus = 'idle' | 'processing' | 'approved' | 'rejected' | 'error';
+type PaymentStatus = 'idle' | 'processing' | 'approved' | 'rejected' | 'error' | 'pending';
 
 interface PaymentState {
   /** Estado del flujo de pago */
@@ -16,6 +16,7 @@ interface PaymentState {
   setProcessing: () => void;
   setApproved: (mpPaymentId: number, statusDetail?: string) => void;
   setRejected: (statusDetail?: string) => void;
+  setPending: (statusDetail?: string) => void;
   setError: (error: string) => void;
   reset: () => void;
 }
@@ -41,6 +42,9 @@ export const usePaymentStore = create<PaymentState>((set) => ({
 
   setRejected: (statusDetail) =>
     set({ status: 'rejected', mpPaymentId: null, statusDetail: statusDetail ?? null }),
+
+  setPending: (statusDetail) =>
+    set({ status: 'pending', mpPaymentId: null, statusDetail: statusDetail ?? null }),
 
   setError: (error) =>
     set({ status: 'error', mpPaymentId: null, statusDetail: null, error }),

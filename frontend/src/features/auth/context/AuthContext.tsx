@@ -20,6 +20,7 @@ import {
   getRefreshToken,
   isTokenExpired,
 } from "../utils";
+import { useAuthStore } from "../../../shared/stores/authStore";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -40,6 +41,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setRefreshTimeoutId(null);
     }
   }, [refreshTimeoutId]);
+
+  /**
+   * Limpia TODO el estado de autenticación (context, store, tokens)
+   */
+  const clearAllAuth = useCallback(() => {
+    clearTokens();
+    setUser(null);
+    useAuthStore.getState().logout();
+    clearRefreshTimeout();
+  }, [clearRefreshTimeout]);
+
+  // Escucha el evento auth:unauthorized disparado por axios interceptor
+  // Así cuando una API call recibe 401, AuthContext reacciona sin necesidad
+  // de recargar la página entera.
+  const handleUnauthorized = useCallback(() => {
+    clearAllAuth();
+  }, [clearAllAuth]);
+
+  useEffect(() => {
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, [handleUnauthorized]);
 
   // Intenta restaurar sesión existente al montar
   useEffect(() => {
@@ -65,10 +88,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Token válido, obtener usuario
         const currentUser = await getCurrentUser(accessToken);
         setUser(currentUser);
+        useAuthStore.getState().setAuth(accessToken, currentUser);
         scheduleTokenRefresh(accessToken);
       } catch (err) {
         console.error("Error restoring session:", err);
-        clearTokens();
+        clearAllAuth();
       }
     };
 
@@ -116,11 +140,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setUser(response.user);
         saveTokens(response.access_token, response.refresh_token);
+        useAuthStore.getState().setAuth(response.access_token, response.user);
         scheduleTokenRefresh(response.access_token);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Login fallido";
         setError(errorMessage);
         clearTokens();
+        useAuthStore.getState().logout();
         throw err;
       } finally {
         setIsLoading(false);
@@ -167,6 +193,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       clearTokens();
       setUser(null);
+      useAuthStore.getState().logout();
       clearRefreshTimeout();
       setError(null);
     } catch (err) {
@@ -175,6 +202,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Aún así limpiamos el estado local aunque falle
       clearTokens();
       setUser(null);
+      useAuthStore.getState().logout();
       clearRefreshTimeout();
     } finally {
       setIsLoading(false);
@@ -196,17 +224,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(response.user);
       saveTokens(response.access_token, response.refresh_token);
+      useAuthStore.getState().setAuth(response.access_token, response.user);
       scheduleTokenRefresh(response.access_token);
     } catch (err) {
-      // Si falla el refresh, logout
-      clearTokens();
-      setUser(null);
-      clearRefreshTimeout();
+      // Si falla el refresh, limpiamos todo
+      clearAllAuth();
       const errorMessage = err instanceof Error ? err.message : "Token refresh fallido";
       setError(errorMessage);
       console.error("Token refresh failed:", err);
     }
-  }, [scheduleTokenRefresh, clearRefreshTimeout]);
+  }, [scheduleTokenRefresh, clearAllAuth]);
 
   /**
    * Limpia el mensaje de error

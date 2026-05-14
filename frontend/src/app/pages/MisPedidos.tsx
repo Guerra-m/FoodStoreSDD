@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders, useOrderById } from '../../shared/hooks/useOrders';
 import { formatPrice, formatDate, getEstadoLabel, getEstadoColor, getPaymentStatusLabel, getPaymentStatusColor } from '../../shared/api/orderApi';
+import { SkeletonTable } from '../../shared/components/SkeletonTable';
 
 export default function MisPedidos() {
   const [page, setPage] = useState(1);
@@ -10,7 +11,14 @@ export default function MisPedidos() {
   
   const { data: orderDetail, isLoading: detailLoading } = useOrderById(selectedOrderId);
 
-  if (isLoading) return <div style={{ padding: '20px' }}>Cargando pedidos...</div>;
+  if (isLoading) {
+    return (
+      <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+        <h1>Mis Pedidos</h1>
+        <SkeletonTable rows={5} />
+      </div>
+    );
+  }
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Error al cargar pedidos</div>;
 
   return (
@@ -168,7 +176,9 @@ export default function MisPedidos() {
             onClick={(e) => e.stopPropagation()}
           >
             {detailLoading ? (
-              <div>Cargando detalle...</div>
+              <div style={{ padding: '20px' }}>
+                <SkeletonTable rows={3} columns={[{ width: '40%' }, { width: '20%' }, { width: '20%' }, { width: '20%' }]} />
+              </div>
             ) : orderDetail ? (
               <>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>

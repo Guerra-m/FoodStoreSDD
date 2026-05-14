@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { usePublicProducts } from '../../shared/hooks/useProducts';
 import { useCategories } from '../../shared/hooks/useCategories';
 import { useCartStore } from '../../shared/stores/cartStore';
+import { SkeletonCard } from '../../shared/components/SkeletonCard';
+import { toast } from 'react-toastify';
 
 export default function Catalogo() {
   const [filters, setFilters] = useState({
@@ -23,7 +25,26 @@ export default function Catalogo() {
 
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-  if (isLoading) return <div>Cargando catálogo...</div>;
+  if (isLoading) {
+    return (
+      <div style={{ padding: '20px' }}>
+        <h1>Catálogo de Productos</h1>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+            gap: '20px',
+          }}
+          aria-busy="true"
+          aria-label="Cargando catálogo"
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <div>Error al cargar el catálogo</div>;
 
   return (
@@ -179,14 +200,15 @@ export default function Catalogo() {
                   </strong>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button
-                      onClick={() =>
+                      onClick={() => {
                         addItem({
                           productoId: product.id,
                           nombre: product.nombre,
                           priceInCents: product.price_in_cents,
                           cantidad: 1,
-                        })
-                      }
+                        });
+                        toast.success(`${product.nombre} agregado al carrito`);
+                      }}
                       style={{
                         padding: '6px 12px',
                         background: '#28a745',

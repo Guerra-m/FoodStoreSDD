@@ -9,6 +9,8 @@ import {
   getDashboardRevenue,
   getDashboardTopProducts,
 } from '../../../shared/api/adminApi';
+import { Skeleton } from '../../../shared/components/Skeleton';
+import { SkeletonTable } from '../../../shared/components/SkeletonTable';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
@@ -165,9 +167,44 @@ export function DashboardPage() {
 
   if (statsLoading) {
     return (
-      <div>
-        <h2 style={{ marginBottom: '1rem' }}>Dashboard</h2>
-        <div style={{ color: '#6b7280' }}>Cargando métricas...</div>
+      <div aria-busy="true" aria-label="Cargando dashboard">
+        <h2 style={{ marginBottom: '1rem', color: '#111827' }}>Dashboard</h2>
+
+        {/* Skeleton summary cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
+              <div style={{ marginBottom: '8px' }}>
+                <Skeleton width="50%" height={14} />
+              </div>
+              <Skeleton width="40%" height={28} />
+            </div>
+          ))}
+        </div>
+
+        {/* Skeleton charts area */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <Skeleton width="40%" height={18} />
+            </div>
+            <Skeleton shape="rect" width="100%" height={260} />
+          </div>
+          <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <Skeleton width="40%" height={18} />
+            </div>
+            <Skeleton shape="rect" width="100%" height={260} />
+          </div>
+        </div>
+
+        {/* Skeleton table */}
+        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', marginTop: '16px' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <Skeleton width="40%" height={18} />
+          </div>
+          <SkeletonTable rows={5} />
+        </div>
       </div>
     );
   }

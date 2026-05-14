@@ -12,8 +12,8 @@ from app.modules.pedidos.router import router as pedidos_router
 from app.modules.pagos.router import router as pagos_router
 from app.auth.routes import router as auth_routes_router
 from app.admin.routes import router as admin_router
+from app.core.config import settings
 from dotenv import load_dotenv
-import os
 from sqlmodel import SQLModel
 from app.core.database import engine
 
@@ -33,7 +33,7 @@ app.add_exception_handler(RequestValidationError, global_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)
 
 # CORS configuración para permitir comunicaciones desde el frontend
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+origins = settings.CORS_ORIGINS
 
 app.add_middleware(
     CORSMiddleware,

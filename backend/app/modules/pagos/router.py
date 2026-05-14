@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
 from app.core.database import get_session
-from app.modules.pagos.schema import PagoCreateRequest, PagoResponse
+from app.modules.pagos.schema import PagoCreateRequest, PagoResponse, PreferenciaCreateRequest, PreferenciaResponse
 from app.modules.pagos.service import PagoService
 from app.auth.dependencies import get_current_user
 from app.auth.schemas import UserResponse
@@ -52,6 +52,38 @@ async def crear_pago(
         pedido_id=pago_data.pedido_id,
         card_token=pago_data.card_token,
         user_email=current_user.email,
+        user_id=current_user.id,
+    )
+
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    return resultado
+
+
+@router.post(
+    "/crear-preferencia",
+    response_model=PreferenciaResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def crear_preferencia(
+    pref_data: PreferenciaCreateRequest,
+    current_user: UserResponse = Depends(get_current_user),
+    pago_service: PagoService = Depends(get_pago_service),
+):
+    """
+    Crea una preferencia de MercadoPago Checkout Pro.
+
+    Requiere autenticación JWT. El pedido debe pertenecer al usuario autenticado.
+
+    **Args (body):**
+    - ``pedido_id``: ID del pedido.
+
+    **Returns:**
+    ``PreferenciaResponse`` con ``preference_id`` e ``init_point`` para redirigir al checkout de MP.
+    """
+    resultado, error = pago_service.crear_preferencia(
+        pedido_id=pref_data.pedido_id,
         user_id=current_user.id,
     )
 
