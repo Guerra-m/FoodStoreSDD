@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
     REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
+    # MercadoPago Integration
+    MP_ACCESS_TOKEN: str = os.getenv("MP_ACCESS_TOKEN", "")
+    MP_PUBLIC_KEY: str = os.getenv("MP_PUBLIC_KEY", "")
+    MP_WEBHOOK_SECRET: str = os.getenv("MP_WEBHOOK_SECRET", "")
+
     class Config:
         env_file = ".env"
 

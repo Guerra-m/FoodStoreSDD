@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders, useOrderById } from '../../shared/hooks/useOrders';
-import { formatPrice, formatDate, getEstadoLabel, getEstadoColor } from '../../shared/api/orderApi';
+import { formatPrice, formatDate, getEstadoLabel, getEstadoColor, getPaymentStatusLabel, getPaymentStatusColor } from '../../shared/api/orderApi';
 
 export default function MisPedidos() {
   const [page, setPage] = useState(1);
@@ -64,7 +64,7 @@ export default function MisPedidos() {
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span
                     style={{
                       padding: '4px 12px',
@@ -77,6 +77,21 @@ export default function MisPedidos() {
                   >
                     {getEstadoLabel(pedido.estado)}
                   </span>
+
+                  {pedido.payment_status && (
+                    <span
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: getPaymentStatusColor(pedido.payment_status),
+                      }}
+                    >
+                      Pago: {getPaymentStatusLabel(pedido.payment_status)}
+                    </span>
+                  )}
                   
                   <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
                     {formatPrice(pedido.total)}
@@ -185,7 +200,40 @@ export default function MisPedidos() {
                   >
                     {getEstadoLabel(orderDetail.estado)}
                   </span>
+
+                  {orderDetail.payment_status && (
+                    <>
+                      {' '}
+                      <span
+                        style={{
+                          padding: '2px 8px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          color: 'white',
+                          backgroundColor: getPaymentStatusColor(orderDetail.payment_status),
+                        }}
+                      >
+                        Pago: {getPaymentStatusLabel(orderDetail.payment_status)}
+                      </span>
+                    </>
+                  )}
                 </div>
+
+                {orderDetail.payment_status === 'rejected' && (
+                  <div
+                    style={{
+                      marginBottom: '20px',
+                      padding: '10px',
+                      background: '#f8d7da',
+                      borderRadius: '4px',
+                      color: '#721c24',
+                      fontSize: '13px',
+                    }}
+                  >
+                    El pago fue rechazado. Para reintentar, contactate con soporte o realizá un nuevo pedido.
+                  </div>
+                )}
 
                 <div style={{ marginBottom: '20px' }}>
                   <strong>Fecha:</strong> {formatDate(orderDetail.creado_en)}

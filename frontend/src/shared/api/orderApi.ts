@@ -58,6 +58,7 @@ export interface OrderResponse {
   };
   total: number;
   estado: string;
+  payment_status?: string | null;
   creado_en: string;
   actualizado_en: string;
   items: OrderItemResponse[];
@@ -150,4 +151,36 @@ export const getEstadoColor = (estado: string): string => {
     cancelado: '#ef4444', // red
   };
   return colors[estado] || '#6b7280';
+};
+
+// ─── Payment status helpers ───────────────────────────────────────────────────
+
+/** Traduce el payment_status de MercadoPago a un label legible */
+export const getPaymentStatusLabel = (status?: string | null): string => {
+  const labels: Record<string, string> = {
+    pending: 'Pendiente',
+    approved: 'Aprobado',
+    rejected: 'Rechazado',
+    in_process: 'En proceso',
+    in_mediation: 'En mediación',
+    cancelled: 'Cancelado',
+    refunded: 'Reintegrado',
+    charged_back: 'Contracargo',
+  };
+  return status ? labels[status] || status : '—';
+};
+
+/** Retorna un color en hex para el badge de payment_status */
+export const getPaymentStatusColor = (status?: string | null): string => {
+  const colors: Record<string, string> = {
+    pending: '#f59e0b',     // amber
+    approved: '#10b981',    // green
+    rejected: '#ef4444',    // red
+    in_process: '#3b82f6',  // blue
+    in_mediation: '#f59e0b', // amber
+    cancelled: '#6b7280',   // gray
+    refunded: '#8b5cf6',    // purple
+    charged_back: '#dc2626', // dark red
+  };
+  return status ? colors[status] || '#6b7280' : '#6b7280';
 };

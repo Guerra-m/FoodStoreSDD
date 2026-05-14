@@ -21,7 +21,7 @@ class PedidoRepository:
         return self.session.exec(statement).first()
 
     def get_by_id_with_relations(self, pedido_id: int) -> Optional[Pedido]:
-        """Obtiene un pedido por ID con items e historial."""
+        """Obtiene un pedido por ID con items, historial y pagos."""
         statement = select(Pedido).where(Pedido.id == pedido_id)
         pedido = self.session.exec(statement).first()
         
@@ -35,6 +35,11 @@ class PedidoRepository:
                 PedidoHistorial.pedido_id == pedido_id
             ).order_by(PedidoHistorial.timestamp)
             pedido.historial = list(self.session.exec(historial_stmt).all())
+            
+            # Cargar pagos
+            from app.modules.pagos.model import Pago
+            pagos_stmt = select(Pago).where(Pago.pedido_id == pedido_id).order_by(Pago.created_at)
+            pedido.pagos = list(self.session.exec(pagos_stmt).all())
         
         return pedido
 

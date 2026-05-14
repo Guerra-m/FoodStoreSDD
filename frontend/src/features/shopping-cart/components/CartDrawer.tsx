@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCartStore, selectCartItemsCount, selectCartTotal } from '../../../shared/stores/cartStore';
+import { usePaymentStore } from '../../../shared/stores/paymentStore';
 import { useUIStore } from '../../../shared/stores/uiStore';
 import { useDirecciones } from '../../../shared/hooks/useDirecciones';
 import { useCreateOrder } from '../../../shared/hooks/useOrders';
+import { useCreatePayment, usePagoByPedido } from '../../../shared/hooks/usePago';
 import { formatPrice } from '../../../shared/api/orderApi';
+import PaymentForm from '../../../shared/components/PaymentForm';
 import CartItemCard from './CartItemCard';
 import CartSummary from './CartSummary';
 
@@ -19,13 +22,26 @@ export default function CartDrawer() {
   const count = selectCartItemsCount(items);
   const total = selectCartTotal(items);
 
+  const paymentStatus = usePaymentStore((state) => state.status);
+
   // Checkout state
   const [showCheckout, setShowCheckout] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
 
+  // Payment step state
+  const [showPayment, setShowPayment] = useState(false);
+  const [pollingEnabled, setPollingEnabled] = useState(false);
+
   const { data: direcciones } = useDirecciones();
   const createOrder = useCreateOrder();
+  const createPayment = useCreatePayment();
+  const { data: pagoData } = usePagoByPedido(
+    orderSuccess,
+    pollingEnabled,
+  );
+
+  // ─── Handlers ─────────────────────────────────────────────────────────────
 
   const handleCheckout = async () => {
     if (!selectedAddressId) {
@@ -38,22 +54,77 @@ export default function CartDrawer() {
         carrito: items,
         direccionId: selectedAddressId,
       });
-      
+
       clearCart();
       setShowCheckout(false);
       setOrderSuccess(result.id);
+      setShowPayment(false);
+      usePaymentStore.getState().reset();
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Error al crear el pedido');
     }
   };
 
+  const handlePaymentToken = useCallback(
+    async (token: string) => {
+      if (!orderSuccess) return;
+
+      usePaymentStore.getState().setProcessing();
+
+      try {
+        await createPayment.mutateAsync({
+          card_token: token,
+          pedido_id: orderSuccess,
+        });
+        setPollingEnabled(true);
+      } catch (err: any) {
+        usePaymentStore
+          .getState()
+          .setError(
+            err.response?.data?.detail || 'Error al procesar el pago',
+          );
+      }
+    },
+    [orderSuccess, createPayment],
+  );
+
+  const handleCloseDrawer = () => {
+    setShowCheckout(false);
+    setShowPayment(false);
+    setOrderSuccess(null);
+    setPollingEnabled(false);
+    usePaymentStore.getState().reset();
+    toggleCart();
+  };
+
+  // Sync polling data → paymentStore when terminal status arrives
+  useEffect(() => {
+    if (!pagoData || !pollingEnabled) return;
+
+    const { mp_status, mp_payment_id, status_detail } = pagoData;
+
+    if (mp_status === 'approved') {
+      usePaymentStore
+        .getState()
+        .setApproved(mp_payment_id ?? 0, status_detail ?? undefined);
+      setPollingEnabled(false);
+    } else if (mp_status === 'rejected') {
+      usePaymentStore
+        .getState()
+        .setRejected(status_detail ?? undefined);
+      setPollingEnabled(false);
+    }
+  }, [pagoData, pollingEnabled]);
+
   if (!cartOpen) return null;
+
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <>
       {/* Backdrop */}
       <div
-        onClick={() => { setShowCheckout(false); toggleCart(); }}
+        onClick={handleCloseDrawer}
         style={{
           position: 'fixed',
           inset: 0,
@@ -92,7 +163,7 @@ export default function CartDrawer() {
             Carrito ({count} {count === 1 ? 'item' : 'items'})
           </h2>
           <button
-            onClick={() => { setShowCheckout(false); toggleCart(); }}
+            onClick={handleCloseDrawer}
             style={{
               background: 'none',
               border: 'none',
@@ -107,17 +178,153 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* Success Message */}
+        {/* Success + Payment section */}
         {orderSuccess && (
-          <div style={{ padding: '20px', background: '#d4edda', color: '#155724' }}>
-            <strong>¡Pedido creado exitosamente!</strong>
-            <p style={{ margin: '8px 0 0 0' }}>Tu pedido #{orderSuccess} está pendiente de pago.</p>
-            <button
-              onClick={() => setOrderSuccess(null)}
-              style={{ marginTop: '10px', padding: '8px 16px' }}
-            >
-              Cerrar
-            </button>
+          <div
+            style={{
+              padding: '20px',
+              background: '#e8f5e9',
+              borderBottom: '1px solid #c8e6c9',
+            }}
+          >
+            <strong style={{ color: '#155724' }}>
+              ¡Pedido #{orderSuccess} creado!
+            </strong>
+
+            {/* Show payment option if not yet paid */}
+            {!showPayment &&
+              paymentStatus !== 'approved' &&
+              paymentStatus !== 'processing' && (
+                <>
+                  <p style={{ margin: '8px 0 0 0', color: '#155724', fontSize: '14px' }}>
+                    Ahora completá el pago para confirmar tu pedido.
+                  </p>
+                  <button
+                    onClick={() => setShowPayment(true)}
+                    style={{
+                      marginTop: '10px',
+                      padding: '10px 20px',
+                      background: '#28a745',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Pagar ahora
+                  </button>
+                  <button
+                    onClick={() => {
+                      setOrderSuccess(null);
+                    }}
+                    style={{
+                      marginTop: '10px',
+                      marginLeft: '10px',
+                      padding: '10px 20px',
+                      background: 'transparent',
+                      color: '#666',
+                      border: '1px solid #ccc',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Después
+                  </button>
+                </>
+              )}
+
+            {/* Payment form */}
+            {showPayment && orderSuccess && (
+              <div style={{ marginTop: '10px' }}>
+                <PaymentForm
+                  totalInCents={total}
+                  onPayment={handlePaymentToken}
+                />
+              </div>
+            )}
+
+            {/* Polling indicator */}
+            {pollingEnabled && paymentStatus === 'processing' && (
+              <div
+                style={{
+                  marginTop: '10px',
+                  padding: '10px',
+                  background: '#fff3cd',
+                  borderRadius: '4px',
+                  fontSize: '13px',
+                  color: '#856404',
+                }}
+              >
+                ⏳ Verificando pago... Esto puede tomar unos segundos.
+              </div>
+            )}
+
+            {/* Approved message */}
+            {paymentStatus === 'approved' && (
+              <div
+                style={{
+                  marginTop: '10px',
+                  padding: '10px',
+                  background: '#d4edda',
+                  borderRadius: '4px',
+                  color: '#155724',
+                  fontSize: '14px',
+                }}
+              >
+                ✅ Pago aprobado. Tu pedido ya está en proceso.
+              </div>
+            )}
+
+            {/* Rejected message */}
+            {paymentStatus === 'rejected' && (
+              <div
+                style={{
+                  marginTop: '10px',
+                  padding: '10px',
+                  background: '#f8d7da',
+                  borderRadius: '4px',
+                  color: '#721c24',
+                  fontSize: '14px',
+                }}
+              >
+                ❌ Pago rechazado. Intentá con otro medio de pago.
+              </div>
+            )}
+
+            {/* Error message */}
+            {paymentStatus === 'error' && (
+              <div
+                style={{
+                  marginTop: '10px',
+                  padding: '10px',
+                  background: '#f8d7da',
+                  borderRadius: '4px',
+                  color: '#721c24',
+                  fontSize: '14px',
+                }}
+              >
+                ⚠️ Error al procesar el pago. Intentá de nuevo.
+              </div>
+            )}
+
+            {/* Finished — close */}
+            {(paymentStatus === 'approved' || paymentStatus === 'rejected') && (
+              <button
+                onClick={handleCloseDrawer}
+                style={{
+                  marginTop: '10px',
+                  padding: '8px 16px',
+                  background: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                Cerrar
+              </button>
+            )}
           </div>
         )}
 
@@ -125,7 +332,7 @@ export default function CartDrawer() {
         {showCheckout && !orderSuccess && (
           <div style={{ padding: '20px', borderBottom: '1px solid #eee' }}>
             <h3 style={{ margin: '0 0 15px 0' }}>Finalizar Pedido</h3>
-            
+
             {(!direcciones || direcciones.length === 0) ? (
               <div style={{ color: '#666' }}>
                 <p>No tenés direcciones guardadas.</p>
@@ -235,9 +442,9 @@ export default function CartDrawer() {
         {/* Summary */}
         <div style={{ padding: '0 20px 20px' }}>
           <CartSummary items={items} />
-          
+
           {/* Checkout Button */}
-          {!showCheckout && items.length > 0 && (
+          {!showCheckout && items.length > 0 && !orderSuccess && (
             <button
               onClick={() => {
                 if (!isAuthenticated) {
