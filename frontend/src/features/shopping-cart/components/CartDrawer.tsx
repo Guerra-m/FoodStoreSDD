@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCartStore, selectCartItemsCount, selectCartTotal } from '../../../shared/stores/cartStore';
 import { usePaymentStore } from '../../../shared/stores/paymentStore';
@@ -12,6 +14,7 @@ import CartItemCard from './CartItemCard';
 import CartSummary from './CartSummary';
 
 export default function CartDrawer() {
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const items = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
@@ -45,7 +48,7 @@ export default function CartDrawer() {
 
   const handleCheckout = async () => {
     if (!selectedAddressId) {
-      alert('Por favor seleccioná una dirección de entrega');
+      toast.warning('Seleccioná una dirección de entrega');
       return;
     }
 
@@ -55,13 +58,14 @@ export default function CartDrawer() {
         direccionId: selectedAddressId,
       });
 
+      toast.success(`Pedido #${result.id} creado con éxito`);
       clearCart();
       setShowCheckout(false);
       setOrderSuccess(result.id);
       setShowPayment(false);
       usePaymentStore.getState().reset();
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Error al crear el pedido');
+      toast.error(err.response?.data?.detail || 'Error al crear el pedido');
     }
   };
 
@@ -216,6 +220,23 @@ export default function CartDrawer() {
                   </button>
                   <button
                     onClick={() => {
+                      navigate(`/order-confirmation/${orderSuccess}`);
+                    }}
+                    style={{
+                      marginTop: '10px',
+                      marginLeft: '10px',
+                      padding: '10px 20px',
+                      background: 'transparent',
+                      color: '#007bff',
+                      border: '1px solid #007bff',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Ver detalle
+                  </button>
+                  <button
+                    onClick={() => {
                       setOrderSuccess(null);
                     }}
                     style={{
@@ -310,20 +331,40 @@ export default function CartDrawer() {
 
             {/* Finished — close */}
             {(paymentStatus === 'approved' || paymentStatus === 'rejected') && (
-              <button
-                onClick={handleCloseDrawer}
-                style={{
-                  marginTop: '10px',
-                  padding: '8px 16px',
-                  background: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Cerrar
-              </button>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button
+                  onClick={() => {
+                    navigate(`/order-confirmation/${orderSuccess}`);
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '8px 16px',
+                    background: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  Ver detalle del pedido
+                </button>
+                <button
+                  onClick={handleCloseDrawer}
+                  style={{
+                    flex: 1,
+                    padding: '8px 16px',
+                    background: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  Cerrar
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -448,7 +489,7 @@ export default function CartDrawer() {
             <button
               onClick={() => {
                 if (!isAuthenticated) {
-                  alert('Necesitás estar logueado para finalizar un pedido');
+                  toast.warning('Necesitás estar logueado para finalizar un pedido');
                   return;
                 }
                 setShowCheckout(true);

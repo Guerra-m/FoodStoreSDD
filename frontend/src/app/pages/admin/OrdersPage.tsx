@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { listAdminOrders } from '../../../shared/api/adminApi';
+import { SkeletonTable } from '../../../shared/components/SkeletonTable';
 
 const STATUS_COLORS: Record<string, string> = {
   pendiente: '#f59e0b',
@@ -73,7 +74,7 @@ export function OrdersPage() {
       </div>
 
       {/* Table */}
-      {isLoading && <div style={{ color: '#6b7280' }}>Cargando pedidos...</div>}
+      {isLoading && <SkeletonTable rows={8} />}
       {error && <div style={{ color: '#ef4444' }}>Error al cargar pedidos</div>}
 
       {data && !data.orders.length && (

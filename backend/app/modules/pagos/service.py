@@ -37,6 +37,95 @@ class PagoService:
         self.sdk = mercadopago.SDK(settings.MP_ACCESS_TOKEN)
 
     # ────────────────────────
+    #  crear_preferencia (Checkout Pro)
+    # ────────────────────────
+
+    def crear_preferencia(
+        self, pedido_id: int, user_id: int
+    ) -> Tuple[Optional[Dict[str, str]], Optional[str]]:
+        """
+        Crea una preferencia de MercadoPago Checkout Pro con back_urls.
+
+        Flujo:
+        1. Valida que el pedido existe y pertenece al usuario
+        2. Obtiene los items del pedido con sus snapshots
+        3. Crea la preferencia vía ``sdk.preference().create()``
+        4. Retorna ``preference_id`` e ``init_point`` para redirigir al usuario
+
+        Args:
+            pedido_id: ID del pedido.
+            user_id: ID del usuario para validación de propiedad.
+
+        Returns:
+            (dict con preference_id e init_point, None) si exitoso.
+            (None, mensaje_error) si falla.
+        """
+        # 1. Validar pedido existe y pertenece al usuario
+        pedido_service = PedidoService(self.session)
+        pedido, error = pedido_service.obtener_por_id(pedido_id, user_id)
+        if error:
+            return None, error
+
+        frontend_url = settings.CORS_ORIGINS[0] if settings.CORS_ORIGINS else "http://localhost:5173"
+
+        # 2. Armar items de la preferencia
+        items = []
+        for item in pedido.items:
+            nombre = item.producto_snapshot.get("nombre", f"Producto #{item.producto_id}")
+            items.append({
+                "title": nombre,
+                "quantity": item.cantidad,
+                "unit_price": float(item.precio_unitario / 100),  # centavos → decimal
+                "currency_id": "ARS",
+            })
+
+        # Si no hay items (por algún motivo), poner un item genérico
+        if not items:
+            items.append({
+                "title": f"Pedido #{pedido.id}",
+                "quantity": 1,
+                "unit_price": float(pedido.total / 100),
+                "currency_id": "ARS",
+            })
+
+        preference_data: Dict[str, Any] = {
+            "items": items,
+            "external_reference": str(pedido.id),
+            "auto_return": "approved",
+            "back_urls": {
+                "success": f"{frontend_url}/payment-result?status=approved&external_reference=order_{pedido.id}",
+                "failure": f"{frontend_url}/payment-result?status=rejected&external_reference=order_{pedido.id}",
+                "pending": f"{frontend_url}/payment-result?status=pending&external_reference=order_{pedido.id}",
+            },
+            "statement_descriptor": "FOODSTORE",
+            "notification_url": f"{frontend_url}/api/v1/pagos/webhook",
+        }
+
+        try:
+            # 4. Llamar MP SDK para crear la preferencia
+            mp_response = self.sdk.preference().create(preference_data)
+
+            # 5. Validar respuesta del SDK
+            if mp_response.get("status") not in (200, 201):
+                return None, (
+                    f"Error de MercadoPago al crear preferencia: "
+                    f"{mp_response.get('status', 'unknown')} — "
+                    f"{mp_response.get('response', {})}"
+                )
+
+            mp_response_data = mp_response.get("response", {})
+            preference_id = mp_response_data.get("id")
+            init_point = mp_response_data.get("init_point") or mp_response_data.get("sandbox_init_point")
+
+            if not preference_id or not init_point:
+                return None, "MercadoPago no devolvió ID de preferencia o init_point"
+
+            return {"preference_id": preference_id, "init_point": init_point}, None
+
+        except Exception as exc:
+            return None, f"Error al crear preferencia en MercadoPago: {str(exc)}"
+
+    # ────────────────────────
     #  crear_pago
     # ────────────────────────
 

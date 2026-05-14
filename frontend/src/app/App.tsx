@@ -1,6 +1,8 @@
 import { UnauthorizedPage } from './pages/auth/UnauthorizedPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../index.css';
 import { AuthProvider } from '../features/auth/context/AuthContext';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
@@ -12,6 +14,8 @@ import Catalogo from './pages/Catalogo';
 import ProductoDetalle from './pages/ProductoDetalle';
 import MiPerfil from './pages/MiPerfil';
 import MisPedidos from './pages/MisPedidos';
+import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import PaymentResultPage from './pages/PaymentResultPage';
 import CartDrawer from '../features/shopping-cart/components/CartDrawer';
 import { useCartCrossTabSync } from '../features/shopping-cart/hooks/useCartCrossTabSync';
 import { useCartStore, selectCartItemsCount } from '../shared/stores/cartStore';
@@ -93,6 +97,17 @@ function App() {
         <AuthProvider>
           <Navbar />
           <CartDrawer />
+          <ToastContainer
+            position="bottom-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
           <Routes>
             <Route path="/" element={<h1>Food Store Home</h1>} />
             <Route path="/login" element={<LoginPage />} />
@@ -116,6 +131,8 @@ function App() {
             />
             <Route path="/catalog" element={<Catalogo />} />
             <Route path="/catalog/:id" element={<ProductoDetalle />} />
+            <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
+            <Route path="/payment-result" element={<PaymentResultPage />} />
             <Route
               path="/perfil"
               element={

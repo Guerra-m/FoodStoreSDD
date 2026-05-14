@@ -22,7 +22,10 @@ api.interceptors.response.use(
       switch (status) {
         case 401:
           useAuthStore.getState().logout();
-          window.location.href = '/login';
+          // No usamos window.location.href porque causa recarga completa de página
+          // y genera un ciclo infinito con la doble fuente de estado.
+          // Disparamos un evento custom para que AuthContext reaccione.
+          window.dispatchEvent(new CustomEvent('auth:unauthorized'));
           break;
         case 403:
           toast.error("Sin permisos");

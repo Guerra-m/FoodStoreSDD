@@ -17,12 +17,23 @@ export interface PagoCreateRequest {
   pedido_id: number;
 }
 
+export interface PreferenciaResponse {
+  preference_id: string;
+  init_point: string;
+}
+
 // ─── API ──────────────────────────────────────────────────────────────────────
 
 export const pagoApi = {
   /** Crea un pago con el token de la tarjeta obtenido del SDK de MercadoPago */
   crearPago: async (data: PagoCreateRequest): Promise<PagoResponse> => {
     const response = await api.post('/api/v1/pagos/crear', data);
+    return response.data;
+  },
+
+  /** Crea una preferencia de MercadoPago Checkout Pro con back_urls */
+  crearPreferencia: async (pedidoId: number): Promise<PreferenciaResponse> => {
+    const response = await api.post('/api/v1/pagos/crear-preferencia', { pedido_id: pedidoId });
     return response.data;
   },
 

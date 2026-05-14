@@ -12,6 +12,17 @@ class PagoCreateRequest(BaseModel):
     card_token: str
 
 
+class PreferenciaCreateRequest(BaseModel):
+    """Schema para crear una preferencia de Checkout Pro"""
+    pedido_id: int
+
+
+class PreferenciaResponse(BaseModel):
+    """Schema de respuesta al crear una preferencia"""
+    preference_id: str
+    init_point: str
+
+
 class PagoResponse(BaseModel):
     """Schema de respuesta para un pago — no expone idempotency_key"""
     id: int

@@ -46,10 +46,10 @@ export const usePagoByPedido = (
         if (terminal.includes(query.state.data.mp_status)) return false;
       }
 
-      // Timeout de seguridad: dejar de pollear después de 60s
+      // Timeout de seguridad: dejar de pollear después de 2 minutos
       if (
         pollStartRef.current &&
-        Date.now() - pollStartRef.current > 60_000
+        Date.now() - pollStartRef.current > 120_000
       ) {
         return false;
       }

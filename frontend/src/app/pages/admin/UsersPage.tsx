@@ -8,6 +8,7 @@ import {
   restoreUser,
 } from '../../../shared/api/adminApi';
 import type { UserAdmin } from '../../../features/admin/types';
+import { SkeletonTable } from '../../../shared/components/SkeletonTable';
 
 const ALL_ROLES = ['Cliente', 'Admin', 'Delivery'];
 
@@ -252,7 +253,7 @@ export function UsersPage() {
       </div>
 
       {/* Table */}
-      {isLoading && <div style={{ color: '#6b7280' }}>Cargando usuarios...</div>}
+      {isLoading && <SkeletonTable rows={8} />}
       {error && <div style={{ color: '#ef4444' }}>Error al cargar usuarios</div>}
 
       {data && !data.users.length && (

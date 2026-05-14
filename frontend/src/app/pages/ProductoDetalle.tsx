@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { usePublicProductById } from '../../shared/hooks/useProducts';
 import AddToCartButton from '../../features/shopping-cart/components/AddToCartButton';
 import type { IngredientOption } from '../../features/shopping-cart/components/AddToCartButton';
+import { SkeletonDetail } from '../../shared/components/SkeletonDetail';
 
 export default function ProductoDetalle() {
   const { id } = useParams<{ id: string }>();
@@ -9,7 +10,7 @@ export default function ProductoDetalle() {
 
   const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-  if (isLoading) return <div>Cargando producto...</div>;
+  if (isLoading) return <SkeletonDetail />;
   if (error || !product) return <div>Producto no encontrado</div>;
 
   const ingredientes: IngredientOption[] = (product.ingredientes ?? []).map((ing) => ({
