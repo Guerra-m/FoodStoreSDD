@@ -12,7 +12,7 @@ import {
   selectCartTotal,
   selectCartItemsCount,
   selectItemSubtotal,
-} from '../../../shared/stores/cartStore';
+} from '../../../stores/cartStore';
 import type { CartItem } from '../types';
 
 console.log('=== CART STORE TESTS ===\n');

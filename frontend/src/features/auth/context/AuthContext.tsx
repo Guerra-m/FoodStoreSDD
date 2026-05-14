@@ -20,7 +20,7 @@ import {
   getRefreshToken,
   isTokenExpired,
 } from "../utils";
-import { useAuthStore } from "../../../shared/stores/authStore";
+import { useAuthStore } from "../../../stores/authStore";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
