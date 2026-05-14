@@ -322,6 +322,12 @@ class PedidoService:
             for h in getattr(pedido, 'historial', [])
         ]
 
+        # Obtener payment_status del último Pago asociado (si cargado)
+        payment_status = None
+        if hasattr(pedido, 'pagos') and pedido.pagos:
+            latest_pago = max(pedido.pagos, key=lambda p: p.created_at)
+            payment_status = latest_pago.mp_status
+
         return PedidoResponse(
             id=pedido.id,
             cliente_id=pedido.cliente_id,
@@ -333,4 +339,5 @@ class PedidoService:
             actualizado_en=pedido.actualizado_en,
             items=items_response,
             historial=historial_response,
+            payment_status=payment_status,
         )

@@ -16,6 +16,7 @@ from app.modules.categorias.model import Categoria
 from app.modules.ingredientes.model import Ingrediente
 from app.modules.productos.model import Producto, ProductoCategoria, ProductoIngrediente
 from app.modules.direcciones.model import Direccion  # noqa: F401
+from app.modules.pagos.model import Pago  # noqa: F401
 from app.core.config import settings
 
 # this is the Alembic Config object, which provides

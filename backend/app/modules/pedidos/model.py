@@ -41,6 +41,7 @@ class Pedido(SQLModel, table=True):
     # Relaciones
     items: List["PedidoItem"] = Relationship(back_populates="pedido")
     historial: List["PedidoHistorial"] = Relationship(back_populates="pedido")
+    pagos: List["Pago"] = Relationship(back_populates="pedido")
 
 
 class PedidoItem(SQLModel, table=True):

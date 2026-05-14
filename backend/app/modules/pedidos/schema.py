@@ -56,6 +56,7 @@ class PedidoResponse(BaseModel):
     actualizado_en: datetime
     items: List[PedidoItemResponse]
     historial: List[PedidoHistorialResponse]
+    payment_status: Optional[str] = None
     
     class Config:
         from_attributes = True
