@@ -16,18 +16,29 @@ import CartDrawer from '../features/shopping-cart/components/CartDrawer';
 import { useCartCrossTabSync } from '../features/shopping-cart/hooks/useCartCrossTabSync';
 import { useCartStore, selectCartItemsCount } from '../shared/stores/cartStore';
 import { useUIStore } from '../shared/stores/uiStore';
+import { useAuth } from '../features/auth/hooks/useAuth';
+import { AdminLayout } from './components/admin/AdminLayout';
+import { DashboardPage } from './pages/admin/DashboardPage';
+import { UsersPage } from './pages/admin/UsersPage';
+import { OrdersPage } from './pages/admin/OrdersPage';
+import { OrderDetailPage } from './pages/admin/OrderDetailPage';
 
 function Navbar() {
   const items = useCartStore((state) => state.items);
   const count = selectCartItemsCount(items);
   const toggleCart = useUIStore((state) => state.toggleCart);
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('Admin') ?? false;
 
   return (
     <nav style={{ padding: '10px 20px', borderBottom: '1px solid #ddd', marginBottom: '10px' }}>
       <a href="/" style={{ marginRight: '15px' }}>Home</a>
       <a href="/catalog" style={{ marginRight: '15px' }}>Catálogo</a>
-      <a href="/categorias" style={{ marginRight: '15px' }}>Categorías (Admin)</a>
-      <a href="/admin/products" style={{ marginRight: '15px' }}>Productos (Admin)</a>
+      {isAdmin && <a href="/admin" style={{ marginRight: '15px' }}>Dashboard</a>}
+      {isAdmin && <a href="/admin/users" style={{ marginRight: '15px' }}>Usuarios</a>}
+      {isAdmin && <a href="/admin/orders" style={{ marginRight: '15px' }}>Pedidos</a>}
+      {isAdmin && <a href="/categorias" style={{ marginRight: '15px' }}>Categorías</a>}
+      {isAdmin && <a href="/admin/products" style={{ marginRight: '15px' }}>Productos</a>}
       <a href="/perfil" style={{ marginRight: '15px' }}>Mi Perfil</a>
       <a href="/mis-pedidos" style={{ marginRight: '15px' }}>Mis Pedidos</a>
       <a href="/login" style={{ marginRight: '15px' }}>Login</a>
@@ -121,6 +132,21 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<DashboardPage />} />
+              <Route path="users" element={<UsersPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="orders/:id" element={<OrderDetailPage />} />
+            </Route>
           </Routes>
         </AuthProvider>
       </BrowserRouter>
