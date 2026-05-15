@@ -104,6 +104,22 @@
       "sessions": 2,
       "memories": 0,
       "prompts": 15
+    },
+    {
+      "id": "77dd3136",
+      "created_by": "marti",
+      "created_at": "2026-05-15T01:32:52Z",
+      "sessions": 1,
+      "memories": 0,
+      "prompts": 1
+    },
+    {
+      "id": "a8297888",
+      "created_by": "marti",
+      "created_at": "2026-05-15T01:36:21Z",
+      "sessions": 0,
+      "memories": 0,
+      "prompts": 2
     }
   ]
 }
