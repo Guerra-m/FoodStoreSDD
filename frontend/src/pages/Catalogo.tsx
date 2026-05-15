@@ -27,14 +27,10 @@ export default function Catalogo() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: '20px' }}>
+      <div className="p-5">
         <h1>Catálogo de Productos</h1>
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-            gap: '20px',
-          }}
+          className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5"
           aria-busy="true"
           aria-label="Cargando catálogo"
         >
@@ -48,21 +44,11 @@ export default function Catalogo() {
   if (error) return <div>Error al cargar el catálogo</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="p-5">
       <h1>Catálogo de Productos</h1>
 
       {/* Filters */}
-      <div
-        style={{
-          marginBottom: '20px',
-          padding: '15px',
-          border: '1px solid #ddd',
-          display: 'flex',
-          gap: '10px',
-          flexWrap: 'wrap',
-          alignItems: 'end',
-        }}
-      >
+      <div className="mb-5 p-4 border border-gray-200 flex gap-3 flex-wrap items-end">
         <div>
           <label>Buscar: </label>
           <input
@@ -109,7 +95,7 @@ export default function Catalogo() {
                 page: 1,
               })
             }
-            style={{ width: '100px' }}
+            className="w-[100px]"
             min={0}
           />
         </div>
@@ -127,7 +113,7 @@ export default function Catalogo() {
                 page: 1,
               })
             }
-            style={{ width: '100px' }}
+            className="w-[100px]"
             min={0}
           />
         </div>
@@ -136,69 +122,32 @@ export default function Catalogo() {
       {/* Product Grid */}
       {data && data.productos.length > 0 ? (
         <>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: '20px',
-            }}
-          >
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
             {data.productos.map((product) => (
               <div
                 key={product.id}
-                style={{
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  padding: '15px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
+                className="border border-gray-200 rounded-lg p-4 flex flex-col"
               >
                 {product.images && product.images.length > 0 ? (
                   <img
                     src={product.images[0]}
                     alt={product.nombre}
-                    style={{
-                      width: '100%',
-                      height: '150px',
-                      objectFit: 'cover',
-                      borderRadius: '4px',
-                      marginBottom: '10px',
-                    }}
+                    className="w-full h-[150px] object-cover rounded mb-3"
                   />
                 ) : (
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '150px',
-                      background: '#f0f0f0',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: '4px',
-                      marginBottom: '10px',
-                      color: '#999',
-                    }}
-                  >
+                  <div className="w-full h-[150px] bg-gray-100 flex items-center justify-center rounded mb-3 text-gray-400">
                     Sin imagen
                   </div>
                 )}
-                <h3 style={{ margin: '0 0 5px 0' }}>{product.nombre}</h3>
-                <p style={{ color: '#666', fontSize: '14px', flex: 1 }}>
+                <h3 className="m-0 mb-1">{product.nombre}</h3>
+                <p className="text-gray-500 text-sm flex-1">
                   {product.descripcion || 'Sin descripción'}
                 </p>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: '10px',
-                  }}
-                >
-                  <strong style={{ fontSize: '18px' }}>
+                <div className="flex justify-between items-center mt-3">
+                  <strong className="text-lg">
                     {formatPrice(product.price_in_cents)}
                   </strong>
-                  <div style={{ display: 'flex', gap: '6px' }}>
+                  <div className="flex gap-1.5">
                     <button
                       onClick={() => {
                         addItem({
@@ -209,35 +158,20 @@ export default function Catalogo() {
                         });
                         toast.success(`${product.nombre} agregado al carrito`);
                       }}
-                      style={{
-                        padding: '6px 12px',
-                        background: '#28a745',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                      }}
+                      className="px-3 py-1.5 bg-green-600 text-white border-none rounded text-sm cursor-pointer"
                     >
                       Agregar
                     </button>
                     <Link
                       to={`/catalog/${product.id}`}
-                      style={{
-                        padding: '6px 12px',
-                        background: '#007bff',
-                        color: 'white',
-                        textDecoration: 'none',
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                      }}
+                      className="px-3 py-1.5 bg-blue-600 text-white no-underline rounded text-sm"
                     >
                       Ver detalle
                     </Link>
                   </div>
                 </div>
                 {product.ingredientes.length > 0 && (
-                  <div style={{ marginTop: '8px', fontSize: '12px', color: '#888' }}>
+                  <div className="mt-2 text-xs text-gray-500">
                     Ingredientes: {product.ingredientes.map((i) => i.nombre).join(', ')}
                   </div>
                 )}
@@ -246,14 +180,14 @@ export default function Catalogo() {
           </div>
 
           {/* Pagination */}
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <div className="mt-5 text-center">
             <button
               onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
               disabled={filters.page <= 1}
             >
               Anterior
             </button>
-            <span style={{ margin: '0 10px' }}>
+            <span className="mx-3">
               Página {filters.page} ({data.total} productos)
             </span>
             <button

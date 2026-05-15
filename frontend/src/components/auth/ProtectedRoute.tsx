@@ -20,7 +20,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
   // Mostrar loading mientras se verifica la sesión
   if (isLoading) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem" }}>
+      <div className="text-center p-8">
         <p>Cargando...</p>
       </div>
     );

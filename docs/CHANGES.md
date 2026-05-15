@@ -93,3 +93,13 @@ Revisás la propuesta, la discutís, la ajustás si hace falta — y recién ent
 - **El orden importa.** Si el change B necesita código del change A, A tiene que estar archivado antes de proponer B.
 - **Un change = un commit** (o varios commits atómicos). Nunca mezcles dos changes en un mismo commit.
 - **Las specs son código.** Se versionan en git, se revisan en PRs, evolucionan con el proyecto.
+
+---
+
+## Ya realizado (archivado en OPSX)
+
+*Última actualización: 2026-05-15*
+
+| Change | Estado | Evidencia |
+| :--- | :--- | :--- |
+| `frontend-restructure-layer-4` — Reestructurar capa 4 del frontend (utils/ → lib/, assets/, types/ centralizado, limpieza de archivos stale) | ✅ Hecho (archivado 2026-05-15) | `openspec/changes/archive/2026-05-15-frontend-restructure-layer-4/` |

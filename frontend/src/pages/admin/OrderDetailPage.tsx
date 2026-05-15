@@ -9,7 +9,6 @@ function formatCurrency(cents: number): string {
 }
 
 // Mapa de acciones FSM disponibles para Admin
-// Basado en: backend/app/modules/pedidos/fsm.py TRANSITION_MAP para Admin
 const ACTIONS_FOR_STATE: Record<string, { action: string; label: string }[]> = {
   pendiente: [
     { action: 'pagar', label: '✅ Confirmar pago' },
@@ -67,39 +66,31 @@ export function OrderDetailPage() {
     },
   });
 
-  if (isLoading) return <div style={{ color: '#6b7280' }}>Cargando detalle del pedido...</div>;
-  if (error) return <div style={{ color: '#ef4444' }}>Error al cargar el pedido</div>;
-  if (!order) return <div style={{ color: '#ef4444' }}>Pedido no encontrado</div>;
+  if (isLoading) return <div className="text-gray-500">Cargando detalle del pedido...</div>;
+  if (error) return <div className="text-red-500">Error al cargar el pedido</div>;
+  if (!order) return <div className="text-red-500">Pedido no encontrado</div>;
 
   const availableActions = ACTIONS_FOR_STATE[order.estado] || [];
   const isTerminal = order.estado === 'entregado' || order.estado === 'cancelado';
-
-  // Datos de dirección
-  const dir = order.direccion_snapshot || {};
+  const dir = (order.direccion_snapshot || {}) as Record<string, string | null>;
+  const statusColor = STATUS_COLORS[order.estado] || '#6b7280';
 
   return (
     <div>
       <button
         onClick={() => navigate('/admin/orders')}
-        style={{
-          padding: '0.4rem 0.8rem', border: '1px solid #d1d5db', borderRadius: '6px',
-          background: '#fff', cursor: 'pointer', marginBottom: '1rem', fontSize: '0.85rem',
-        }}
+        className="px-3 py-1.5 border border-gray-300 rounded-lg bg-white cursor-pointer mb-4 text-sm"
       >
         ← Volver a Pedidos
       </button>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ margin: 0, color: '#111827' }}>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="m-0 text-gray-900 text-xl font-bold">
           Pedido #{order.id}
         </h2>
         <span
-          style={{
-            display: 'inline-block', padding: '4px 14px', borderRadius: '16px',
-            fontSize: '0.85rem', fontWeight: 600,
-            background: `${STATUS_COLORS[order.estado] || '#6b7280'}20`,
-            color: STATUS_COLORS[order.estado] || '#6b7280',
-          }}
+          className="inline-block px-3.5 py-1 rounded-full text-sm font-semibold"
+          style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
         >
           {order.estado.toUpperCase()}
         </span>
@@ -107,9 +98,9 @@ export function OrderDetailPage() {
 
       {/* FSM Actions */}
       {!isTerminal && availableActions.length > 0 && (
-        <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem' }}>
-          <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>Acciones disponibles:</h4>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <h4 className="m-0 mb-2 text-sm text-gray-700">Acciones disponibles:</h4>
+          <div className="flex gap-2 flex-wrap">
             {availableActions.map((act) => (
               <button
                 key={act.action}
@@ -117,42 +108,29 @@ export function OrderDetailPage() {
                   setSelectedAction(act.action);
                   setShowConfirm(true);
                 }}
-                style={{
-                  padding: '0.5rem 1rem', border: '1px solid #d1d5db', borderRadius: '6px',
-                  background: '#fff', cursor: 'pointer', fontSize: '0.85rem',
-                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm"
               >
                 {act.label}
               </button>
             ))}
           </div>
 
-          {/* Confirmation dialog */}
           {showConfirm && (
-            <div style={{ marginTop: '1rem', padding: '1rem', background: '#fff', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
-              <p style={{ margin: '0 0 0.75rem', fontSize: '0.9rem' }}>
+            <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
+              <p className="m-0 mb-3 text-sm">
                 ¿Estás seguro de aplicar "{availableActions.find(a => a.action === selectedAction)?.label}" al pedido #{order.id}?
               </p>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div className="flex gap-2">
                 <button
-                  onClick={() => {
-                    setShowConfirm(false);
-                    setSelectedAction('');
-                  }}
-                  style={{
-                    padding: '0.5rem 1rem', border: '1px solid #d1d5db', borderRadius: '6px',
-                    background: '#fff', cursor: 'pointer', fontSize: '0.85rem',
-                  }}
+                  onClick={() => { setShowConfirm(false); setSelectedAction(''); }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={() => statusMutation.mutate(selectedAction)}
                   disabled={statusMutation.isPending}
-                  style={{
-                    padding: '0.5rem 1rem', border: 'none', borderRadius: '6px',
-                    background: '#2563eb', color: '#fff', cursor: 'pointer', fontSize: '0.85rem',
-                  }}
+                  className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white cursor-pointer text-sm disabled:opacity-50"
                 >
                   {statusMutation.isPending ? 'Aplicando...' : 'Confirmar'}
                 </button>
@@ -162,20 +140,20 @@ export function OrderDetailPage() {
         </div>
       )}
 
-      {/* Cliente info */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem' }}>
-          <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>Cliente</h4>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.9rem' }}>{order.cliente_nombre}</p>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.85rem', color: '#6b7280' }}>{order.cliente_email}</p>
+      {/* Cliente + Dirección */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <h4 className="m-0 mb-2 text-sm text-gray-700">Cliente</h4>
+          <p className="my-1 text-sm">{order.cliente_nombre}</p>
+          <p className="my-1 text-sm text-gray-500">{order.cliente_email}</p>
         </div>
 
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem' }}>
-          <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>Dirección de entrega</h4>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.9rem' }}>
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <h4 className="m-0 mb-2 text-sm text-gray-700">Dirección de entrega</h4>
+          <p className="my-1 text-sm">
             {dir.calle || ''} {dir.numero || ''}
           </p>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.85rem', color: '#6b7280' }}>
+          <p className="my-1 text-sm text-gray-500">
             {dir.ciudad || ''}, {dir.provincia || ''} {dir.codigo_postal || ''}
           </p>
         </div>
@@ -183,14 +161,14 @@ export function OrderDetailPage() {
 
       {/* Payment info */}
       {order.pago && (
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem' }}>
-          <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', color: '#374151' }}>Pago</h4>
-          <p style={{ margin: '0.25rem 0', fontSize: '0.9rem' }}>
+        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+          <h4 className="m-0 mb-2 text-sm text-gray-700">Pago</h4>
+          <p className="my-1 text-sm">
             Estado MP: <strong>{order.pago.mp_status}</strong>
-            {order.pago.status_detail && <span style={{ color: '#6b7280' }}> ({order.pago.status_detail})</span>}
+            {order.pago.status_detail && <span className="text-gray-500"> ({order.pago.status_detail})</span>}
           </p>
           {order.pago.mp_payment_id && (
-            <p style={{ margin: '0.25rem 0', fontSize: '0.85rem', color: '#6b7280' }}>
+            <p className="my-1 text-sm text-gray-500">
               ID de pago MP: {order.pago.mp_payment_id}
             </p>
           )}
@@ -198,72 +176,65 @@ export function OrderDetailPage() {
       )}
 
       {/* Items */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem' }}>
-        <h4 style={{ margin: '0 0 0.75rem', fontSize: '0.9rem', color: '#374151' }}>
+      <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+        <h4 className="m-0 mb-3 text-sm text-gray-700">
           Items ({order.items.length})
         </h4>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+        <table className="w-full border-collapse text-sm">
           <thead>
-            <tr style={{ borderBottom: '2px solid #e5e7eb', color: '#6b7280', textAlign: 'left' }}>
-              <th style={{ padding: '0.5rem' }}>Producto</th>
-              <th style={{ padding: '0.5rem' }}>Precio Unit.</th>
-              <th style={{ padding: '0.5rem' }}>Cant.</th>
-              <th style={{ padding: '0.5rem' }}>Subtotal</th>
+            <tr className="border-b-2 border-gray-200 text-gray-500 text-left">
+              <th className="p-2">Producto</th>
+              <th className="p-2">Precio Unit.</th>
+              <th className="p-2">Cant.</th>
+              <th className="p-2">Subtotal</th>
             </tr>
           </thead>
           <tbody>
             {order.items.map((item) => (
-              <tr key={item.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '0.5rem' }}>{item.producto_nombre}</td>
-                <td style={{ padding: '0.5rem' }}>{formatCurrency(item.precio_unitario)}</td>
-                <td style={{ padding: '0.5rem' }}>{item.cantidad}</td>
-                <td style={{ padding: '0.5rem' }}>{formatCurrency(item.subtotal)}</td>
+              <tr key={item.id} className="border-b border-gray-100">
+                <td className="p-2">{item.producto_nombre}</td>
+                <td className="p-2">{formatCurrency(item.precio_unitario)}</td>
+                <td className="p-2">{item.cantidad}</td>
+                <td className="p-2">{formatCurrency(item.subtotal)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr style={{ fontWeight: 700 }}>
-              <td colSpan={3} style={{ padding: '0.5rem', textAlign: 'right' }}>Total:</td>
-              <td style={{ padding: '0.5rem' }}>{formatCurrency(order.total)}</td>
+            <tr className="font-bold">
+              <td colSpan={3} className="p-2 text-right">Total:</td>
+              <td className="p-2">{formatCurrency(order.total)}</td>
             </tr>
           </tfoot>
         </table>
       </div>
 
       {/* Timeline */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1rem' }}>
-        <h4 style={{ margin: '0 0 0.75rem', fontSize: '0.9rem', color: '#374151' }}>Historial de cambios</h4>
-        <div style={{ position: 'relative', paddingLeft: '1.5rem' }}>
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <h4 className="m-0 mb-3 text-sm text-gray-700">Historial de cambios</h4>
+        <div className="relative pl-6">
           {order.historial.map((h, idx) => (
-            <div key={h.id} style={{ position: 'relative', paddingBottom: '1rem' }}>
+            <div key={h.id} className="relative pb-4">
               {/* Timeline dot */}
               <div
+                className="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full border-2 border-white"
                 style={{
-                  position: 'absolute', left: '-1.5rem', top: '4px',
-                  width: '10px', height: '10px', borderRadius: '50%',
                   background: STATUS_COLORS[h.estado] || '#6b7280',
-                  border: '2px solid #fff', boxShadow: '0 0 0 1px #e5e7eb',
+                  boxShadow: '0 0 0 1px #e5e7eb',
                 }}
               />
               {/* Line (except last) */}
               {idx < order.historial.length - 1 && (
-                <div
-                  style={{
-                    position: 'absolute', left: '-1.1rem', top: '14px',
-                    width: '2px', height: 'calc(100% - 4px)',
-                    background: '#e5e7eb',
-                  }}
-                />
+                <div className="absolute -left-[17px] top-[14px] w-[2px] bg-gray-200" style={{ height: 'calc(100% - 4px)' }} />
               )}
-              <div style={{ fontSize: '0.85rem' }}>
+              <div className="text-sm">
                 <span style={{ fontWeight: 600, color: STATUS_COLORS[h.estado] || '#374151' }}>
                   {h.estado.toUpperCase()}
                 </span>
-                <span style={{ color: '#6b7280', marginLeft: '0.5rem' }}>
+                <span className="text-gray-500 ml-2">
                   {new Date(h.timestamp).toLocaleString('es-AR')}
                 </span>
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '2px' }}>
+              <div className="text-xs text-gray-400 mt-0.5">
                 {h.descripcion}
                 {h.usuario_id && <span> (por usuario #{h.usuario_id})</span>}
               </div>

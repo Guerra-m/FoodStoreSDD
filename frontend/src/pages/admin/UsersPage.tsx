@@ -33,22 +33,19 @@ function EditRolesModal({
 
   return (
     <div
-      style={{
-        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-      }}
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]"
       onClick={onClose}
     >
       <div
-        style={{ background: '#fff', borderRadius: '8px', padding: '1.5rem', minWidth: '320px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+        className="bg-white rounded-lg p-6 min-w-[320px] shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 style={{ margin: '0 0 1rem', color: '#111827' }}>Editar Roles: {user.nombre}</h3>
+        <h3 className="m-0 mb-4 text-gray-900">Editar Roles: {user.nombre}</h3>
 
         {ALL_ROLES.map((role) => (
           <label
             key={role}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0', cursor: 'pointer' }}
+            className="flex items-center gap-2 py-1.5 cursor-pointer"
           >
             <input
               type="checkbox"
@@ -59,22 +56,16 @@ function EditRolesModal({
           </label>
         ))}
 
-        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className="flex gap-2 justify-end mt-6">
           <button
             onClick={onClose}
-            style={{
-              padding: '0.5rem 1rem', border: '1px solid #d1d5db', borderRadius: '6px',
-              background: '#fff', cursor: 'pointer',
-            }}
+            className="px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm"
           >
             Cancelar
           </button>
           <button
             onClick={() => onSave(selectedRoles)}
-            style={{
-              padding: '0.5rem 1rem', border: 'none', borderRadius: '6px',
-              background: '#2563eb', color: '#fff', cursor: 'pointer',
-            }}
+            className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white cursor-pointer text-sm"
           >
             Guardar
           </button>
@@ -84,7 +75,22 @@ function EditRolesModal({
   );
 }
 
-// ─── Users Table ─────────────────────────────────────────────────────────────
+// ─── Role badge colors ────────────────────────────────────────────────────────
+
+function RoleBadge({ role }: { role: string }) {
+  const colors: Record<string, string> = {
+    Admin: 'bg-blue-100 text-blue-800',
+    Delivery: 'bg-yellow-100 text-yellow-800',
+    Cliente: 'bg-sky-100 text-sky-700',
+  };
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold mr-1 ${colors[role] || 'bg-gray-100 text-gray-700'}`}>
+      {role}
+    </span>
+  );
+}
+
+// ─── Users Row ────────────────────────────────────────────────────────────────
 
 function UserRow({
   user,
@@ -100,46 +106,30 @@ function UserRow({
   const isDeleted = user.eliminado_en !== null;
 
   return (
-    <tr style={{ borderBottom: '1px solid #f3f4f6', opacity: isDeleted ? 0.6 : 1 }}>
-      <td style={{ padding: '0.6rem' }}>{user.nombre}</td>
-      <td style={{ padding: '0.6rem', color: '#6b7280', fontSize: '0.9rem' }}>{user.email}</td>
-      <td style={{ padding: '0.6rem' }}>
+    <tr className={`border-b border-gray-100 ${isDeleted ? 'opacity-60' : ''}`}>
+      <td className="p-2">{user.nombre}</td>
+      <td className="p-2 text-gray-500 text-sm">{user.email}</td>
+      <td className="p-2">
         {user.roles.map((role) => (
-          <span
-            key={role}
-            style={{
-              display: 'inline-block', padding: '2px 8px', borderRadius: '12px',
-              fontSize: '0.75rem', fontWeight: 600, marginRight: '4px',
-              background: role === 'Admin' ? '#dbeafe' : role === 'Delivery' ? '#fef3c7' : '#e0f2fe',
-              color: role === 'Admin' ? '#1e40af' : role === 'Delivery' ? '#92400e' : '#0369a1',
-            }}
-          >
-            {role}
-          </span>
+          <RoleBadge key={role} role={role} />
         ))}
       </td>
-      <td style={{ padding: '0.6rem', fontSize: '0.85rem', color: '#6b7280' }}>
+      <td className="p-2 text-sm text-gray-500">
         {new Date(user.creado_en).toLocaleDateString('es-AR')}
       </td>
-      <td style={{ padding: '0.6rem' }}>
+      <td className="p-2">
         {isDeleted ? (
           <button
             onClick={() => onRestore(user.id)}
-            style={{
-              padding: '4px 10px', border: '1px solid #10b981', borderRadius: '6px',
-              background: '#ecfdf5', color: '#065f46', cursor: 'pointer', fontSize: '0.8rem',
-            }}
+            className="px-2.5 py-1 border border-emerald-500 rounded-lg bg-emerald-50 text-emerald-800 cursor-pointer text-xs"
           >
             Restaurar
           </button>
         ) : (
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <div className="flex gap-1">
             <button
               onClick={() => onEditRoles(user)}
-              style={{
-                padding: '4px 10px', border: '1px solid #d1d5db', borderRadius: '6px',
-                background: '#fff', cursor: 'pointer', fontSize: '0.8rem',
-              }}
+              className="px-2.5 py-1 border border-gray-300 rounded-lg bg-white cursor-pointer text-xs"
             >
               Roles
             </button>
@@ -149,10 +139,7 @@ function UserRow({
                   onDelete(user.id);
                 }
               }}
-              style={{
-                padding: '4px 10px', border: '1px solid #fca5a5', borderRadius: '6px',
-                background: '#fef2f2', color: '#991b1b', cursor: 'pointer', fontSize: '0.8rem',
-              }}
+              className="px-2.5 py-1 border border-red-300 rounded-lg bg-red-50 text-red-800 cursor-pointer text-xs"
             >
               Eliminar
             </button>
@@ -163,7 +150,7 @@ function UserRow({
   );
 }
 
-// ─── Main Users Page ─────────────────────────────────────────────────────────
+// ─── Main Users Page ──────────────────────────────────────────────────────────
 
 export function UsersPage() {
   const queryClient = useQueryClient();
@@ -218,31 +205,28 @@ export function UsersPage() {
 
   return (
     <div>
-      <h2 style={{ marginBottom: '1rem', color: '#111827' }}>Gestión de Usuarios</h2>
+      <h2 className="mb-4 text-gray-900 text-xl font-bold">Gestión de Usuarios</h2>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="flex gap-3 mb-4 flex-wrap items-center">
         <input
           type="text"
           placeholder="Buscar por email..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          style={{
-            padding: '0.5rem 0.75rem', border: '1px solid #d1d5db', borderRadius: '6px',
-            flex: 1, minWidth: '200px', fontSize: '0.9rem',
-          }}
+          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
         />
         <select
           value={roleFilter}
           onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-          style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.9rem' }}
+          className="px-2 py-2 border border-gray-300 rounded-lg text-sm"
         >
           <option value="">Todos los roles</option>
           {ALL_ROLES.map((r) => (
             <option key={r} value={r}>{r}</option>
           ))}
         </select>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.9rem' }}>
+        <label className="flex items-center gap-1 text-sm cursor-pointer">
           <input
             type="checkbox"
             checked={includeDeleted}
@@ -254,22 +238,22 @@ export function UsersPage() {
 
       {/* Table */}
       {isLoading && <SkeletonTable rows={8} />}
-      {error && <div style={{ color: '#ef4444' }}>Error al cargar usuarios</div>}
+      {error && <div className="text-red-500">Error al cargar usuarios</div>}
 
       {data && !data.users.length && (
-        <div style={{ color: '#9ca3af', padding: '2rem', textAlign: 'center' }}>No se encontraron usuarios</div>
+        <div className="text-gray-400 py-8 text-center">No se encontraron usuarios</div>
       )}
 
       {data && data.users.length > 0 && (
         <>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr style={{ borderBottom: '2px solid #e5e7eb', color: '#6b7280', textAlign: 'left' }}>
-                <th style={{ padding: '0.6rem' }}>Nombre</th>
-                <th style={{ padding: '0.6rem' }}>Email</th>
-                <th style={{ padding: '0.6rem' }}>Roles</th>
-                <th style={{ padding: '0.6rem' }}>Registro</th>
-                <th style={{ padding: '0.6rem' }}>Acciones</th>
+              <tr className="border-b-2 border-gray-200 text-gray-500 text-left">
+                <th className="p-2">Nombre</th>
+                <th className="p-2">Email</th>
+                <th className="p-2">Roles</th>
+                <th className="p-2">Registro</th>
+                <th className="p-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -286,27 +270,25 @@ export function UsersPage() {
           </table>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1.5rem', alignItems: 'center' }}>
+          <div className="flex justify-center gap-2 mt-6 items-center">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              style={{
-                padding: '0.4rem 0.8rem', border: '1px solid #d1d5db', borderRadius: '6px',
-                background: '#fff', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: '0.85rem',
-              }}
+              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm ${
+                page <= 1 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              }`}
             >
               Anterior
             </button>
-            <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>
+            <span className="text-sm text-gray-500">
               Página {page} de {totalPages}
             </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              style={{
-                padding: '0.4rem 0.8rem', border: '1px solid #d1d5db', borderRadius: '6px',
-                background: '#fff', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: '0.85rem',
-              }}
+              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm ${
+                page >= totalPages ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              }`}
             >
               Siguiente
             </button>
@@ -314,7 +296,6 @@ export function UsersPage() {
         </>
       )}
 
-      {/* Edit Roles Modal */}
       {editingUser && (
         <EditRolesModal
           user={editingUser}

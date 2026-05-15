@@ -82,43 +82,33 @@ export default function MiPerfil() {
     }
   };
 
-  if (profileLoading) return <div style={{ padding: '20px' }}>Cargando perfil...</div>;
+  if (profileLoading) return <div className="p-5">Cargando perfil...</div>;
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+    <div className="max-w-4xl mx-auto p-5">
       <h1>Mi Perfil</h1>
 
       {successMsg && (
-        <div style={{ padding: '12px', backgroundColor: '#d4edda', color: '#155724', borderRadius: '4px', marginBottom: '16px' }}>
+        <div className="p-3 bg-green-100 text-green-800 rounded mb-4">
           {successMsg}
         </div>
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0', marginBottom: '24px', borderBottom: '2px solid #ddd' }}>
+      <div className="flex gap-0 mb-6 border-b-2 border-gray-300">
         <button
           onClick={() => setActiveTab('perfil')}
-          style={{
-            padding: '10px 20px',
-            border: 'none',
-            borderBottom: activeTab === 'perfil' ? '3px solid #2196F3' : '3px solid transparent',
-            backgroundColor: 'transparent',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'perfil' ? 'bold' : 'normal',
-          }}
+          className={`px-5 py-3 border-none bg-transparent cursor-pointer ${
+            activeTab === 'perfil' ? 'border-b-[3px] border-blue-500 font-bold' : 'border-b-[3px] border-transparent font-normal'
+          }`}
         >
           Datos Personales
         </button>
         <button
           onClick={() => setActiveTab('direcciones')}
-          style={{
-            padding: '10px 20px',
-            border: 'none',
-            borderBottom: activeTab === 'direcciones' ? '3px solid #2196F3' : '3px solid transparent',
-            backgroundColor: 'transparent',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'direcciones' ? 'bold' : 'normal',
-          }}
+          className={`px-5 py-3 border-none bg-transparent cursor-pointer ${
+            activeTab === 'direcciones' ? 'border-b-[3px] border-blue-500 font-bold' : 'border-b-[3px] border-transparent font-normal'
+          }`}
         >
           Direcciones
         </button>
@@ -129,102 +119,81 @@ export default function MiPerfil() {
         <div>
           {!isEditing ? (
             <div>
-              <div style={{ marginBottom: '16px' }}>
+              <div className="mb-4">
                 <strong>Nombre:</strong> {profile?.nombre}
               </div>
-              <div style={{ marginBottom: '16px' }}>
+              <div className="mb-4">
                 <strong>Email:</strong> {profile?.email}
               </div>
-              <div style={{ marginBottom: '16px' }}>
+              <div className="mb-4">
                 <strong>Teléfono:</strong> {profile?.telefono || '—'}
               </div>
-              <div style={{ marginBottom: '16px' }}>
+              <div className="mb-4">
                 <strong>Fecha de Nacimiento:</strong> {profile?.fecha_nacimiento ? profile.fecha_nacimiento.split('T')[0] : '—'}
               </div>
               {profile?.foto_url && (
-                <div style={{ marginBottom: '16px' }}>
+                <div className="mb-4">
                   <strong>Foto:</strong><br />
-                  <img src={profile.foto_url} alt="Foto de perfil" style={{ maxWidth: '150px', borderRadius: '8px' }} />
+                  <img src={profile.foto_url} alt="Foto de perfil" className="max-w-[150px] rounded-lg" />
                 </div>
               )}
               <button
                 onClick={() => setIsEditing(true)}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#2196F3',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
+                className="px-5 py-3 bg-blue-500 text-white border-none rounded cursor-pointer"
               >
                 Editar Perfil
               </button>
             </div>
           ) : (
             <form onSubmit={handleProfileSubmit}>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Nombre</label>
+              <div className="mb-3">
+                <label className="block mb-1 font-bold">Nombre</label>
                 <input
                   type="text"
                   value={profileForm.nombre}
                   onChange={e => setProfileForm({ ...profileForm, nombre: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="w-full p-2 border border-gray-300 rounded"
                 />
               </div>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Teléfono</label>
+              <div className="mb-3">
+                <label className="block mb-1 font-bold">Teléfono</label>
                 <input
                   type="text"
                   value={profileForm.telefono}
                   onChange={e => setProfileForm({ ...profileForm, telefono: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="w-full p-2 border border-gray-300 rounded"
                 />
               </div>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>URL de Foto</label>
+              <div className="mb-3">
+                <label className="block mb-1 font-bold">URL de Foto</label>
                 <input
                   type="text"
                   value={profileForm.foto_url}
                   onChange={e => setProfileForm({ ...profileForm, foto_url: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="w-full p-2 border border-gray-300 rounded"
                 />
               </div>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>Fecha de Nacimiento</label>
+              <div className="mb-3">
+                <label className="block mb-1 font-bold">Fecha de Nacimiento</label>
                 <input
                   type="date"
                   value={profileForm.fecha_nacimiento}
                   onChange={e => setProfileForm({ ...profileForm, fecha_nacimiento: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="w-full p-2 border border-gray-300 rounded"
                 />
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="flex gap-2">
                 <button
                   type="submit"
                   disabled={updateProfile.isPending}
-                  style={{
-                    padding: '10px 20px',
-                    backgroundColor: '#4CAF50',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  }}
+                  className="px-5 py-3 bg-green-500 text-white border-none rounded cursor-pointer"
                 >
                   {updateProfile.isPending ? 'Guardando...' : 'Guardar'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  style={{
-                    padding: '10px 20px',
-                    backgroundColor: '#9e9e9e',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  }}
+                  className="px-5 py-3 bg-gray-400 text-white border-none rounded cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -237,17 +206,10 @@ export default function MiPerfil() {
       {/* Direcciones Tab */}
       {activeTab === 'direcciones' && (
         <div>
-          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="mb-4 flex justify-end">
             <button
               onClick={() => { setEditingAddress(null); setShowAddressForm(true); }}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
+              className="px-5 py-3 bg-green-500 text-white border-none rounded cursor-pointer"
             >
               + Nueva Dirección
             </button>
@@ -266,7 +228,7 @@ export default function MiPerfil() {
               />
             ))
           ) : (
-            <p style={{ color: '#666' }}>No tenés direcciones registradas todavía.</p>
+            <p className="text-gray-500">No tenés direcciones registradas todavía.</p>
           )}
 
           {showAddressForm && (

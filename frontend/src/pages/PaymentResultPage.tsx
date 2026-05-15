@@ -58,7 +58,7 @@ export default function PaymentResultPage() {
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '40px 20px' }}>
+    <div className="max-w-lg mx-auto px-5 py-10">
       <PaymentResultScreen
         orderId={orderId}
         onRetry={handleRetry}
@@ -68,21 +68,14 @@ export default function PaymentResultPage() {
 
       {/* Si no hay status (acceso directo sin params), mostrar instructivo */}
       {!status && (
-        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+        <div className="text-center px-5 py-10">
           <h2>Resultado del pago</h2>
-          <p style={{ color: '#6b7280', marginBottom: '20px' }}>
+          <p className="text-gray-500 mb-5">
             No se recibió información de pago. Si realizaste un pago, revisá tus pedidos para ver el estado.
           </p>
           <Link
             to="/mis-pedidos"
-            style={{
-              padding: '10px 20px',
-              background: '#007bff',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '6px',
-              display: 'inline-block',
-            }}
+            className="px-5 py-3 bg-blue-600 text-white no-underline rounded-md inline-block"
           >
             Ver mis pedidos
           </Link>

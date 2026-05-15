@@ -8,16 +8,8 @@ const navItems = [
 
 export function Sidebar() {
   return (
-    <aside
-      style={{
-        width: '220px',
-        minHeight: '100vh',
-        borderRight: '1px solid #e5e7eb',
-        padding: '1rem 0',
-        background: '#f9fafb',
-      }}
-    >
-      <div style={{ padding: '0 1rem 1rem', fontWeight: 700, fontSize: '1.1rem', color: '#111827' }}>
+    <aside className="w-[220px] min-h-screen border-r border-gray-200 py-0 bg-gray-50">
+      <div className="px-4 pb-4 pt-4 font-bold text-lg text-gray-900">
         ⚙️ Admin Panel
       </div>
       <nav>
@@ -26,15 +18,13 @@ export function Sidebar() {
             key={item.to}
             to={item.to}
             end={item.end}
-            style={({ isActive }) => ({
-              display: 'block',
-              padding: '0.6rem 1rem',
-              textDecoration: 'none',
-              color: isActive ? '#2563eb' : '#374151',
-              background: isActive ? '#eff6ff' : 'transparent',
-              fontWeight: isActive ? 600 : 400,
-              borderLeft: isActive ? '3px solid #2563eb' : '3px solid transparent',
-            })}
+            className={({ isActive }) =>
+              `block px-4 py-2.5 no-underline transition-colors ${
+                isActive
+                  ? 'bg-blue-50 text-blue-600 font-semibold border-l-[3px] border-blue-600'
+                  : 'text-gray-600 border-l-[3px] border-transparent hover:bg-gray-100'
+              }`
+            }
           >
             {item.label}
           </NavLink>

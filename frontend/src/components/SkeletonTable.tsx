@@ -30,21 +30,13 @@ export function SkeletonTable({
 }: SkeletonTableProps) {
   return (
     <div
-      style={{ width: '100%' }}
+      className="w-full"
       aria-busy="true"
       aria-label="Cargando datos"
       role="status"
     >
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          marginBottom: '12px',
-          paddingBottom: '8px',
-          borderBottom: '1px solid #e5e7eb',
-        }}
-      >
+      <div className="flex gap-3 mb-3 pb-2 border-b border-gray-200">
         {columns.map((col, i) => (
           <div key={i} style={{ width: col.width }}>
             <Skeleton width="100%" height={16} />
@@ -56,12 +48,7 @@ export function SkeletonTable({
       {Array.from({ length: rows }).map((_, rowIdx) => (
         <div
           key={rowIdx}
-          style={{
-            display: 'flex',
-            gap: '12px',
-            padding: '12px 0',
-            borderBottom: '1px solid #f3f4f6',
-          }}
+          className="flex gap-3 py-3 border-b border-gray-100"
         >
           {columns.map((col, colIdx) => (
             <div key={colIdx} style={{ width: col.width }}>

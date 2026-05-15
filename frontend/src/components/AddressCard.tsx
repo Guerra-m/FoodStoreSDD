@@ -9,71 +9,37 @@ interface AddressCardProps {
 
 export default function AddressCard({ direccion, onEdit, onDelete, onSetPrincipal }: AddressCardProps) {
   return (
-    <div style={{
-      border: direccion.es_principal ? '2px solid #4CAF50' : '1px solid #ddd',
-      borderRadius: '8px',
-      padding: '16px',
-      marginBottom: '12px',
-      backgroundColor: direccion.es_principal ? '#f0fff0' : '#fff',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <div className={`rounded-lg p-4 mb-3 ${direccion.es_principal ? 'border-2 border-green-500 bg-green-50' : 'border border-gray-300 bg-white'}`}>
+      <div className="flex justify-between items-start">
         <div>
           <strong>{direccion.calle} {direccion.numero}</strong>
           {direccion.es_principal && (
-            <span style={{
-              marginLeft: '8px',
-              padding: '2px 8px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              borderRadius: '4px',
-              fontSize: '12px',
-            }}>
+            <span className="ml-2 px-2 py-0.5 bg-green-500 text-white rounded text-xs">
               Principal
             </span>
           )}
-          <p style={{ margin: '4px 0', color: '#666' }}>
+          <p className="my-1 text-gray-600">
             {direccion.ciudad}, {direccion.provincia} - CP: {direccion.codigo_postal}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="flex gap-2">
           {!direccion.es_principal && (
             <button
               onClick={() => onSetPrincipal(direccion.id)}
-              style={{
-                padding: '4px 12px',
-                backgroundColor: '#2196F3',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
+              className="px-3 py-1 bg-blue-500 text-white border-0 rounded cursor-pointer"
             >
               Principal
             </button>
           )}
           <button
             onClick={() => onEdit(direccion)}
-            style={{
-              padding: '4px 12px',
-              backgroundColor: '#FFC107',
-              color: 'black',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className="px-3 py-1 bg-yellow-500 text-black border-0 rounded cursor-pointer"
           >
             Editar
           </button>
           <button
             onClick={() => onDelete(direccion.id)}
-            style={{
-              padding: '4px 12px',
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className="px-3 py-1 bg-red-500 text-white border-0 rounded cursor-pointer"
           >
             Eliminar
           </button>
