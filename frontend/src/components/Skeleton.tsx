@@ -1,14 +1,3 @@
-/**
- * Componente Skeleton primitivo para loading states animados.
- *
- * @example
- * ```tsx
- * <Skeleton shape="rect" className="w-full h-32" />
- * <Skeleton shape="circle" size={40} />
- * <Skeleton shape="text" width="60%" />
- * ```
- */
-
 type SkeletonShape = 'rect' | 'circle' | 'text';
 
 interface SkeletonProps {
@@ -19,10 +8,10 @@ interface SkeletonProps {
   className?: string;
 }
 
-const shapeBorderRadius: Record<SkeletonShape, string> = {
-  rect: '8px',
-  circle: '50%',
-  text: '4px',
+const shapeClass: Record<SkeletonShape, string> = {
+  rect: 'rounded-lg',
+  circle: 'rounded-full',
+  text: 'rounded',
 };
 
 export function Skeleton({
@@ -32,11 +21,7 @@ export function Skeleton({
   size,
   className = '',
 }: SkeletonProps) {
-  const style: React.CSSProperties = {
-    borderRadius: shapeBorderRadius[shape],
-    animation: 'skeleton-pulse 1.5s ease-in-out infinite',
-    backgroundColor: '#e5e7eb',
-  };
+  const style: React.CSSProperties = {};
 
   if (size) {
     style.width = size;
@@ -51,7 +36,7 @@ export function Skeleton({
 
   return (
     <div
-      className={className}
+      className={`${className} ${shapeClass[shape]} bg-gray-200 animate-skeleton`}
       style={style}
       aria-hidden="true"
     />

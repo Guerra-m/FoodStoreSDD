@@ -27,37 +27,27 @@ export default function CartDrawer() {
 
   const paymentStatus = usePaymentStore((state) => state.status);
 
-  // Checkout state
   const [showCheckout, setShowCheckout] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
-
-  // Payment step state
   const [showPayment, setShowPayment] = useState(false);
   const [pollingEnabled, setPollingEnabled] = useState(false);
 
   const { data: direcciones } = useDirecciones();
   const createOrder = useCreateOrder();
   const createPayment = useCreatePayment();
-  const { data: pagoData } = usePagoByPedido(
-    orderSuccess,
-    pollingEnabled,
-  );
-
-  // ─── Handlers ─────────────────────────────────────────────────────────────
+  const { data: pagoData } = usePagoByPedido(orderSuccess, pollingEnabled);
 
   const handleCheckout = async () => {
     if (!selectedAddressId) {
       toast.warning('Seleccioná una dirección de entrega');
       return;
     }
-
     try {
       const result = await createOrder.mutateAsync({
         carrito: items,
         direccionId: selectedAddressId,
       });
-
       toast.success(`Pedido #${result.id} creado con éxito`);
       clearCart();
       setShowCheckout(false);
@@ -72,21 +62,12 @@ export default function CartDrawer() {
   const handlePaymentToken = useCallback(
     async (token: string) => {
       if (!orderSuccess) return;
-
       usePaymentStore.getState().setProcessing();
-
       try {
-        await createPayment.mutateAsync({
-          card_token: token,
-          pedido_id: orderSuccess,
-        });
+        await createPayment.mutateAsync({ card_token: token, pedido_id: orderSuccess });
         setPollingEnabled(true);
       } catch (err: any) {
-        usePaymentStore
-          .getState()
-          .setError(
-            err.response?.data?.detail || 'Error al procesar el pago',
-          );
+        usePaymentStore.getState().setError(err.response?.data?.detail || 'Error al procesar el pago');
       }
     },
     [orderSuccess, createPayment],
@@ -101,81 +82,38 @@ export default function CartDrawer() {
     toggleCart();
   };
 
-  // Sync polling data → paymentStore when terminal status arrives
   useEffect(() => {
     if (!pagoData || !pollingEnabled) return;
-
     const { mp_status, mp_payment_id, status_detail } = pagoData;
-
     if (mp_status === 'approved') {
-      usePaymentStore
-        .getState()
-        .setApproved(mp_payment_id ?? 0, status_detail ?? undefined);
+      usePaymentStore.getState().setApproved(mp_payment_id ?? 0, status_detail ?? undefined);
       setPollingEnabled(false);
     } else if (mp_status === 'rejected') {
-      usePaymentStore
-        .getState()
-        .setRejected(status_detail ?? undefined);
+      usePaymentStore.getState().setRejected(status_detail ?? undefined);
       setPollingEnabled(false);
     }
   }, [pagoData, pollingEnabled]);
 
   if (!cartOpen) return null;
 
-  // ─── Render ───────────────────────────────────────────────────────────────
-
   return (
     <>
       {/* Backdrop */}
       <div
         onClick={handleCloseDrawer}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.4)',
-          zIndex: 999,
-        }}
+        className="fixed inset-0 bg-black/40 z-[999]"
       />
 
       {/* Drawer */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          width: '420px',
-          maxWidth: '100vw',
-          height: '100vh',
-          background: 'white',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '-4px 0 12px rgba(0,0,0,0.15)',
-        }}
-      >
+      <div className="fixed top-0 right-0 w-[420px] max-w-[100vw] h-screen bg-white z-[1000] flex flex-col shadow-[-4px_0_12px_rgba(0,0,0,0.15)]">
         {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '16px 20px',
-            borderBottom: '1px solid #eee',
-          }}
-        >
-          <h2 style={{ margin: 0, fontSize: '18px' }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+          <h2 className="m-0 text-lg">
             Carrito ({count} {count === 1 ? 'item' : 'items'})
           </h2>
           <button
             onClick={handleCloseDrawer}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '22px',
-              cursor: 'pointer',
-              padding: '4px',
-              lineHeight: 1,
-            }}
+            className="bg-transparent border-0 text-[22px] cursor-pointer p-1 leading-none"
             aria-label="Cerrar carrito"
           >
             ✕
@@ -184,183 +122,80 @@ export default function CartDrawer() {
 
         {/* Success + Payment section */}
         {orderSuccess && (
-          <div
-            style={{
-              padding: '20px',
-              background: '#e8f5e9',
-              borderBottom: '1px solid #c8e6c9',
-            }}
-          >
-            <strong style={{ color: '#155724' }}>
+          <div className="px-5 py-5 bg-green-50 border-b border-green-200">
+            <strong className="text-green-800">
               ¡Pedido #{orderSuccess} creado!
             </strong>
 
-            {/* Show payment option if not yet paid */}
-            {!showPayment &&
-              paymentStatus !== 'approved' &&
-              paymentStatus !== 'processing' && (
-                <>
-                  <p style={{ margin: '8px 0 0 0', color: '#155724', fontSize: '14px' }}>
-                    Ahora completá el pago para confirmar tu pedido.
-                  </p>
+            {!showPayment && paymentStatus !== 'approved' && paymentStatus !== 'processing' && (
+              <>
+                <p className="mt-2 mb-0 text-sm text-green-800">
+                  Ahora completá el pago para confirmar tu pedido.
+                </p>
+                <div className="flex gap-2 mt-2.5 flex-wrap">
                   <button
                     onClick={() => setShowPayment(true)}
-                    style={{
-                      marginTop: '10px',
-                      padding: '10px 20px',
-                      background: '#28a745',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                    }}
+                    className="px-5 py-2.5 bg-green-600 text-white border-0 rounded cursor-pointer font-bold text-sm"
                   >
                     Pagar ahora
                   </button>
                   <button
-                    onClick={() => {
-                      navigate(`/order-confirmation/${orderSuccess}`);
-                    }}
-                    style={{
-                      marginTop: '10px',
-                      marginLeft: '10px',
-                      padding: '10px 20px',
-                      background: 'transparent',
-                      color: '#007bff',
-                      border: '1px solid #007bff',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
+                    onClick={() => navigate(`/order-confirmation/${orderSuccess}`)}
+                    className="px-5 py-2.5 bg-transparent text-blue-500 border border-blue-500 rounded cursor-pointer text-sm"
                   >
                     Ver detalle
                   </button>
                   <button
-                    onClick={() => {
-                      setOrderSuccess(null);
-                    }}
-                    style={{
-                      marginTop: '10px',
-                      marginLeft: '10px',
-                      padding: '10px 20px',
-                      background: 'transparent',
-                      color: '#666',
-                      border: '1px solid #ccc',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
+                    onClick={() => setOrderSuccess(null)}
+                    className="px-5 py-2.5 bg-transparent text-gray-500 border border-gray-300 rounded cursor-pointer text-sm"
                   >
                     Después
                   </button>
-                </>
-              )}
+                </div>
+              </>
+            )}
 
-            {/* Payment form */}
             {showPayment && orderSuccess && (
-              <div style={{ marginTop: '10px' }}>
-                <PaymentForm
-                  totalInCents={total}
-                  onPayment={handlePaymentToken}
-                />
+              <div className="mt-2.5">
+                <PaymentForm totalInCents={total} onPayment={handlePaymentToken} />
               </div>
             )}
 
-            {/* Polling indicator */}
             {pollingEnabled && paymentStatus === 'processing' && (
-              <div
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  background: '#fff3cd',
-                  borderRadius: '4px',
-                  fontSize: '13px',
-                  color: '#856404',
-                }}
-              >
+              <div className="mt-2.5 p-2.5 bg-yellow-100 rounded text-xs text-yellow-800">
                 ⏳ Verificando pago... Esto puede tomar unos segundos.
               </div>
             )}
 
-            {/* Approved message */}
             {paymentStatus === 'approved' && (
-              <div
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  background: '#d4edda',
-                  borderRadius: '4px',
-                  color: '#155724',
-                  fontSize: '14px',
-                }}
-              >
+              <div className="mt-2.5 p-2.5 bg-green-100 rounded text-sm text-green-800">
                 ✅ Pago aprobado. Tu pedido ya está en proceso.
               </div>
             )}
 
-            {/* Rejected message */}
             {paymentStatus === 'rejected' && (
-              <div
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  background: '#f8d7da',
-                  borderRadius: '4px',
-                  color: '#721c24',
-                  fontSize: '14px',
-                }}
-              >
+              <div className="mt-2.5 p-2.5 bg-red-100 rounded text-sm text-red-800">
                 ❌ Pago rechazado. Intentá con otro medio de pago.
               </div>
             )}
 
-            {/* Error message */}
             {paymentStatus === 'error' && (
-              <div
-                style={{
-                  marginTop: '10px',
-                  padding: '10px',
-                  background: '#f8d7da',
-                  borderRadius: '4px',
-                  color: '#721c24',
-                  fontSize: '14px',
-                }}
-              >
+              <div className="mt-2.5 p-2.5 bg-red-100 rounded text-sm text-red-800">
                 ⚠️ Error al procesar el pago. Intentá de nuevo.
               </div>
             )}
 
-            {/* Finished — close */}
             {(paymentStatus === 'approved' || paymentStatus === 'rejected') && (
-              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <div className="flex gap-2.5 mt-2.5">
                 <button
-                  onClick={() => {
-                    navigate(`/order-confirmation/${orderSuccess}`);
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: '8px 16px',
-                    background: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
+                  onClick={() => navigate(`/order-confirmation/${orderSuccess}`)}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white border-0 rounded cursor-pointer text-sm"
                 >
                   Ver detalle del pedido
                 </button>
                 <button
                   onClick={handleCloseDrawer}
-                  style={{
-                    flex: 1,
-                    padding: '8px 16px',
-                    background: '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
+                  className="flex-1 px-4 py-2 bg-gray-500 text-white border-0 rounded cursor-pointer text-sm"
                 >
                   Cerrar
                 </button>
@@ -371,79 +206,57 @@ export default function CartDrawer() {
 
         {/* Checkout Form */}
         {showCheckout && !orderSuccess && (
-          <div style={{ padding: '20px', borderBottom: '1px solid #eee' }}>
-            <h3 style={{ margin: '0 0 15px 0' }}>Finalizar Pedido</h3>
+          <div className="px-5 py-5 border-b border-gray-200">
+            <h3 className="m-0 mb-4">Finalizar Pedido</h3>
 
             {(!direcciones || direcciones.length === 0) ? (
-              <div style={{ color: '#666' }}>
+              <div className="text-gray-500">
                 <p>No tenés direcciones guardadas.</p>
-                <a href="/perfil" style={{ color: '#007bff' }}>
-                  Agregar dirección en Mi Perfil
-                </a>
+                <a href="/perfil" className="text-blue-500">Agregar dirección en Mi Perfil</a>
               </div>
             ) : (
               <>
-                <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-                  Seleccioná dirección de entrega:
-                </p>
+                <p className="mb-2.5 font-bold">Seleccioná dirección de entrega:</p>
                 {direcciones.map((dir) => (
                   <label
                     key={dir.id}
-                    style={{
-                      display: 'block',
-                      padding: '10px',
-                      marginBottom: '8px',
-                      border: selectedAddressId === dir.id ? '2px solid #007bff' : '1px solid #ddd',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
+                    className={`block p-2.5 mb-2 rounded cursor-pointer ${
+                      selectedAddressId === dir.id
+                        ? 'border-2 border-blue-500'
+                        : 'border border-gray-300'
+                    }`}
                   >
                     <input
                       type="radio"
                       name="address"
                       checked={selectedAddressId === dir.id}
                       onChange={() => setSelectedAddressId(dir.id)}
-                      style={{ marginRight: '10px' }}
+                      className="mr-2"
                     />
                     {dir.calle} {dir.numero}, {dir.ciudad}
                     {dir.es_principal && (
-                      <span style={{ marginLeft: '8px', fontSize: '12px', color: '#007bff' }}>
-                        (Principal)
-                      </span>
+                      <span className="ml-2 text-xs text-blue-500">(Principal)</span>
                     )}
                   </label>
                 ))}
               </>
             )}
 
-            <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
+            <div className="mt-4 flex gap-2.5">
               <button
                 onClick={() => setShowCheckout(false)}
-                style={{
-                  flex: 1,
-                  padding: '10px',
-                  background: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
+                className="flex-1 p-2.5 bg-gray-500 text-white border-0 rounded cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleCheckout}
                 disabled={!selectedAddressId || createOrder.isPending}
-                style={{
-                  flex: 1,
-                  padding: '10px',
-                  background: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: selectedAddressId ? 'pointer' : 'not-allowed',
-                  opacity: createOrder.isPending ? 0.7 : 1,
-                }}
+                className={`flex-1 p-2.5 text-white border-0 rounded ${
+                  !selectedAddressId || createOrder.isPending
+                    ? 'bg-gray-400 cursor-not-allowed opacity-70'
+                    : 'bg-green-600 cursor-pointer'
+                }`}
               >
                 {createOrder.isPending ? 'Creando...' : `Confirmar ${formatPrice(total)}`}
               </button>
@@ -452,21 +265,11 @@ export default function CartDrawer() {
         )}
 
         {/* Items */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px' }}>
+        <div className="flex-1 overflow-y-auto px-5">
           {items.length === 0 ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '40px 20px',
-                color: '#999',
-              }}
-            >
-              <p style={{ fontSize: '16px', marginBottom: '8px' }}>
-                Tu carrito está vacío
-              </p>
-              <p style={{ fontSize: '14px' }}>
-                Agregá productos desde el catálogo
-              </p>
+            <div className="text-center py-10 text-gray-400">
+              <p className="text-base mb-2">Tu carrito está vacío</p>
+              <p className="text-sm">Agregá productos desde el catálogo</p>
             </div>
           ) : (
             items.map((item) => (
@@ -481,10 +284,9 @@ export default function CartDrawer() {
         </div>
 
         {/* Summary */}
-        <div style={{ padding: '0 20px 20px' }}>
+        <div className="px-5 pb-5">
           <CartSummary items={items} />
 
-          {/* Checkout Button */}
           {!showCheckout && items.length > 0 && !orderSuccess && (
             <button
               onClick={() => {
@@ -494,18 +296,7 @@ export default function CartDrawer() {
                 }
                 setShowCheckout(true);
               }}
-              style={{
-                width: '100%',
-                padding: '14px',
-                marginTop: '15px',
-                background: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
+              className="w-full py-3.5 mt-4 bg-blue-500 text-white border-0 rounded-lg text-base font-bold cursor-pointer"
             >
               Finalizar Pedido
             </button>

@@ -7,19 +7,12 @@ import { Skeleton } from './Skeleton';
 export function SkeletonCard() {
   return (
     <div
-      style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-      }}
+      className="border border-gray-200 rounded-lg p-4 flex flex-col gap-3"
       aria-busy="true"
       aria-label="Cargando producto"
     >
       {/* Imagen 16:9 */}
-      <div style={{ width: '100%', aspectRatio: '16 / 9' }}>
+      <div className="w-full aspect-video">
         <Skeleton shape="rect" width="100%" height="100%" />
       </div>
       {/* Título */}
@@ -28,7 +21,7 @@ export function SkeletonCard() {
       <Skeleton width="100%" height={14} />
       <Skeleton width="80%" height={14} />
       {/* Precio */}
-      <div style={{ marginTop: '8px' }}>
+      <div className="mt-2">
         <Skeleton width="30%" height={24} />
       </div>
     </div>

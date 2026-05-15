@@ -165,7 +165,7 @@ export default function Productos() {
   if (error) return <div>Error al cargar productos</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="p-5">
       <h1>Gestión de Productos</h1>
 
       <button
@@ -173,7 +173,7 @@ export default function Productos() {
           resetForm();
           setShowForm(true);
         }}
-        style={{ marginBottom: '20px', padding: '8px 16px' }}
+        className="mb-5 px-4 py-2"
       >
         + Nuevo Producto
       </button>
@@ -181,11 +181,7 @@ export default function Productos() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          style={{
-            marginBottom: '20px',
-            padding: '15px',
-            border: '1px solid #ccc',
-          }}
+          className="mb-5 p-4 border border-gray-300"
         >
           <h3>{editingProduct ? 'Editar Producto' : 'Nuevo Producto'}</h3>
 
@@ -268,7 +264,7 @@ export default function Productos() {
           <div>
             <h4>Categorías</h4>
             {categorias?.map((cat) => (
-              <label key={cat.id} style={{ display: 'block', margin: '4px 0' }}>
+              <label key={cat.id} className="block my-1">
                 <input
                   type="checkbox"
                   checked={formData.categoria_ids?.includes(cat.id) || false}
@@ -286,7 +282,7 @@ export default function Productos() {
                 (i) => i.ingrediente_id === ing.id
               );
               return (
-                <div key={ing.id} style={{ margin: '8px 0' }}>
+                <div key={ing.id} className="my-2">
                   <label>
                     <input
                       type="checkbox"
@@ -309,7 +305,7 @@ export default function Productos() {
                       onChange={(e) =>
                         updateIngrediente(ing.id, Number(e.target.value))
                       }
-                      style={{ marginLeft: '10px', width: '80px' }}
+                      className="ml-3 w-[80px]"
                       min={0}
                       step="0.1"
                     />
@@ -319,7 +315,7 @@ export default function Productos() {
             })}
           </div>
 
-          <button type="submit" style={{ marginTop: '10px', marginRight: '10px' }}>
+          <button type="submit" className="mt-3 mr-3">
             Guardar
           </button>
           <button type="button" onClick={resetForm}>
@@ -329,7 +325,7 @@ export default function Productos() {
       )}
 
       <h2>Lista de Productos</h2>
-      <table border={1} cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <table border={1} cellPadding="8" className="border-collapse w-full">
         <thead>
           <tr>
             <th>ID</th>
@@ -356,7 +352,7 @@ export default function Productos() {
                       onChange={(e) =>
                         setStockEdit({ id: product.id, value: e.target.value })
                       }
-                      style={{ width: '60px' }}
+                      className="w-[60px]"
                     />
                     <button onClick={() => handleStockAction(product.id, 'set', Number(stockEdit.value))}>
                       Set
@@ -403,7 +399,7 @@ export default function Productos() {
                 <button onClick={() => openEdit(product)}>Editar</button>
                 <button
                   onClick={() => setDeleteConfirm(product)}
-                  style={{ marginLeft: '5px', color: 'red' }}
+                  className="ml-1 text-red-500"
                 >
                   Eliminar
                 </button>
@@ -413,14 +409,14 @@ export default function Productos() {
         </tbody>
       </table>
 
-      <div style={{ marginTop: '20px' }}>
+      <div className="mt-5">
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page <= 1}
         >
           Anterior
         </button>
-        <span style={{ margin: '0 10px' }}>Página {page}</span>
+        <span className="mx-3">Página {page}</span>
         <button
           onClick={() => setPage((p) => p + 1)}
           disabled={!data || page * 20 >= data.total}
@@ -430,23 +426,11 @@ export default function Productos() {
       </div>
 
       {deleteConfirm && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px' }}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-5 rounded-lg">
             <h3>Confirmar Eliminación</h3>
             <p>¿Está seguro de eliminar el producto "{deleteConfirm.nombre}"?</p>
-            <button onClick={handleDelete} style={{ marginRight: '10px', color: 'red' }}>
+            <button onClick={handleDelete} className="mr-3 text-red-500">
               Eliminar
             </button>
             <button onClick={() => setDeleteConfirm(null)}>Cancelar</button>

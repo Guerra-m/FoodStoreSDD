@@ -60,16 +60,7 @@ export default function AddToCartButton({
     <>
       <button
         onClick={handleOpen}
-        style={{
-          padding: '10px 20px',
-          background: '#28a745',
-          color: 'white',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          fontWeight: 600,
-        }}
+        className="px-5 py-2.5 bg-green-500 text-white border-0 rounded-md text-base cursor-pointer font-semibold"
       >
         Agregar al carrito
       </button>
@@ -79,45 +70,21 @@ export default function AddToCartButton({
         <>
           <div
             onClick={() => setShowModal(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0,0,0,0.4)',
-              zIndex: 1100,
-            }}
+            className="fixed inset-0 bg-black/40 z-[1100]"
           />
           <div
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: 'white',
-              borderRadius: '12px',
-              padding: '24px',
-              zIndex: 1101,
-              width: '90%',
-              maxWidth: '420px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-            }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl p-6 z-[1101] w-[90%] max-w-[420px] shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
           >
-            <h3 style={{ margin: '0 0 8px 0' }}>Personalizar {nombre}</h3>
-            <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px' }}>
+            <h3 className="m-0 mb-2">Personalizar {nombre}</h3>
+            <p className="text-sm text-gray-600 mb-4">
               Desmarcá los ingredientes que querés excluir:
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="flex flex-col gap-2">
               {ingredientes.map((ing) => (
                 <label
                   key={ing.ingredienteId}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    cursor: 'pointer',
-                    fontSize: '15px',
-                    padding: '4px 0',
-                  }}
+                  className="flex items-center gap-2 cursor-pointer text-[15px] py-1"
                 >
                   <input
                     type="checkbox"
@@ -129,39 +96,16 @@ export default function AddToCartButton({
               ))}
             </div>
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '12px',
-                marginTop: '20px',
-              }}
-            >
+            <div className="flex justify-end gap-3 mt-5">
               <button
                 onClick={() => setShowModal(false)}
-                style={{
-                  padding: '8px 16px',
-                  background: '#f0f0f0',
-                  border: '1px solid #ccc',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
+                className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-md cursor-pointer text-sm"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleAdd}
-                style={{
-                  padding: '8px 16px',
-                  background: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
+                className="px-4 py-2 bg-green-500 text-white border-0 rounded-md cursor-pointer text-sm font-semibold"
               >
                 Agregar al carrito
               </button>

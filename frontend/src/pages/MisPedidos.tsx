@@ -13,30 +13,24 @@ export default function MisPedidos() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+      <div className="p-5 max-w-5xl mx-auto">
         <h1>Mis Pedidos</h1>
         <SkeletonTable rows={5} />
       </div>
     );
   }
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Error al cargar pedidos</div>;
+  if (error) return <div className="p-5 text-red-500">Error al cargar pedidos</div>;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="p-5 max-w-5xl mx-auto">
       <h1>Mis Pedidos</h1>
       
       {data?.pedidos && data.pedidos.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <p style={{ color: '#666', marginBottom: '20px' }}>No tenés pedidos aún.</p>
+        <div className="text-center p-10">
+          <p className="text-gray-500 mb-5">No tenés pedidos aún.</p>
           <Link 
             to="/catalog" 
-            style={{ 
-              padding: '10px 20px', 
-              background: '#007bff', 
-              color: 'white', 
-              textDecoration: 'none', 
-              borderRadius: '4px' 
-            }}
+            className="px-5 py-3 bg-blue-600 text-white no-underline rounded"
           >
             Ir al Catálogo
           </Link>
@@ -44,77 +38,48 @@ export default function MisPedidos() {
       ) : (
         <>
           {/* Lista de pedidos */}
-          <div style={{ marginBottom: '30px' }}>
+          <div className="mb-8">
             {data?.pedidos.map((pedido) => (
               <div
                 key={pedido.id}
-                style={{
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  padding: '15px',
-                  marginBottom: '15px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '10px',
-                }}
+                className="border border-gray-200 rounded-lg p-4 mb-4 flex justify-between items-center flex-wrap gap-3"
               >
                 <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
+                  <div className="font-bold text-base">
                     Pedido #{pedido.id}
                   </div>
-                  <div style={{ color: '#666', fontSize: '14px' }}>
+                  <div className="text-gray-500 text-sm">
                     {formatDate(pedido.creado_en)}
                   </div>
-                  <div style={{ color: '#666', fontSize: '14px', marginTop: '5px' }}>
+                  <div className="text-gray-500 text-sm mt-1">
                     Entrega: {pedido.direccion_snapshot.calle} {pedido.direccion_snapshot.numero}, {pedido.direccion_snapshot.ciudad}
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="flex items-center gap-2">
                   <span
-                    style={{
-                      padding: '4px 12px',
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      color: 'white',
-                      backgroundColor: getEstadoColor(pedido.estado),
-                    }}
+                    className="px-3 py-1 rounded-full text-xs font-bold text-white"
+                    style={{ backgroundColor: getEstadoColor(pedido.estado) }}
                   >
                     {getEstadoLabel(pedido.estado)}
                   </span>
 
                   {pedido.payment_status && (
                     <span
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        color: 'white',
-                        backgroundColor: getPaymentStatusColor(pedido.payment_status),
-                      }}
+                      className="px-3 py-1 rounded-full text-xs font-bold text-white"
+                      style={{ backgroundColor: getPaymentStatusColor(pedido.payment_status) }}
                     >
                       Pago: {getPaymentStatusLabel(pedido.payment_status)}
                     </span>
                   )}
                   
-                  <span style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                  <span className="text-lg font-bold">
                     {formatPrice(pedido.total)}
                   </span>
                   
                   <button
                     onClick={() => setSelectedOrderId(pedido.id)}
-                    style={{
-                      padding: '8px 16px',
-                      background: '#007bff',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
+                    className="px-4 py-2 bg-blue-600 text-white border-none rounded cursor-pointer"
                   >
                     Ver Detalle
                   </button>
@@ -124,21 +89,21 @@ export default function MisPedidos() {
           </div>
 
           {/* Paginación */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+          <div className="flex justify-center gap-3">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              style={{ padding: '8px 16px' }}
+              className="px-4 py-2"
             >
               Anterior
             </button>
-            <span style={{ padding: '8px 16px' }}>
+            <span className="px-4 py-2">
               Página {page} ({(data?.total || 0)} pedidos)
             </span>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={!data || page * 10 >= data.total}
-              style={{ padding: '8px 16px' }}
+              className="px-4 py-2"
             >
               Siguiente
             </button>
@@ -149,64 +114,34 @@ export default function MisPedidos() {
       {/* Modal de detalle del pedido */}
       {selectedOrderId && (
         <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000]"
           onClick={() => setSelectedOrderId(null)}
         >
           <div
-            style={{
-              background: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              maxWidth: '600px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto',
-            }}
+            className="bg-white p-5 rounded-lg max-w-[600px] w-[90%] max-h-[80vh] overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {detailLoading ? (
-              <div style={{ padding: '20px' }}>
+              <div className="p-5">
                 <SkeletonTable rows={3} columns={[{ width: '40%' }, { width: '20%' }, { width: '20%' }, { width: '20%' }]} />
               </div>
             ) : orderDetail ? (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h2 style={{ margin: 0 }}>Pedido #{orderDetail.id}</h2>
+                <div className="flex justify-between items-center mb-5">
+                  <h2 className="m-0">Pedido #{orderDetail.id}</h2>
                   <button
                     onClick={() => setSelectedOrderId(null)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      fontSize: '24px',
-                      cursor: 'pointer',
-                    }}
+                    className="bg-none border-none text-2xl cursor-pointer"
                   >
                     ×
                   </button>
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
+                <div className="mb-5">
                   <strong>Estado:</strong>{' '}
                   <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: '8px',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      color: 'white',
-                      backgroundColor: getEstadoColor(orderDetail.estado),
-                    }}
+                    className="px-2 py-1 rounded text-xs font-bold text-white"
+                    style={{ backgroundColor: getEstadoColor(orderDetail.estado) }}
                   >
                     {getEstadoLabel(orderDetail.estado)}
                   </span>
@@ -215,14 +150,8 @@ export default function MisPedidos() {
                     <>
                       {' '}
                       <span
-                        style={{
-                          padding: '2px 8px',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          color: 'white',
-                          backgroundColor: getPaymentStatusColor(orderDetail.payment_status),
-                        }}
+                        className="px-2 py-1 rounded text-xs font-bold text-white"
+                        style={{ backgroundColor: getPaymentStatusColor(orderDetail.payment_status) }}
                       >
                         Pago: {getPaymentStatusLabel(orderDetail.payment_status)}
                       </span>
@@ -231,27 +160,18 @@ export default function MisPedidos() {
                 </div>
 
                 {orderDetail.payment_status === 'rejected' && (
-                  <div
-                    style={{
-                      marginBottom: '20px',
-                      padding: '10px',
-                      background: '#f8d7da',
-                      borderRadius: '4px',
-                      color: '#721c24',
-                      fontSize: '13px',
-                    }}
-                  >
+                  <div className="mb-5 p-3 bg-red-100 rounded text-red-800 text-sm">
                     El pago fue rechazado. Para reintentar, contactate con soporte o realizá un nuevo pedido.
                   </div>
                 )}
 
-                <div style={{ marginBottom: '20px' }}>
+                <div className="mb-5">
                   <strong>Fecha:</strong> {formatDate(orderDetail.creado_en)}
                 </div>
 
-                <div style={{ marginBottom: '20px' }}>
+                <div className="mb-5">
                   <strong>Dirección de entrega:</strong>
-                  <div style={{ color: '#666' }}>
+                  <div className="text-gray-500">
                     {orderDetail.direccion_snapshot.calle} {orderDetail.direccion_snapshot.numero}
                     {orderDetail.direccion_snapshot.piso && `, Piso ${orderDetail.direccion_snapshot.piso}`}
                     {orderDetail.direccion_snapshot.departamento && `, Depto ${orderDetail.direccion_snapshot.departamento}`}
@@ -261,29 +181,29 @@ export default function MisPedidos() {
                 </div>
 
                 <h3>Items</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="w-full border-collapse">
                   <thead>
-                    <tr style={{ borderBottom: '2px solid #ddd' }}>
-                      <th style={{ textAlign: 'left', padding: '8px' }}>Producto</th>
-                      <th style={{ textAlign: 'center', padding: '8px' }}>Cantidad</th>
-                      <th style={{ textAlign: 'right', padding: '8px' }}>Precio</th>
-                      <th style={{ textAlign: 'right', padding: '8px' }}>Subtotal</th>
+                    <tr className="border-b-2 border-gray-300">
+                      <th className="text-left p-2">Producto</th>
+                      <th className="text-center p-2">Cantidad</th>
+                      <th className="text-right p-2">Precio</th>
+                      <th className="text-right p-2">Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orderDetail.items.map((item) => (
-                      <tr key={item.id} style={{ borderBottom: '1px solid #eee' }}>
-                        <td style={{ padding: '8px' }}>
+                      <tr key={item.id} className="border-b border-gray-200">
+                        <td className="p-2">
                           {item.producto_snapshot.nombre}
                           {item.ingredientes_excluidos.length > 0 && (
-                            <div style={{ fontSize: '12px', color: '#888' }}>
+                            <div className="text-xs text-gray-500">
                               Sin: {item.ingredientes_excluidos.join(', ')}
                             </div>
                           )}
                         </td>
-                        <td style={{ textAlign: 'center', padding: '8px' }}>{item.cantidad}</td>
-                        <td style={{ textAlign: 'right', padding: '8px' }}>{formatPrice(item.precio_unitario)}</td>
-                        <td style={{ textAlign: 'right', padding: '8px' }}>
+                        <td className="text-center p-2">{item.cantidad}</td>
+                        <td className="text-right p-2">{formatPrice(item.precio_unitario)}</td>
+                        <td className="text-right p-2">
                           {formatPrice(item.precio_unitario * item.cantidad)}
                         </td>
                       </tr>
@@ -291,10 +211,10 @@ export default function MisPedidos() {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan={3} style={{ textAlign: 'right', padding: '8px', fontWeight: 'bold' }}>
+                      <td colSpan={3} className="text-right p-2 font-bold">
                         Total:
                       </td>
-                      <td style={{ textAlign: 'right', padding: '8px', fontWeight: 'bold', fontSize: '18px' }}>
+                      <td className="text-right p-2 font-bold text-lg">
                         {formatPrice(orderDetail.total)}
                       </td>
                     </tr>
@@ -303,10 +223,10 @@ export default function MisPedidos() {
 
                 {orderDetail.historial.length > 0 && (
                   <>
-                    <h3 style={{ marginTop: '20px' }}>Historial</h3>
-                    <div style={{ fontSize: '14px', color: '#666' }}>
+                    <h3 className="mt-5">Historial</h3>
+                    <div className="text-sm text-gray-500">
                       {orderDetail.historial.map((h, idx) => (
-                        <div key={idx} style={{ marginBottom: '8px' }}>
+                        <div key={idx} className="mb-2">
                           <strong>{formatDate(h.timestamp)}</strong>: {h.descripcion} 
                           {h.usuario_id && ` (Usuario #${h.usuario_id})`}
                         </div>

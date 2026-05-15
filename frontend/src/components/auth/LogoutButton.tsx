@@ -1,12 +1,6 @@
-/**
- * LogoutButton Component
- * Simple button to trigger logout
- */
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import styles from "./LogoutButton.module.css";
 
 interface LogoutButtonProps {
   className?: string;
@@ -31,14 +25,14 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className }) => {
   return (
     <>
       {error && (
-        <div className={styles.errorAlert}>
+        <div className="mb-2 p-2 bg-red-50 border border-red-300 rounded text-xs text-red-600">
           {error}
         </div>
       )}
       <button
         onClick={handleLogout}
         disabled={isLoading}
-        className={`${styles.button} ${className || ""}`}
+        className={`px-4 py-2 bg-red-500 text-white font-medium rounded text-sm transition-colors hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed ${className || ""}`}
       >
         {isLoading ? "Cerrando sesión..." : "Cerrar Sesión"}
       </button>

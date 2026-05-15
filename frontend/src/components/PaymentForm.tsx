@@ -4,107 +4,61 @@
 
 import { usePaymentStore } from '../stores/paymentStore';
 
-// ─── Props ────────────────────────────────────────────────────────────────────
-
 interface PaymentFormProps {
-  /** Monto total en centavos (se muestra al usuario como decimal) */
+  /** Monto total en centavos */
   totalInCents: number;
-  /**
-   * Callback ejecutado cuando MercadoPago devuelve el token de la tarjeta.
-   * Recibe el token string que debe enviarse a POST /api/v1/pagos/crear.
-   */
+  /** Callback con token de MercadoPago */
   onPayment: (token: string) => void;
 }
-
-// ─── Componente ───────────────────────────────────────────────────────────────
 
 export default function PaymentForm({ totalInCents, onPayment }: PaymentFormProps) {
   const status = usePaymentStore((state) => state.status);
   const error = usePaymentStore((state) => state.error);
 
-  // SUGGESTION: Una vez instalado el SDK, importar initMercadoPago y CardPayment:
-  //
-  //   import { initMercadoPago, CardPayment } from '@mercadopago/sdk-react';
-  //
-  //   initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
-
   if (status === 'approved') {
     return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '10px' }}>✅</div>
-        <h3 style={{ margin: '0 0 8px 0', color: '#155724' }}>Pago aprobado</h3>
-        <p style={{ color: '#666', margin: 0 }}>
-          Tu pago fue procesado correctamente.
-        </p>
+      <div className="text-center p-5">
+        <div className="text-5xl mb-2.5">✅</div>
+        <h3 className="m-0 mb-2 text-green-800">Pago aprobado</h3>
+        <p className="text-gray-500 m-0">Tu pago fue procesado correctamente.</p>
       </div>
     );
   }
 
   if (status === 'rejected') {
     return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '10px' }}>❌</div>
-        <h3 style={{ margin: '0 0 8px 0', color: '#721c24' }}>Pago rechazado</h3>
-        <p style={{ color: '#666', margin: 0 }}>
-          El pago no pudo procesarse. Intentá con otro medio de pago.
-        </p>
+      <div className="text-center p-5">
+        <div className="text-5xl mb-2.5">❌</div>
+        <h3 className="m-0 mb-2 text-red-800">Pago rechazado</h3>
+        <p className="text-gray-500 m-0">El pago no pudo procesarse. Intentá con otro medio de pago.</p>
       </div>
     );
   }
 
   if (status === 'error') {
     return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        <div style={{ fontSize: '48px', marginBottom: '10px' }}>⚠️</div>
-        <h3 style={{ margin: '0 0 8px 0', color: '#856404' }}>Error de pago</h3>
-        <p style={{ color: '#666', margin: 0 }}>{error || 'Ocurrió un error al procesar el pago.'}</p>
+      <div className="text-center p-5">
+        <div className="text-5xl mb-2.5">⚠️</div>
+        <h3 className="m-0 mb-2 text-yellow-800">Error de pago</h3>
+        <p className="text-gray-500 m-0">{error || 'Ocurrió un error al procesar el pago.'}</p>
       </div>
     );
   }
 
-  // SUGGESTION: Reemplazar el div de abajo con <CardPayment /> de MercadoPago:
-  //
-  // <CardPayment
-  //   initialization={{ amount: totalInCents / 100 }}
-  //   onSubmit={async (cardFormData) => {
-  //     // cardFormData.token contiene el token de la tarjeta
-  //     onPayment(cardFormData.token);
-  //   }}
-  //   onError={(err) => {
-  //     console.error('MP CardPayment error:', err);
-  //     usePaymentStore.getState().setError('Error al cargar el formulario de pago');
-  //   }}
-  // />
-
   return (
-    <div style={{ padding: '20px' }}>
-      <h3 style={{ margin: '0 0 15px 0' }}>Datos de pago</h3>
-      <p style={{ color: '#666', marginBottom: '15px', fontSize: '14px' }}>
+    <div className="p-5">
+      <h3 className="m-0 mb-4">Datos de pago</h3>
+      <p className="text-gray-500 mb-4 text-sm">
         Total a pagar: <strong>${(totalInCents / 100).toFixed(2)}</strong>
       </p>
 
-      {/* SUGGESTION: <CardPayment /> se renderiza aquí automáticamente */}
-      <div
-        style={{
-          border: '2px dashed #ccc',
-          borderRadius: '8px',
-          padding: '40px 20px',
-          textAlign: 'center',
-          color: '#999',
-        }}
-      >
-        <p style={{ margin: 0 }}>
-          Formulario de pago seguro de MercadoPago
-        </p>
-        <p style={{ fontSize: '12px', margin: '8px 0 0 0' }}>
-          (Requiere instalar @mercadopago/sdk-react)
-        </p>
+      <div className="border-2 border-dashed border-gray-300 rounded-lg py-10 px-5 text-center text-gray-400">
+        <p className="m-0">Formulario de pago seguro de MercadoPago</p>
+        <p className="text-xs mt-2 m-0">(Requiere instalar @mercadopago/sdk-react)</p>
       </div>
 
       {status === 'processing' && (
-        <div style={{ textAlign: 'center', marginTop: '15px', color: '#666' }}>
-          Procesando pago...
-        </div>
+        <div className="text-center mt-4 text-gray-500">Procesando pago...</div>
       )}
     </div>
   );

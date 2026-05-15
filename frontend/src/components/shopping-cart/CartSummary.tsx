@@ -14,33 +14,12 @@ export default function CartSummary({ items }: CartSummaryProps) {
   if (items.length === 0) return null;
 
   return (
-    <div
-      style={{
-        padding: '16px 0',
-        borderTop: '2px solid #333',
-        marginTop: '8px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: '14px',
-          color: '#666',
-          marginBottom: '8px',
-        }}
-      >
+    <div className="py-4 border-t-2 border-gray-800 mt-2">
+      <div className="flex justify-between text-sm text-gray-600 mb-2">
         <span>Items ({count} unidades)</span>
         <span>{formatPrice(total)}</span>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: '18px',
-          fontWeight: 700,
-        }}
-      >
+      <div className="flex justify-between text-lg font-bold">
         <span>Total</span>
         <span>{formatPrice(total)}</span>
       </div>

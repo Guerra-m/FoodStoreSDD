@@ -19,14 +19,14 @@ export default function ProductoDetalle() {
   }));
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <Link to="/catalog" style={{ marginBottom: '20px', display: 'block' }}>
+    <div className="p-5 max-w-4xl mx-auto">
+      <Link to="/catalog" className="mb-5 block">
         &larr; Volver al catálogo
       </Link>
 
-      <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
+      <div className="flex gap-8 flex-wrap">
         {/* Image gallery */}
-        <div style={{ flex: '1', minWidth: '300px' }}>
+        <div className="flex-1 min-w-[300px]">
           {product.images && product.images.length > 0 ? (
             <div>
               {product.images.map((img, idx) => (
@@ -34,47 +34,30 @@ export default function ProductoDetalle() {
                   key={idx}
                   src={img}
                   alt={`${product.nombre} - ${idx + 1}`}
-                  style={{
-                    width: '100%',
-                    maxHeight: '400px',
-                    objectFit: 'cover',
-                    borderRadius: '8px',
-                    marginBottom: '10px',
-                  }}
+                  className="w-full max-h-[400px] object-cover rounded-lg mb-3"
                 />
               ))}
             </div>
           ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '300px',
-                background: '#f0f0f0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '8px',
-                color: '#999',
-              }}
-            >
+            <div className="w-full h-[300px] bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
               Sin imagen
             </div>
           )}
         </div>
 
         {/* Product info */}
-        <div style={{ flex: '1', minWidth: '300px' }}>
+        <div className="flex-1 min-w-[300px]">
           <h1>{product.nombre}</h1>
-          <p style={{ color: '#666', fontSize: '16px', lineHeight: '1.5' }}>
+          <p className="text-gray-500 text-base leading-relaxed">
             {product.descripcion || 'Sin descripción'}
           </p>
 
-          <h2 style={{ fontSize: '28px', color: '#007bff' }}>
+          <h2 className="text-[28px] text-blue-600">
             {formatPrice(product.price_in_cents)}
           </h2>
 
           {/* Add to cart */}
-          <div style={{ marginTop: '20px' }}>
+          <div className="mt-5">
             <AddToCartButton
               productoId={product.id}
               nombre={product.nombre}
@@ -85,12 +68,12 @@ export default function ProductoDetalle() {
 
           {/* Ingredients with allergens */}
           {product.ingredientes && product.ingredientes.length > 0 && (
-            <div style={{ marginTop: '30px' }}>
+            <div className="mt-8">
               <h3>Ingredientes</h3>
               <table
                 border={1}
                 cellPadding="6"
-                style={{ borderCollapse: 'collapse', width: '100%' }}
+                className="border-collapse w-full"
               >
                 <thead>
                   <tr>
@@ -111,16 +94,7 @@ export default function ProductoDetalle() {
               </table>
 
               {/* Allergen alert */}
-              <div
-                style={{
-                  marginTop: '15px',
-                  padding: '10px',
-                  background: '#fff3cd',
-                  border: '1px solid #ffc107',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                }}
-              >
+              <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-sm">
                 <strong>⚠️ Información de alérgenos:</strong> Este producto contiene{' '}
                 {product.ingredientes.map((i) => i.nombre).join(', ')}.
                 Consulte con el personal si tiene alguna alergia o intolerancia

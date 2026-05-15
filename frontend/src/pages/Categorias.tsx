@@ -59,7 +59,7 @@ export default function Categorias() {
   if (error) return <div>Error al cargar categorías</div>;
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="p-5">
       <h1>Gestión de Categorías</h1>
 
       <button
@@ -68,13 +68,13 @@ export default function Categorias() {
           setEditingCategoria(null);
           setFormData({ nombre: '', padre_id: null });
         }}
-        style={{ marginBottom: '20px', padding: '8px 16px' }}
+        className="mb-5 px-4 py-2"
       >
         + Nueva Categoría
       </button>
 
       {showForm && (
-        <form onSubmit={handleSubmit} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ccc' }}>
+        <form onSubmit={handleSubmit} className="mb-5 p-4 border border-gray-300">
           <h3>{editingCategoria ? 'Editar Categoría' : 'Nueva Categoría'}</h3>
           <div>
             <label>Nombre: </label>
@@ -101,7 +101,7 @@ export default function Categorias() {
               ))}
             </select>
           </div>
-          <button type="submit" style={{ marginTop: '10px', marginRight: '10px' }}>
+          <button type="submit" className="mt-3 mr-3">
             Guardar
           </button>
           <button type="button" onClick={() => setShowForm(false)}>
@@ -111,7 +111,7 @@ export default function Categorias() {
       )}
 
       <h2>Lista de Categorías</h2>
-      <table border={1} cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <table border={1} cellPadding="8" className="border-collapse w-full">
         <thead>
           <tr>
             <th>ID</th>
@@ -132,7 +132,7 @@ export default function Categorias() {
                 <button onClick={() => openEdit(cat)}>Editar</button>
                 <button
                   onClick={() => setDeleteConfirm(cat)}
-                  style={{ marginLeft: '5px', color: 'red' }}
+                  className="ml-1 text-red-500"
                 >
                   Eliminar
                 </button>
@@ -143,7 +143,7 @@ export default function Categorias() {
       </table>
 
       <h2>Árbol de Categorías</h2>
-      <div style={{ marginTop: '20px' }}>
+      <div className="mt-5">
         {categoriaTree && categoriaTree.length > 0 ? (
           <TreeView tree={categoriaTree} />
         ) : (
@@ -152,23 +152,11 @@ export default function Categorias() {
       </div>
 
       {deleteConfirm && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px' }}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-5 rounded-lg">
             <h3>Confirmar Eliminación</h3>
             <p>¿Está seguro de eliminar la categoría "{deleteConfirm.nombre}"?</p>
-            <button onClick={handleDelete} style={{ marginRight: '10px', color: 'red' }}>
+            <button onClick={handleDelete} className="mr-3 text-red-500">
               Eliminar
             </button>
             <button onClick={() => setDeleteConfirm(null)}>Cancelar</button>
@@ -181,10 +169,10 @@ export default function Categorias() {
 
 function TreeView({ tree, level = 0 }: { tree: CategoriaTree[]; level?: number }) {
   return (
-    <ul style={{ listStyle: 'none', paddingLeft: level > 0 ? '20px' : '0' }}>
+    <ul className={`list-none ${level > 0 ? 'pl-5' : 'pl-0'}`}>
       {tree.map((node) => (
-        <li key={node.id} style={{ margin: '5px 0' }}>
-          <span style={{ fontWeight: node.hijos.length > 0 ? 'bold' : 'normal' }}>
+        <li key={node.id} className="my-1">
+          <span className={node.hijos.length > 0 ? 'font-bold' : 'font-normal'}>
             {node.nombre} {node.hijos.length > 0 && `(${node.hijos.length})`}
           </span>
           {node.hijos.length > 0 && <TreeView tree={node.hijos} level={level + 1} />}

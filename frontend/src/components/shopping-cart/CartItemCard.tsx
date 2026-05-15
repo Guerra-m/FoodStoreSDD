@@ -11,75 +11,43 @@ interface CartItemCardProps {
 
 export default function CartItemCard({ item, onUpdateQuantity, onRemove }: CartItemCardProps) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: '12px',
-        padding: '12px 0',
-        borderBottom: '1px solid #eee',
-        alignItems: 'flex-start',
-      }}
-    >
+    <div className="flex gap-3 py-3 border-b border-gray-200 items-start">
       {/* Info */}
-      <div style={{ flex: 1 }}>
-        <div style={{ fontWeight: 600, marginBottom: '4px' }}>{item.nombre}</div>
-        <div style={{ fontSize: '14px', color: '#666' }}>
+      <div className="flex-1">
+        <div className="font-semibold mb-1">{item.nombre}</div>
+        <div className="text-sm text-gray-600">
           {formatPrice(item.priceInCents)} c/u
         </div>
 
         {/* Ingredientes excluidos */}
         {item.excludedIngredientIds.length > 0 && (
-          <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+          <div className="text-xs text-gray-400 mt-1">
             Sin ingredientes ID: {item.excludedIngredientIds.join(', ')}
           </div>
         )}
 
-        <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '4px' }}>
+        <div className="text-sm font-medium mt-1">
           Subtotal: {formatPrice(selectItemSubtotal(item))}
         </div>
       </div>
 
       {/* Quantity controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="flex items-center gap-2">
         <button
           onClick={() => onUpdateQuantity(item.id, item.cantidad - 1)}
-          style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            background: '#f9f9f9',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="w-7 h-7 rounded border border-gray-300 bg-gray-50 cursor-pointer text-base font-semibold flex items-center justify-center"
           aria-label="Disminuir cantidad"
         >
           −
         </button>
 
-        <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: 500 }}>
+        <span className="min-w-[24px] text-center font-medium">
           {item.cantidad}
         </span>
 
         <button
           onClick={() => onUpdateQuantity(item.id, item.cantidad + 1)}
-          style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            background: '#f9f9f9',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className="w-7 h-7 rounded border border-gray-300 bg-gray-50 cursor-pointer text-base font-semibold flex items-center justify-center"
           aria-label="Aumentar cantidad"
         >
           +
@@ -89,15 +57,7 @@ export default function CartItemCard({ item, onUpdateQuantity, onRemove }: CartI
       {/* Remove */}
       <button
         onClick={() => onRemove(item.id)}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: '#e74c3c',
-          cursor: 'pointer',
-          fontSize: '18px',
-          padding: '4px',
-          lineHeight: 1,
-        }}
+        className="bg-transparent border-0 text-red-500 cursor-pointer text-lg p-1 leading-none"
         aria-label="Eliminar item"
         title="Eliminar"
       >
