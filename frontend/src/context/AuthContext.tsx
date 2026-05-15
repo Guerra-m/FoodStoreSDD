@@ -19,7 +19,7 @@ import {
   getAccessToken,
   getRefreshToken,
   isTokenExpired,
-} from "../utils/auth";
+} from "../lib/auth";
 import { useAuthStore } from "../stores/authStore";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

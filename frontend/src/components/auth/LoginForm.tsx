@@ -5,7 +5,7 @@
 
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { validateEmail } from "../../utils/auth";
+import { validateEmail } from "../../lib/auth";
 import styles from "./LoginForm.module.css";
 
 interface LoginFormProps {
