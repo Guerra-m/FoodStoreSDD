@@ -3,12 +3,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
-import { AuthProvider } from './features/auth/context/AuthContext';
-import CartDrawer from './features/shopping-cart/components/CartDrawer';
-import { useCartCrossTabSync } from './features/shopping-cart/hooks/useCartCrossTabSync';
+import { AuthProvider } from './context/AuthContext';
+import CartDrawer from './components/shopping-cart/CartDrawer';
+import { useCartCrossTabSync } from './hooks/useCartCrossTabSync';
 import { useCartStore, selectCartItemsCount } from './stores/cartStore';
 import { useUIStore } from './stores/uiStore';
-import { useAuth } from './features/auth/hooks/useAuth';
+import { useAuth } from './hooks/useAuth';
 import { AppRoutes } from './router';
 
 function Navbar() {

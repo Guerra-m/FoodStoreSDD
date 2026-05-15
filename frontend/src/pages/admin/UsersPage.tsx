@@ -7,7 +7,7 @@ import {
   deleteUser,
   restoreUser,
 } from '../../api/admin';
-import type { UserAdmin } from '../../features/admin/types';
+import type { UserAdmin } from '../../types/admin';
 import { SkeletonTable } from '../../components/SkeletonTable';
 
 const ALL_ROLES = ['Cliente', 'Admin', 'Delivery'];

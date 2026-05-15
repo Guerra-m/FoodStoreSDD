@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CartItem, CartItemId, AddToCartParams, CartState, CartActions } from '../features/shopping-cart/types';
-import { CART_STORAGE_KEY, CART_STORAGE_VERSION } from '../features/shopping-cart/types';
+import type { CartItem, CartItemId, AddToCartParams, CartState, CartActions } from '../types/shopping-cart';
+import { CART_STORAGE_KEY, CART_STORAGE_VERSION } from '../types/shopping-cart';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

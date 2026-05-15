@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useCartStore } from '../../../stores/cartStore';
-import { CART_STORAGE_KEY } from '../types';
+import { useCartStore } from '../stores/cartStore';
+import { CART_STORAGE_KEY } from '../types/shopping-cart';
 
 /**
  * Hook que sincroniza el carrito entre pestañas del navegador.

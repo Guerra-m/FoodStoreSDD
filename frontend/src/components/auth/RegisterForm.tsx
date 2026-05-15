@@ -4,8 +4,8 @@
  */
 
 import React, { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { validateEmail, validatePassword } from "../utils";
+import { useAuth } from "../../hooks/useAuth";
+import { validateEmail, validatePassword } from "../../utils/auth";
 import styles from "./RegisterForm.module.css";
 
 interface RegisterFormProps {

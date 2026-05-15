@@ -4,14 +4,14 @@
  */
 
 import React, { createContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { AuthContextType, User } from "../types";
+import { AuthContextType, User } from "../types/auth";
 import {
   loginUser,
   registerUser,
   logoutUser,
   getCurrentUser,
   refreshAccessToken,
-} from "../services/authApi";
+} from "../api/authApi";
 import {
   saveTokens,
   getTokens,
@@ -19,8 +19,8 @@ import {
   getAccessToken,
   getRefreshToken,
   isTokenExpired,
-} from "../utils";
-import { useAuthStore } from "../../../stores/authStore";
+} from "../utils/auth";
+import { useAuthStore } from "../stores/authStore";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

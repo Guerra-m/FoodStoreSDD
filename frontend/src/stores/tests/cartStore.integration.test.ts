@@ -1,10 +1,10 @@
 /**
  * Tests de integración para el flujo completo del carrito.
- * Ejecutar con: npx tsx src/features/shopping-cart/tests/cartStore.integration.test.ts
+ * Ejecutar con: npx tsx src/stores/tests/cartStore.integration.test.ts
  * O desde la consola del navegador en desarrollo.
  */
 
-import { useCartStore, selectCartTotal, selectCartItemsCount } from '../../../stores/cartStore';
+import { useCartStore, selectCartTotal, selectCartItemsCount } from '../cartStore';
 
 console.log('=== CART STORE INTEGRATION TESTS ===\n');
 
