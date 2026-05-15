@@ -1,0 +1,152 @@
+2026-05-15 12:15:25,251 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:15:25,252 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("usuarios_roles")
+2026-05-15 12:15:25,253 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,254 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("role")
+2026-05-15 12:15:25,255 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,256 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("usuario")
+2026-05-15 12:15:25,257 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,258 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("refresh_token")
+2026-05-15 12:15:25,259 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,260 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("categoria")
+2026-05-15 12:15:25,261 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,262 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("ingrediente")
+2026-05-15 12:15:25,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,263 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("producto_categorias")
+2026-05-15 12:15:25,264 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,264 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("producto_ingredientes")
+2026-05-15 12:15:25,264 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,265 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("producto")
+2026-05-15 12:15:25,265 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,266 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("direccion")
+2026-05-15 12:15:25,267 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,268 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pedido")
+2026-05-15 12:15:25,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,270 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pedido_item")
+2026-05-15 12:15:25,270 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,271 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pedido_historial")
+2026-05-15 12:15:25,272 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,273 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pago")
+2026-05-15 12:15:25,274 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-15 12:15:25,275 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:61425 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61425 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61425 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61425 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50190 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50190 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50190 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55548 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+2026-05-15 12:23:40,310 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:23:40,366 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT producto.id AS id, producto.nombre AS nombre, producto.descripcion AS descripcion, producto.price_in_cents AS price_in_cents, producto.images AS images, producto.stock AS stock, producto.is_active AS is_active, producto.creado_en AS creado_en, producto.actualizado_en AS actualizado_en, producto.eliminado_en AS eliminado_en 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL) AS anon_1
+2026-05-15 12:23:40,367 INFO sqlalchemy.engine.Engine [generated in 0.00064s] ()
+2026-05-15 12:23:40,370 INFO sqlalchemy.engine.Engine SELECT producto.id, producto.nombre, producto.descripcion, producto.price_in_cents, producto.images, producto.stock, producto.is_active, producto.creado_en, producto.actualizado_en, producto.eliminado_en 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL ORDER BY producto.nombre
+ LIMIT ? OFFSET ?
+2026-05-15 12:23:40,370 INFO sqlalchemy.engine.Engine [generated in 0.00074s] (20, 0)
+2026-05-15 12:23:40,379 INFO sqlalchemy.engine.Engine SELECT producto_1.id AS producto_1_id, categoria.id AS categoria_id, categoria.nombre AS categoria_nombre, categoria.padre_id AS categoria_padre_id, categoria.posicion AS categoria_posicion, categoria.creado_en AS categoria_creado_en, categoria.actualizado_en AS categoria_actualizado_en, categoria.eliminado_en AS categoria_eliminado_en 
+FROM producto AS producto_1 JOIN producto_categorias AS producto_categorias_1 ON producto_1.id = producto_categorias_1.producto_id JOIN categoria ON categoria.id = producto_categorias_1.categoria_id 
+WHERE producto_1.id IN (?)
+2026-05-15 12:23:40,380 INFO sqlalchemy.engine.Engine [generated in 0.00072s] (1,)
+2026-05-15 12:23:40,386 INFO sqlalchemy.engine.Engine SELECT producto_ingredientes.producto_id AS producto_ingredientes_producto_id, producto_ingredientes.ingrediente_id AS producto_ingredientes_ingrediente_id, producto_ingredientes.cantidad AS producto_ingredientes_cantidad 
+FROM producto_ingredientes 
+WHERE producto_ingredientes.producto_id IN (?)
+2026-05-15 12:23:40,386 INFO sqlalchemy.engine.Engine [generated in 0.00069s] (1,)
+2026-05-15 12:23:40,388 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:55548 - "GET /api/v1/products/public?page=1&per_page=20 HTTP/1.1" 200 OK
+2026-05-15 12:23:40,392 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:23:40,395 INFO sqlalchemy.engine.Engine SELECT categoria.id, categoria.nombre, categoria.padre_id, categoria.posicion, categoria.creado_en, categoria.actualizado_en, categoria.eliminado_en 
+FROM categoria 
+WHERE categoria.padre_id IS NULL AND categoria.eliminado_en IS NULL ORDER BY categoria.posicion, categoria.nombre
+2026-05-15 12:23:40,396 INFO sqlalchemy.engine.Engine [generated in 0.00061s] ()
+2026-05-15 12:23:40,400 INFO sqlalchemy.engine.Engine SELECT count(producto.id) AS count_1 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL AND producto.id IN (SELECT producto_categorias.producto_id 
+FROM producto_categorias 
+WHERE producto_categorias.categoria_id = ?)
+2026-05-15 12:23:40,400 INFO sqlalchemy.engine.Engine [generated in 0.00064s] (1,)
+2026-05-15 12:23:40,402 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:60486 - "GET /api/v1/categorias HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55548 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55548 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55548 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55548 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53348 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+2026-05-15 12:25:04,824 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:25:04,826 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT producto.id AS id, producto.nombre AS nombre, producto.descripcion AS descripcion, producto.price_in_cents AS price_in_cents, producto.images AS images, producto.stock AS stock, producto.is_active AS is_active, producto.creado_en AS creado_en, producto.actualizado_en AS actualizado_en, producto.eliminado_en AS eliminado_en 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL) AS anon_1
+2026-05-15 12:25:04,826 INFO sqlalchemy.engine.Engine [cached since 84.46s ago] ()
+2026-05-15 12:25:04,829 INFO sqlalchemy.engine.Engine SELECT producto.id, producto.nombre, producto.descripcion, producto.price_in_cents, producto.images, producto.stock, producto.is_active, producto.creado_en, producto.actualizado_en, producto.eliminado_en 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL ORDER BY producto.nombre
+ LIMIT ? OFFSET ?
+2026-05-15 12:25:04,830 INFO sqlalchemy.engine.Engine [generated in 0.00065s] (20, 0)
+2026-05-15 12:25:04,833 INFO sqlalchemy.engine.Engine SELECT producto_1.id AS producto_1_id, categoria.id AS categoria_id, categoria.nombre AS categoria_nombre, categoria.padre_id AS categoria_padre_id, categoria.posicion AS categoria_posicion, categoria.creado_en AS categoria_creado_en, categoria.actualizado_en AS categoria_actualizado_en, categoria.eliminado_en AS categoria_eliminado_en 
+FROM producto AS producto_1 JOIN producto_categorias AS producto_categorias_1 ON producto_1.id = producto_categorias_1.producto_id JOIN categoria ON categoria.id = producto_categorias_1.categoria_id 
+WHERE producto_1.id IN (?)
+2026-05-15 12:25:04,833 INFO sqlalchemy.engine.Engine [cached since 84.45s ago] (1,)
+2026-05-15 12:25:04,837 INFO sqlalchemy.engine.Engine SELECT producto_ingredientes.producto_id AS producto_ingredientes_producto_id, producto_ingredientes.ingrediente_id AS producto_ingredientes_ingrediente_id, producto_ingredientes.cantidad AS producto_ingredientes_cantidad 
+FROM producto_ingredientes 
+WHERE producto_ingredientes.producto_id IN (?)
+2026-05-15 12:25:04,838 INFO sqlalchemy.engine.Engine [cached since 84.45s ago] (1,)
+2026-05-15 12:25:04,840 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:52489 - "GET /api/v1/products/public?page=1&per_page=20 HTTP/1.1" 200 OK
+2026-05-15 12:25:04,842 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:25:04,843 INFO sqlalchemy.engine.Engine SELECT categoria.id, categoria.nombre, categoria.padre_id, categoria.posicion, categoria.creado_en, categoria.actualizado_en, categoria.eliminado_en 
+FROM categoria 
+WHERE categoria.padre_id IS NULL AND categoria.eliminado_en IS NULL ORDER BY categoria.posicion, categoria.nombre
+2026-05-15 12:25:04,844 INFO sqlalchemy.engine.Engine [cached since 84.45s ago] ()
+2026-05-15 12:25:04,847 INFO sqlalchemy.engine.Engine SELECT count(producto.id) AS count_1 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL AND producto.id IN (SELECT producto_categorias.producto_id 
+FROM producto_categorias 
+WHERE producto_categorias.categoria_id = ?)
+2026-05-15 12:25:04,848 INFO sqlalchemy.engine.Engine [cached since 84.45s ago] (1,)
+2026-05-15 12:25:04,850 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:53729 - "GET /api/v1/categorias HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+2026-05-15 12:25:15,796 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:25:15,797 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM (SELECT producto.id AS id, producto.nombre AS nombre, producto.descripcion AS descripcion, producto.price_in_cents AS price_in_cents, producto.images AS images, producto.stock AS stock, producto.is_active AS is_active, producto.creado_en AS creado_en, producto.actualizado_en AS actualizado_en, producto.eliminado_en AS eliminado_en 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL) AS anon_1
+2026-05-15 12:25:15,798 INFO sqlalchemy.engine.Engine [cached since 95.43s ago] ()
+2026-05-15 12:25:15,799 INFO sqlalchemy.engine.Engine SELECT producto.id, producto.nombre, producto.descripcion, producto.price_in_cents, producto.images, producto.stock, producto.is_active, producto.creado_en, producto.actualizado_en, producto.eliminado_en 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL ORDER BY producto.nombre
+ LIMIT ? OFFSET ?
+2026-05-15 12:25:15,800 INFO sqlalchemy.engine.Engine [cached since 10.97s ago] (20, 0)
+2026-05-15 12:25:15,802 INFO sqlalchemy.engine.Engine SELECT producto_1.id AS producto_1_id, categoria.id AS categoria_id, categoria.nombre AS categoria_nombre, categoria.padre_id AS categoria_padre_id, categoria.posicion AS categoria_posicion, categoria.creado_en AS categoria_creado_en, categoria.actualizado_en AS categoria_actualizado_en, categoria.eliminado_en AS categoria_eliminado_en 
+FROM producto AS producto_1 JOIN producto_categorias AS producto_categorias_1 ON producto_1.id = producto_categorias_1.producto_id JOIN categoria ON categoria.id = producto_categorias_1.categoria_id 
+WHERE producto_1.id IN (?)
+2026-05-15 12:25:15,803 INFO sqlalchemy.engine.Engine [cached since 95.42s ago] (1,)
+2026-05-15 12:25:15,805 INFO sqlalchemy.engine.Engine SELECT producto_ingredientes.producto_id AS producto_ingredientes_producto_id, producto_ingredientes.ingrediente_id AS producto_ingredientes_ingrediente_id, producto_ingredientes.cantidad AS producto_ingredientes_cantidad 
+FROM producto_ingredientes 
+WHERE producto_ingredientes.producto_id IN (?)
+2026-05-15 12:25:15,805 INFO sqlalchemy.engine.Engine [cached since 95.42s ago] (1,)
+2026-05-15 12:25:15,807 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:62851 - "GET /api/v1/products/public?page=1&per_page=20 HTTP/1.1" 200 OK
+2026-05-15 12:25:15,810 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-15 12:25:15,811 INFO sqlalchemy.engine.Engine SELECT categoria.id, categoria.nombre, categoria.padre_id, categoria.posicion, categoria.creado_en, categoria.actualizado_en, categoria.eliminado_en 
+FROM categoria 
+WHERE categoria.padre_id IS NULL AND categoria.eliminado_en IS NULL ORDER BY categoria.posicion, categoria.nombre
+2026-05-15 12:25:15,811 INFO sqlalchemy.engine.Engine [cached since 95.42s ago] ()
+2026-05-15 12:25:15,813 INFO sqlalchemy.engine.Engine SELECT count(producto.id) AS count_1 
+FROM producto 
+WHERE producto.is_active = 1 AND producto.eliminado_en IS NULL AND producto.id IN (SELECT producto_categorias.producto_id 
+FROM producto_categorias 
+WHERE producto_categorias.categoria_id = ?)
+2026-05-15 12:25:15,814 INFO sqlalchemy.engine.Engine [cached since 95.41s ago] (1,)
+2026-05-15 12:25:15,814 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     127.0.0.1:53729 - "GET /api/v1/categorias HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53729 - "GET /api/v1/clientes/direcciones HTTP/1.1" 401 Unauthorized
