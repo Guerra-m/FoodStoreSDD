@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../auth/hooks/useAuth';
-import { useCartStore, selectCartItemsCount, selectCartTotal } from '../../../stores/cartStore';
-import { usePaymentStore } from '../../../stores/paymentStore';
-import { useUIStore } from '../../../stores/uiStore';
-import { useDirecciones } from '../../../hooks/useDirecciones';
-import { useCreateOrder } from '../../../hooks/useOrders';
-import { useCreatePayment, usePagoByPedido } from '../../../hooks/usePago';
-import { formatPrice } from '../../../api/orders';
-import PaymentForm from '../../../components/PaymentForm';
+import { useAuth } from '../../hooks/useAuth';
+import { useCartStore, selectCartItemsCount, selectCartTotal } from '../../stores/cartStore';
+import { usePaymentStore } from '../../stores/paymentStore';
+import { useUIStore } from '../../stores/uiStore';
+import { useDirecciones } from '../../hooks/useDirecciones';
+import { useCreateOrder } from '../../hooks/useOrders';
+import { useCreatePayment, usePagoByPedido } from '../../hooks/usePago';
+import { formatPrice } from '../../api/orders';
+import PaymentForm from '../../components/PaymentForm';
 import CartItemCard from './CartItemCard';
 import CartSummary from './CartSummary';
 

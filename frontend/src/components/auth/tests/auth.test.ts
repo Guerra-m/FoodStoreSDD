@@ -3,7 +3,7 @@
  * Run with: npm test (or manually check console outputs)
  */
 
-import { getTokens, clearTokens, saveTokens, isTokenExpired, getAccessToken, getRefreshToken, validateEmail, validatePassword } from '../utils';
+import { getTokens, clearTokens, saveTokens, isTokenExpired, getAccessToken, getRefreshToken, validateEmail, validatePassword } from '../../../utils/auth';
 
 console.log("=== FRONTEND AUTHENTICATION TESTS ===\n");
 

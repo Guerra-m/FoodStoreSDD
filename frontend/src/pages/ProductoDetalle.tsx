@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { usePublicProductById } from '../hooks/useProducts';
-import AddToCartButton from '../features/shopping-cart/components/AddToCartButton';
-import type { IngredientOption } from '../features/shopping-cart/components/AddToCartButton';
+import AddToCartButton from '../components/shopping-cart/AddToCartButton';
+import type { IngredientOption } from '../components/shopping-cart/AddToCartButton';
 import { SkeletonDetail } from '../components/SkeletonDetail';
 
 export default function ProductoDetalle() {

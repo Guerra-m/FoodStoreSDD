@@ -10,7 +10,7 @@ import type {
   AdminOrderListResponse,
   AdminOrderDetail,
   UpdateOrderStatusRequest,
-} from '../features/admin/types';
+} from '../types/admin';
 
 // ─── Dashboard ───────────────────────────────────────────────────────────────
 

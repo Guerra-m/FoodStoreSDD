@@ -1,5 +1,5 @@
-import type { CartItem } from '../types';
-import { selectItemSubtotal } from '../../../stores/cartStore';
+import type { CartItem } from '../../types/shopping-cart';
+import { selectItemSubtotal } from '../../stores/cartStore';
 
 const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 

@@ -2,7 +2,7 @@
  * Verification tests for frontend security features (US-075, US-076).
  * Cubre tasks 3.3 y 3.4 del change auth-security-enhancements.
  *
- * Ejecución: npx tsx src/features/auth/tests/security-verify.test.ts
+ * Ejecución: npx tsx src/components/auth/tests/security-verify.test.ts
  */
 
 // ============================================================

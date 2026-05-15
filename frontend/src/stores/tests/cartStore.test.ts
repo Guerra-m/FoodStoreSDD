@@ -1,9 +1,9 @@
 /**
  * Tests unitarios para el carrito de compras.
- * Ejecutar con: npx tsx src/features/shopping-cart/tests/cartStore.test.ts
+ * Ejecutar con: npx tsx src/stores/tests/cartStore.test.ts
  * O desde la consola del navegador en desarrollo.
  *
- * Sigue el mismo patrón que los tests existentes en features/auth/tests/.
+ * Sigue el mismo patrón que los tests existentes en components/auth/tests/.
  */
 
 // ─── Selectors (funciones puras, no requieren store) ─────────────────────────
@@ -12,8 +12,8 @@ import {
   selectCartTotal,
   selectCartItemsCount,
   selectItemSubtotal,
-} from '../../../stores/cartStore';
-import type { CartItem } from '../types';
+} from '../cartStore';
+import type { CartItem } from '../../types/shopping-cart';
 
 console.log('=== CART STORE TESTS ===\n');
 
