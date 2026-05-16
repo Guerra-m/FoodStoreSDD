@@ -71,20 +71,20 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const tokens = await customerApi.refresh(refreshToken);
+        // El nuevo /auth/refresh devuelve user + tokens en una sola llamada
+        const loginResponse = await customerApi.refresh(refreshToken);
 
         // Guardar nuevos tokens en sessionStorage
-        saveTokens(tokens.access_token, tokens.refresh_token);
+        saveTokens(loginResponse.access_token, loginResponse.refresh_token);
 
-        // Obtener perfil actualizado del usuario
-        const currentUser = await customerApi.getProfile();
-        useAuthStore.getState().setAuth(tokens.access_token, currentUser);
+        // Actualizar auth store con usuario y token
+        useAuthStore.getState().setAuth(loginResponse.access_token, loginResponse.user);
 
         // Procesar cola de requests pendientes
-        processQueue(null, tokens.access_token);
+        processQueue(null, loginResponse.access_token);
 
         // Reintentar request original con nuevo token
-        originalRequest.headers.Authorization = `Bearer ${tokens.access_token}`;
+        originalRequest.headers.Authorization = `Bearer ${loginResponse.access_token}`;
         return api(originalRequest);
       } catch (refreshError) {
         // Refresh falló → logout y limpiar cola

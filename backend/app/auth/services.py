@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from typing import Optional, List
 from sqlmodel import Session, select
 from app.auth.models import User, RefreshToken
@@ -119,6 +119,9 @@ class AuthService:
             email=new_user.email,
             nombre=new_user.nombre,
             roles=user_roles,
+            telefono=new_user.telefono,
+            foto_url=new_user.foto_url,
+            fecha_nacimiento=new_user.fecha_nacimiento,
             creado_en=new_user.creado_en
         )
 
@@ -178,6 +181,9 @@ class AuthService:
             email=user.email,
             nombre=user.nombre,
             roles=user_roles,
+            telefono=user.telefono,
+            foto_url=user.foto_url,
+            fecha_nacimiento=user.fecha_nacimiento,
             creado_en=user.creado_en
         )
         
@@ -285,6 +291,9 @@ class AuthService:
             email=user.email,
             nombre=user.nombre,
             roles=user_roles,
+            telefono=user.telefono,
+            foto_url=user.foto_url,
+            fecha_nacimiento=user.fecha_nacimiento,
             creado_en=user.creado_en
         )
         
@@ -389,5 +398,63 @@ class AuthService:
             "email": user.email,
             "nombre": user.nombre,
             "roles": roles,
+            "telefono": user.telefono,
+            "foto_url": user.foto_url,
+            "fecha_nacimiento": user.fecha_nacimiento,
             "creado_en": user.creado_en
         }
+    
+    def update_profile(self, user_id: int, nombre: Optional[str] = None, telefono: Optional[str] = None, foto_url: Optional[str] = None, fecha_nacimiento: Optional[date] = None) -> UserResponse:
+        """
+        Actualiza el perfil del usuario.
+        
+        Args:
+            user_id: ID del usuario
+            nombre: Nuevo nombre (opcional)
+            telefono: Nuevo teléfono (opcional)
+            foto_url: Nueva URL de foto (opcional)
+            fecha_nacimiento: Nueva fecha de nacimiento (opcional)
+            
+        Returns:
+            UserResponse con datos actualizados
+            
+        Raises:
+            HTTPException 404: Si usuario no encontrado
+        """
+        user = self.session.get(User, user_id)
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuario no encontrado"
+            )
+        
+        # Actualizar solo campos proporcionados
+        if nombre is not None:
+            user.nombre = nombre
+        if telefono is not None:
+            user.telefono = telefono
+        if foto_url is not None:
+            user.foto_url = foto_url
+        if fecha_nacimiento is not None:
+            user.fecha_nacimiento = fecha_nacimiento
+        
+        user.actualizado_en = datetime.utcnow()
+        
+        self.session.add(user)
+        self.session.commit()
+        self.session.refresh(user)
+        
+        # Obtener roles actuales
+        user_roles = self._get_user_roles(user.id)
+        
+        return UserResponse(
+            id=user.id,
+            email=user.email,
+            nombre=user.nombre,
+            roles=user_roles,
+            telefono=user.telefono,
+            foto_url=user.foto_url,
+            fecha_nacimiento=user.fecha_nacimiento,
+            creado_en=user.creado_en
+        )

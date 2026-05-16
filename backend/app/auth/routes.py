@@ -8,6 +8,7 @@ from app.auth.schemas import (
     LoginRequest,
     RefreshRequest,
     LogoutRequest,
+    ProfileUpdateRequest,
     UserResponse,
     LoginResponse,
 )
@@ -123,3 +124,33 @@ def get_me(
         401: Token inválido o expirado
     """
     return current_user
+
+
+@router.patch("/me", response_model=UserResponse)
+def update_me(
+    request: ProfileUpdateRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+    current_user: UserResponse = Depends(get_current_user)
+) -> UserResponse:
+    """
+    Actualiza el perfil del usuario autenticado.
+    
+    Args:
+        nombre: Nuevo nombre (opcional)
+        telefono: Nuevo teléfono (opcional)
+        foto_url: Nueva URL de foto (opcional)
+        fecha_nacimiento: Nueva fecha de nacimiento (opcional)
+        
+    Returns:
+        UserResponse con datos actualizados
+        
+    Raises:
+        404: Usuario no encontrado
+    """
+    return auth_service.update_profile(
+        user_id=current_user.id,
+        nombre=request.nombre,
+        telefono=request.telefono,
+        foto_url=request.foto_url,
+        fecha_nacimiento=request.fecha_nacimiento
+    )

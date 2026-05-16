@@ -1,6 +1,6 @@
 /**
  * Authentication Context and Provider
- * Gestiona el estado global de autenticación usando el sistema nuevo (/api/v1/auth/*).
+ * Gestiona el estado global de autenticación usando el sistema nuevo (/auth/*).
  * Los access tokens se persisten en zustand (localStorage), los refresh tokens en sessionStorage.
  */
 
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [clearRefreshTimeout]);
 
   // ──────────────────────────────────────────
-  // Refresca el token (declarado antes de scheduleTokenRefresh por si se invoca en el timeout)
+  // Refresca el token
   // ──────────────────────────────────────────
   const handleRefreshToken = useCallback(async () => {
     try {
@@ -83,24 +83,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error("No refresh token available");
       }
 
-      // 1. Refresh → obtiene nuevos tokens
-      const tokens = await customerApi.refresh(refreshToken);
-      saveTokens(tokens.access_token, tokens.refresh_token);
-
-      // 2. Obtener perfil actualizado
-      await fetchAndSetUser(tokens.access_token);
+      // El nuevo /auth/refresh devuelve user + tokens
+      const loginResponse = await customerApi.refresh(refreshToken);
+      saveTokens(loginResponse.access_token, loginResponse.refresh_token);
+      setUser(loginResponse.user);
+      useAuthStore.getState().setAuth(loginResponse.access_token, loginResponse.user);
+      scheduleTokenRefresh(loginResponse.access_token);
     } catch (err) {
       clearAllAuth();
       const errorMessage = err instanceof Error ? err.message : "Token refresh fallido";
       setError(errorMessage);
       console.error("Token refresh failed:", err);
     }
-  }, [clearAllAuth]);
+  }, [clearAllAuth, scheduleTokenRefresh]);
 
   // ──────────────────────────────────────────
-  // Obtiene perfil + actualiza stores
+  // Setea usuario desde token (restore session)
   // ──────────────────────────────────────────
-  const fetchAndSetUser = useCallback(async (accessToken: string) => {
+  const setUserFromToken = useCallback(async (accessToken: string) => {
     const currentUser = await customerApi.getCurrentUser();
     setUser(currentUser);
     useAuthStore.getState().setAuth(accessToken, currentUser);
@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return;
         }
 
-        await fetchAndSetUser(accessToken);
+        await setUserFromToken(accessToken);
       } catch (err) {
         console.error("Error restoring session:", err);
         clearAllAuth();
@@ -162,11 +162,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(true);
         setError(null);
 
-        const tokens = await customerApi.login(email, password);
-        saveTokens(tokens.access_token, tokens.refresh_token);
-
-        const currentUser = await fetchAndSetUser(tokens.access_token);
-        setUser(currentUser);
+        // El nuevo /auth/login devuelve user + tokens en una sola llamada
+        const loginResponse = await customerApi.login(email, password);
+        saveTokens(loginResponse.access_token, loginResponse.refresh_token);
+        setUser(loginResponse.user);
+        useAuthStore.getState().setAuth(loginResponse.access_token, loginResponse.user);
+        scheduleTokenRefresh(loginResponse.access_token);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Login fallido";
         setError(errorMessage);
@@ -177,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(false);
       }
     },
-    [fetchAndSetUser]
+    [scheduleTokenRefresh]
   );
 
   // ──────────────────────────────────────────
@@ -189,8 +190,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(true);
         setError(null);
 
-        // Register devuelve los datos del usuario, pero igual hacemos login
+        // El nuevo /auth/register devuelve el usuario creado
         await customerApi.register(nombre, email, password);
+        // Loguear automáticamente después de registrar
         await login(email, password);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Registro fallido";

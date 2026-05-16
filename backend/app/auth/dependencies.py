@@ -17,7 +17,7 @@ def get_auth_service(session: Session = Depends(get_session)) -> AuthService:
     """
     return AuthService(
         session=session,
-        secret_key=settings.JWT_SECRET_KEY,
+        secret_key=settings.SECRET_KEY,
         access_token_expire_minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
         refresh_token_expire_days=settings.REFRESH_TOKEN_EXPIRE_DAYS
     )
@@ -53,7 +53,10 @@ def get_current_user(
         email=user_data["email"],
         nombre=user_data["nombre"],
         roles=user_data.get("roles", []),
-        creado_en=user_data.get("creado_en")  # Este campo debe estar en el dict
+        telefono=user_data.get("telefono"),
+        foto_url=user_data.get("foto_url"),
+        fecha_nacimiento=user_data.get("fecha_nacimiento"),
+        creado_en=user_data.get("creado_en")
     )
 
 

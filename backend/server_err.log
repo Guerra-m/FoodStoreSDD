@@ -414,3 +414,20 @@ Traceback (most recent call last):
     version = _bcrypt.__about__.__version__
               ^^^^^^^^^^^^^^^^^
 AttributeError: module 'bcrypt' has no attribute '__about__'
+WARNING:  WatchFiles detected changes in 'app\auth\dependencies.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14524]
+WARNING:  WatchFiles detected changes in 'app\auth\models.py', 'app\auth\dependencies.py', 'app\auth\services.py', 'app\auth\schemas.py', 'app\auth\routes.py'. Reloading...
+INFO:     Started server process [20312]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\sqlmodel\orm\session.py:127: SAWarning: SELECT statement has a cartesian product between FROM element(s) "usuario" and FROM element "usuarios_roles_1".  Apply join condition(s) between each element to resolve.
+  return super().execute(

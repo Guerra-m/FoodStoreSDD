@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List
 
 
@@ -67,6 +67,9 @@ class UserResponse(BaseModel):
     email: str
     nombre: str
     roles: List[str] = ["Cliente"]  # Lista de nombres de roles asignados
+    telefono: Optional[str] = None
+    foto_url: Optional[str] = None
+    fecha_nacimiento: Optional[date] = None
     creado_en: datetime
     
     class Config:
@@ -77,6 +80,9 @@ class UserResponse(BaseModel):
                 "email": "usuario@example.com",
                 "nombre": "Juan García",
                 "roles": ["Cliente"],
+                "telefono": "+54 11 5555-1234",
+                "foto_url": None,
+                "fecha_nacimiento": "1990-05-15",
                 "creado_en": "2024-05-10T12:00:00Z"
             }
         }
@@ -122,6 +128,24 @@ class LoginResponse(BaseModel):
                 "refresh_token": "opaque_token_base64_string",
                 "token_type": "bearer",
                 "expires_in": 900
+            }
+        }
+
+
+class ProfileUpdateRequest(BaseModel):
+    """Schema para actualizar perfil de usuario."""
+    nombre: Optional[str] = Field(None, min_length=1, max_length=255)
+    telefono: Optional[str] = None
+    foto_url: Optional[str] = None
+    fecha_nacimiento: Optional[date] = None
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "nombre": "Juan García",
+                "telefono": "+54 11 5555-1234",
+                "foto_url": "https://ejemplo.com/foto.jpg",
+                "fecha_nacimiento": "1990-05-15"
             }
         }
 

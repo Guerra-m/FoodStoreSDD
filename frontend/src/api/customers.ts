@@ -1,5 +1,5 @@
 import api from './axios';
-import type { User } from '../types/auth';
+import type { User, AuthToken, LoginResponse } from '../types/auth';
 
 export interface ClientePerfilUpdate {
   nombre?: string;
@@ -8,39 +8,33 @@ export interface ClientePerfilUpdate {
   fecha_nacimiento?: string | null;
 }
 
-export interface AuthTokens {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-}
-
 export const customerApi = {
-  /** Inicia sesión y devuelve tokens (sin datos de usuario) */
-  login: async (email: string, password: string): Promise<AuthTokens> => {
-    const response = await api.post('/api/v1/auth/login', { email, password });
+  /** Inicia sesión y devuelve tokens + datos del usuario */
+  login: async (email: string, password: string): Promise<LoginResponse> => {
+    const response = await api.post('/auth/login', { email, password });
     return response.data;
   },
 
   /** Registra un nuevo usuario y devuelve sus datos */
   register: async (nombre: string, email: string, password: string, telefono?: string): Promise<User> => {
-    const response = await api.post('/api/v1/auth/register', { nombre, email, password, telefono });
+    const response = await api.post('/auth/register', { nombre, email, password, telefono });
     return response.data;
   },
 
   /** Refresca el access token usando el refresh token */
-  refresh: async (refreshToken: string): Promise<AuthTokens> => {
-    const response = await api.post('/api/v1/auth/refresh', { refresh_token: refreshToken });
+  refresh: async (refreshToken: string): Promise<LoginResponse> => {
+    const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
     return response.data;
   },
 
   /** Cierra sesión revocando el refresh token */
   logout: async (refreshToken: string): Promise<void> => {
-    await api.post('/api/v1/auth/logout', { refresh_token: refreshToken });
+    await api.post('/auth/logout', { refresh_token: refreshToken });
   },
 
   /** Obtiene el perfil completo del usuario autenticado */
   getProfile: async (): Promise<User> => {
-    const response = await api.get('/api/v1/auth/me');
+    const response = await api.get('/auth/me');
     return response.data;
   },
 
@@ -51,7 +45,7 @@ export const customerApi = {
 
   /** Actualiza el perfil del usuario autenticado */
   updateProfile: async (data: ClientePerfilUpdate): Promise<User> => {
-    const response = await api.patch('/api/v1/auth/me', data);
+    const response = await api.patch('/auth/me', data);
     return response.data;
   },
 };
