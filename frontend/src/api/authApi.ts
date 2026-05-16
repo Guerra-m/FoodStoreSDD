@@ -1,5 +1,7 @@
 /**
- * API service functions for authentication endpoints
+ * @deprecated Usar `customerApi` de `./customers` en su lugar.
+ * Este archivo usa el sistema viejo de auth (/auth/*) con fetch nativo.
+ * El nuevo sistema (/api/v1/auth/*) con axios y refresh automático está en customers.ts.
  */
 
 import {

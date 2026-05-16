@@ -3,9 +3,14 @@ from app.core.config import settings
 
 """
 Configuración de la conexión a la base de datos utilizando SQLModel.
+Soporta tanto PostgreSQL como SQLite.
 """
 
-engine = create_engine(settings.DATABASE_URL, echo=True)
+_connect_args = {}
+if settings.DATABASE_URL.startswith("sqlite"):
+    _connect_args["check_same_thread"] = False
+
+engine = create_engine(settings.DATABASE_URL, echo=True, connect_args=_connect_args)
 
 def get_session():
     """

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export function HomePage() {
   return (
     <div className="space-y-6">
@@ -11,29 +13,29 @@ export function HomePage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a
-          href="/catalog"
+        <Link
+          to="/catalog"
           className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
         >
           <h3 className="font-semibold text-gray-800 mb-1">🛍️ Catálogo</h3>
           <p className="text-sm text-gray-500">Explorá todos nuestros productos</p>
-        </a>
+        </Link>
 
-        <a
-          href="/perfil"
+        <Link
+          to="/perfil"
           className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
         >
           <h3 className="font-semibold text-gray-800 mb-1">👤 Mi Perfil</h3>
           <p className="text-sm text-gray-500">Administrá tus datos personales</p>
-        </a>
+        </Link>
 
-        <a
-          href="/mis-pedidos"
+        <Link
+          to="/mis-pedidos"
           className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
         >
           <h3 className="font-semibold text-gray-800 mb-1">📦 Mis Pedidos</h3>
           <p className="text-sm text-gray-500">Seguí el estado de tus pedidos</p>
-        </a>
+        </Link>
       </div>
     </div>
   );

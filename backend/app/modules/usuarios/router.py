@@ -73,6 +73,16 @@ async def get_me(payload: dict = Depends(get_current_user)):
 
 
 
+@router.patch("/me", response_model=UserResponse)
+async def update_me(
+    data: ClientePerfilUpdate,
+    payload: dict = Depends(get_current_user),
+):
+    """Actualiza el perfil del usuario autenticado (nombre, teléfono, foto, fecha de nacimiento)."""
+    usuario_id = int(payload.get("sub"))
+    return await cliente_service.actualizar_perfil(usuario_id, data)
+
+
 @router.put("/me/password", status_code=status.HTTP_200_OK)
 async def change_password(
     data: ChangePasswordRequest,

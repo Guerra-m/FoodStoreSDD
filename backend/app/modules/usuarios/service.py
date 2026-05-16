@@ -153,7 +153,8 @@ class AuthService:
                 )
 
             # Verificar expiración
-            if stored.expires_at < datetime.now(timezone.utc):
+            # SQLite almacena sin timezone, así que comparamos naive con naive
+            if stored.expires_at < datetime.now(timezone.utc).replace(tzinfo=None):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Refresh token expirado",

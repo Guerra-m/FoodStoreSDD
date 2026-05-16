@@ -1,23 +1,16 @@
 /**
  * Authentication Context and Provider
- * Manages global authentication state and provides auth functions
+ * Gestiona el estado global de autenticación usando el sistema nuevo (/api/v1/auth/*).
+ * Los access tokens se persisten en zustand (localStorage), los refresh tokens en sessionStorage.
  */
 
 import React, { createContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { AuthContextType, User } from "../types/auth";
-import {
-  loginUser,
-  registerUser,
-  logoutUser,
-  getCurrentUser,
-  refreshAccessToken,
-} from "../api/authApi";
+import { customerApi } from "../api/customers";
 import {
   saveTokens,
   getTokens,
   clearTokens,
-  getAccessToken,
-  getRefreshToken,
   isTokenExpired,
 } from "../lib/auth";
 import { useAuthStore } from "../stores/authStore";
@@ -34,7 +27,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
   const [refreshTimeoutId, setRefreshTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
 
-  // Limpia timeout si existe
+  // ──────────────────────────────────────────
+  // Helpers (sin dependencias circulares)
+  // ──────────────────────────────────────────
+
   const clearRefreshTimeout = useCallback(() => {
     if (refreshTimeoutId) {
       clearTimeout(refreshTimeoutId);
@@ -42,9 +38,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [refreshTimeoutId]);
 
-  /**
-   * Limpia TODO el estado de autenticación (context, store, tokens)
-   */
   const clearAllAuth = useCallback(() => {
     clearTokens();
     setUser(null);
@@ -52,57 +45,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     clearRefreshTimeout();
   }, [clearRefreshTimeout]);
 
-  // Escucha el evento auth:unauthorized disparado por axios interceptor
-  // Así cuando una API call recibe 401, AuthContext reacciona sin necesidad
-  // de recargar la página entera.
-  const handleUnauthorized = useCallback(() => {
-    clearAllAuth();
-  }, [clearAllAuth]);
-
-  useEffect(() => {
-    window.addEventListener('auth:unauthorized', handleUnauthorized);
-    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
-  }, [handleUnauthorized]);
-
-  // Intenta restaurar sesión existente al montar
-  useEffect(() => {
-    const restoreSession = async () => {
-      try {
-        const { accessToken } = getTokens();
-
-        if (!accessToken) {
-          return;
-        }
-
-        // Si token expiró, intentar refresh
-        if (isTokenExpired(accessToken)) {
-          const { refreshToken } = getTokens();
-          if (refreshToken) {
-            await handleRefreshToken();
-          } else {
-            clearTokens();
-          }
-          return;
-        }
-
-        // Token válido, obtener usuario
-        const currentUser = await getCurrentUser(accessToken);
-        setUser(currentUser);
-        useAuthStore.getState().setAuth(accessToken, currentUser);
-        scheduleTokenRefresh(accessToken);
-      } catch (err) {
-        console.error("Error restoring session:", err);
-        clearAllAuth();
-      }
-    };
-
-    restoreSession();
-  }, []);
-
-  /**
-   * Programa el refresh automático del token
-   * Se ejecuta 1 minuto antes de que expire
-   */
+  // ──────────────────────────────────────────
+  // Programa el refresh automático del token
+  // ──────────────────────────────────────────
   const scheduleTokenRefresh = useCallback((accessToken: string) => {
     clearRefreshTimeout();
 
@@ -127,21 +72,101 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [clearRefreshTimeout]);
 
-  /**
-   * Realiza el login del usuario
-   */
+  // ──────────────────────────────────────────
+  // Refresca el token (declarado antes de scheduleTokenRefresh por si se invoca en el timeout)
+  // ──────────────────────────────────────────
+  const handleRefreshToken = useCallback(async () => {
+    try {
+      const { refreshToken } = getTokens();
+
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
+      }
+
+      // 1. Refresh → obtiene nuevos tokens
+      const tokens = await customerApi.refresh(refreshToken);
+      saveTokens(tokens.access_token, tokens.refresh_token);
+
+      // 2. Obtener perfil actualizado
+      await fetchAndSetUser(tokens.access_token);
+    } catch (err) {
+      clearAllAuth();
+      const errorMessage = err instanceof Error ? err.message : "Token refresh fallido";
+      setError(errorMessage);
+      console.error("Token refresh failed:", err);
+    }
+  }, [clearAllAuth]);
+
+  // ──────────────────────────────────────────
+  // Obtiene perfil + actualiza stores
+  // ──────────────────────────────────────────
+  const fetchAndSetUser = useCallback(async (accessToken: string) => {
+    const currentUser = await customerApi.getCurrentUser();
+    setUser(currentUser);
+    useAuthStore.getState().setAuth(accessToken, currentUser);
+    scheduleTokenRefresh(accessToken);
+    return currentUser;
+  }, [scheduleTokenRefresh]);
+
+  // Escucha el evento auth:unauthorized disparado por axios interceptor
+  const handleUnauthorized = useCallback(() => {
+    clearAllAuth();
+  }, [clearAllAuth]);
+
+  useEffect(() => {
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+  }, [handleUnauthorized]);
+
+  // ──────────────────────────────────────────
+  // Restaura sesión al montar
+  // ──────────────────────────────────────────
+  useEffect(() => {
+    const restoreSession = async () => {
+      setIsLoading(true);
+      try {
+        const accessToken = useAuthStore.getState().accessToken;
+
+        if (!accessToken) {
+          return;
+        }
+
+        if (isTokenExpired(accessToken)) {
+          const { refreshToken } = getTokens();
+          if (refreshToken) {
+            await handleRefreshToken();
+          } else {
+            clearAllAuth();
+          }
+          return;
+        }
+
+        await fetchAndSetUser(accessToken);
+      } catch (err) {
+        console.error("Error restoring session:", err);
+        clearAllAuth();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    restoreSession();
+  }, []);
+
+  // ──────────────────────────────────────────
+  // Login
+  // ──────────────────────────────────────────
   const login = useCallback(
     async (email: string, password: string) => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const response = await loginUser(email, password);
+        const tokens = await customerApi.login(email, password);
+        saveTokens(tokens.access_token, tokens.refresh_token);
 
-        setUser(response.user);
-        saveTokens(response.access_token, response.refresh_token);
-        useAuthStore.getState().setAuth(response.access_token, response.user);
-        scheduleTokenRefresh(response.access_token);
+        const currentUser = await fetchAndSetUser(tokens.access_token);
+        setUser(currentUser);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Login fallido";
         setError(errorMessage);
@@ -152,21 +177,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(false);
       }
     },
-    [scheduleTokenRefresh]
+    [fetchAndSetUser]
   );
 
-  /**
-   * Registra un nuevo usuario
-   */
+  // ──────────────────────────────────────────
+  // Register
+  // ──────────────────────────────────────────
   const register = useCallback(
     async (email: string, nombre: string, password: string) => {
       try {
         setIsLoading(true);
         setError(null);
 
-        await registerUser(email, nombre, password);
-
-        // Después de registrar, auto-login
+        // Register devuelve los datos del usuario, pero igual hacemos login
+        await customerApi.register(nombre, email, password);
         await login(email, password);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Registro fallido";
@@ -179,16 +203,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [login]
   );
 
-  /**
-   * Realiza logout del usuario
-   */
+  // ──────────────────────────────────────────
+  // Logout
+  // ──────────────────────────────────────────
   const logout = useCallback(async () => {
     try {
       setIsLoading(true);
       const { refreshToken } = getTokens();
 
       if (refreshToken) {
-        await logoutUser(refreshToken);
+        await customerApi.logout(refreshToken);
       }
 
       clearTokens();
@@ -199,7 +223,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Logout fallido";
       setError(errorMessage);
-      // Aún así limpiamos el estado local aunque falle
       clearTokens();
       setUser(null);
       useAuthStore.getState().logout();
@@ -209,35 +232,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [clearRefreshTimeout]);
 
-  /**
-   * Renueva el access token usando el refresh token
-   */
-  const handleRefreshToken = useCallback(async () => {
-    try {
-      const { refreshToken } = getTokens();
-
-      if (!refreshToken) {
-        throw new Error("No refresh token available");
-      }
-
-      const response = await refreshAccessToken(refreshToken);
-
-      setUser(response.user);
-      saveTokens(response.access_token, response.refresh_token);
-      useAuthStore.getState().setAuth(response.access_token, response.user);
-      scheduleTokenRefresh(response.access_token);
-    } catch (err) {
-      // Si falla el refresh, limpiamos todo
-      clearAllAuth();
-      const errorMessage = err instanceof Error ? err.message : "Token refresh fallido";
-      setError(errorMessage);
-      console.error("Token refresh failed:", err);
-    }
-  }, [scheduleTokenRefresh, clearAllAuth]);
-
-  /**
-   * Limpia el mensaje de error
-   */
+  // ──────────────────────────────────────────
+  // Clear error
+  // ──────────────────────────────────────────
   const clearError = useCallback(() => {
     setError(null);
   }, []);
