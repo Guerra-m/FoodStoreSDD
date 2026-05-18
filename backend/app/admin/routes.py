@@ -30,7 +30,7 @@ from app.admin.services.dashboard_service import DashboardService
 from app.admin.services.user_service import UserAdminService
 from app.admin.services.order_service import OrderAdminService
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────

@@ -144,6 +144,14 @@
       "sessions": 3,
       "memories": 3,
       "prompts": 11
+    },
+    {
+      "id": "e8384b82",
+      "created_by": "Titix",
+      "created_at": "2026-05-18T13:22:09Z",
+      "sessions": 0,
+      "memories": 1,
+      "prompts": 2
     }
   ]
 }
