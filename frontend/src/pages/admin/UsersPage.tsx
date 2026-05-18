@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import {
@@ -7,12 +7,12 @@ import {
   deleteUser,
   restoreUser,
 } from '../../api/admin';
-import type { UserAdmin } from '../../types/admin';
+import type { UserAdmin, UserAdminListResponse } from '../../types/admin';
 import { SkeletonTable } from '../../components/SkeletonTable';
 
 const ALL_ROLES = ['Cliente', 'Admin', 'Delivery'];
 
-// ─── Edit Roles Modal ────────────────────────────────────────────────────────
+/* ─── Edit Roles Modal ──────────────────────────────────────────────────── */
 
 function EditRolesModal({
   user,
@@ -24,50 +24,96 @@ function EditRolesModal({
   onSave: (roles: string[]) => Promise<void>;
 }) {
   const [selectedRoles, setSelectedRoles] = useState<string[]>([...user.roles]);
+  const [saving, setSaving] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  /* Close on Escape key */
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
 
   const toggleRole = (role: string) => {
     setSelectedRoles((prev) =>
-      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
+      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role],
     );
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(selectedRoles);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]"
-      onClick={onClose}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-white rounded-lg p-6 min-w-[320px] shadow-lg"
-        onClick={(e) => e.stopPropagation()}
+        ref={modalRef}
+        className="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="roles-modal-title"
       >
-        <h3 className="m-0 mb-4 text-gray-900">Editar Roles: {user.nombre}</h3>
-
-        {ALL_ROLES.map((role) => (
-          <label
-            key={role}
-            className="flex items-center gap-2 py-1.5 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={selectedRoles.includes(role)}
-              onChange={() => toggleRole(role)}
-            />
-            {role}
-          </label>
-        ))}
-
-        <div className="flex gap-2 justify-end mt-6">
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h3 id="roles-modal-title" className="text-lg font-semibold text-gray-900">
+            Editar Roles: {user.nombre}
+          </h3>
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm"
+            className="p-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+            aria-label="Cerrar"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal body */}
+        <div className="px-6 py-4">
+          <p className="text-sm text-gray-500 mb-3">Seleccioná los roles del usuario:</p>
+          <div className="space-y-2">
+            {ALL_ROLES.map((role) => (
+              <label
+                key={role}
+                className="flex items-center gap-2.5 py-1.5 cursor-pointer hover:bg-gray-50 rounded px-2 -mx-2 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedRoles.includes(role)}
+                  onChange={() => toggleRole(role)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{role}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Modal footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
           >
             Cancelar
           </button>
           <button
-            onClick={() => onSave(selectedRoles)}
-            className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white cursor-pointer text-sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Guardar
+            {saving ? 'Guardando...' : 'Guardar'}
           </button>
         </div>
       </div>
@@ -75,22 +121,27 @@ function EditRolesModal({
   );
 }
 
-// ─── Role badge colors ────────────────────────────────────────────────────────
+/* ─── Role badge colors ──────────────────────────────────────────────────── */
+
+const ROLE_COLORS: Record<string, string> = {
+  Admin: 'bg-blue-100 text-blue-800',
+  Delivery: 'bg-yellow-100 text-yellow-800',
+  Cliente: 'bg-sky-100 text-sky-700',
+};
 
 function RoleBadge({ role }: { role: string }) {
-  const colors: Record<string, string> = {
-    Admin: 'bg-blue-100 text-blue-800',
-    Delivery: 'bg-yellow-100 text-yellow-800',
-    Cliente: 'bg-sky-100 text-sky-700',
-  };
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold mr-1 ${colors[role] || 'bg-gray-100 text-gray-700'}`}>
+    <span
+      className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold mr-1 ${
+        ROLE_COLORS[role] || 'bg-gray-100 text-gray-700'
+      }`}
+    >
       {role}
     </span>
   );
 }
 
-// ─── Users Row ────────────────────────────────────────────────────────────────
+/* ─── Users Row ──────────────────────────────────────────────────────────────── */
 
 function UserRow({
   user,
@@ -100,46 +151,44 @@ function UserRow({
 }: {
   user: UserAdmin;
   onEditRoles: (u: UserAdmin) => void;
-  onDelete: (id: number) => void;
+  onDelete: (u: UserAdmin) => void;
   onRestore: (id: number) => void;
 }) {
   const isDeleted = user.eliminado_en !== null;
 
   return (
-    <tr className={`border-b border-gray-100 ${isDeleted ? 'opacity-60' : ''}`}>
-      <td className="p-2">{user.nombre}</td>
-      <td className="p-2 text-gray-500 text-sm">{user.email}</td>
-      <td className="p-2">
-        {user.roles.map((role) => (
-          <RoleBadge key={role} role={role} />
-        ))}
+    <tr className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${isDeleted ? 'opacity-60' : ''}`}>
+      <td className="p-3 font-medium text-gray-900">{user.nombre}</td>
+      <td className="p-3 text-gray-500 text-sm">{user.email}</td>
+      <td className="p-3">
+        {user.roles.length > 0 ? (
+          user.roles.map((role) => <RoleBadge key={role} role={role} />)
+        ) : (
+          <span className="text-xs text-gray-400">—</span>
+        )}
       </td>
-      <td className="p-2 text-sm text-gray-500">
+      <td className="p-3 text-sm text-gray-500">
         {new Date(user.creado_en).toLocaleDateString('es-AR')}
       </td>
-      <td className="p-2">
+      <td className="p-3">
         {isDeleted ? (
           <button
             onClick={() => onRestore(user.id)}
-            className="px-2.5 py-1 border border-emerald-500 rounded-lg bg-emerald-50 text-emerald-800 cursor-pointer text-xs"
+            className="px-2.5 py-1.5 border border-emerald-500 rounded-lg bg-emerald-50 text-emerald-800 text-xs cursor-pointer hover:bg-emerald-100 transition-colors"
           >
             Restaurar
           </button>
         ) : (
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => onEditRoles(user)}
-              className="px-2.5 py-1 border border-gray-300 rounded-lg bg-white cursor-pointer text-xs"
+              className="px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white text-xs cursor-pointer hover:bg-gray-100 transition-colors"
             >
               Roles
             </button>
             <button
-              onClick={() => {
-                if (window.confirm(`¿Eliminar a "${user.nombre}"?`)) {
-                  onDelete(user.id);
-                }
-              }}
-              className="px-2.5 py-1 border border-red-300 rounded-lg bg-red-50 text-red-800 cursor-pointer text-xs"
+              onClick={() => onDelete(user)}
+              className="px-2.5 py-1.5 border border-red-300 rounded-lg bg-white text-red-600 text-xs cursor-pointer hover:bg-red-50 transition-colors"
             >
               Eliminar
             </button>
@@ -150,7 +199,7 @@ function UserRow({
   );
 }
 
-// ─── Main Users Page ──────────────────────────────────────────────────────────
+/* ─── Main Users Page ────────────────────────────────────────────────────────── */
 
 export function UsersPage() {
   const queryClient = useQueryClient();
@@ -159,9 +208,12 @@ export function UsersPage() {
   const [roleFilter, setRoleFilter] = useState('');
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [editingUser, setEditingUser] = useState<UserAdmin | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<UserAdmin | null>(null);
+
+  const queryKey: unknown[] = ['admin', 'users', page, search, roleFilter, includeDeleted];
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['admin', 'users', page, search, roleFilter, includeDeleted],
+    queryKey,
     queryFn: () =>
       listUsers({
         page,
@@ -175,9 +227,16 @@ export function UsersPage() {
   const updateRolesMutation = useMutation({
     mutationFn: ({ id, roles }: { id: number; roles: string[] }) =>
       updateUserRoles(id, { roles }),
-    onSuccess: () => {
-      toast.success('Roles actualizados');
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    onSuccess: (updated, { id }) => {
+      // Direct cache update so UI refreshes instantly
+      const currentList = queryClient.getQueryData<UserAdminListResponse>(queryKey);
+      if (currentList) {
+        queryClient.setQueryData<UserAdminListResponse>(queryKey, {
+          ...currentList,
+          users: currentList.users.map((u) => (u.id === id ? { ...u, roles: updated.roles } : u)),
+        });
+      }
+      toast.success('Roles actualizados correctamente');
       setEditingUser(null);
     },
     onError: () => toast.error('Error al actualizar roles'),
@@ -185,26 +244,50 @@ export function UsersPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteUser(id),
-    onSuccess: () => {
-      toast.success('Usuario eliminado');
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    onSuccess: (_, id) => {
+      // Direct cache update
+      const currentList = queryClient.getQueryData<UserAdminListResponse>(queryKey);
+      if (currentList) {
+        queryClient.setQueryData<UserAdminListResponse>(queryKey, {
+          ...currentList,
+          users: currentList.users.filter((u) => u.id !== id),
+          total: currentList.total - 1,
+        });
+      }
+      toast.success('Usuario eliminado correctamente');
+      setDeleteConfirm(null);
     },
     onError: () => toast.error('Error al eliminar usuario'),
   });
 
   const restoreMutation = useMutation({
     mutationFn: (id: number) => restoreUser(id),
-    onSuccess: () => {
-      toast.success('Usuario restaurado');
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    onSuccess: (updated) => {
+      // Direct cache update
+      const currentList = queryClient.getQueryData<UserAdminListResponse>(queryKey);
+      if (currentList) {
+        queryClient.setQueryData<UserAdminListResponse>(queryKey, {
+          ...currentList,
+          users: currentList.users.map((u) =>
+            u.id === updated.id ? { ...u, eliminado_en: null } : u,
+          ),
+        });
+      }
+      toast.success('Usuario restaurado correctamente');
     },
     onError: () => toast.error('Error al restaurar usuario'),
   });
 
   const totalPages = data ? Math.ceil(data.total / data.per_page) : 1;
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm) return;
+    await deleteMutation.mutateAsync(deleteConfirm.id);
+  };
+
   return (
     <div>
+      {/* Page header */}
       <h2 className="mb-4 text-gray-900 text-xl font-bold">Gestión de Usuarios</h2>
 
       {/* Filters */}
@@ -214,88 +297,115 @@ export function UsersPage() {
           placeholder="Buscar por email..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
+          className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <select
           value={roleFilter}
           onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}
-          className="px-2 py-2 border border-gray-300 rounded-lg text-sm"
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
         >
           <option value="">Todos los roles</option>
           {ALL_ROLES.map((r) => (
             <option key={r} value={r}>{r}</option>
           ))}
         </select>
-        <label className="flex items-center gap-1 text-sm cursor-pointer">
+        <label className="flex items-center gap-1.5 text-sm cursor-pointer select-none">
           <input
             type="checkbox"
             checked={includeDeleted}
             onChange={(e) => { setIncludeDeleted(e.target.checked); setPage(1); }}
+            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
-          Incluir eliminados
+          <span className="text-gray-700">Incluir eliminados</span>
         </label>
       </div>
 
-      {/* Table */}
-      {isLoading && <SkeletonTable rows={8} />}
-      {error && <div className="text-red-500">Error al cargar usuarios</div>}
-
-      {data && !data.users.length && (
-        <div className="text-gray-400 py-8 text-center">No se encontraron usuarios</div>
+      {/* ── Loading state ──────────────────────────────────────────── */}
+      {isLoading && (
+        <div aria-busy="true" aria-label="Cargando usuarios">
+          <SkeletonTable rows={8} />
+        </div>
       )}
 
-      {data && data.users.length > 0 && (
+      {/* ── Error state ────────────────────────────────────────────── */}
+      {error && (
+        <div className="text-red-500 bg-red-50 border border-red-200 rounded-lg p-4 text-sm">
+          Error al cargar usuarios. Intente nuevamente.
+        </div>
+      )}
+
+      {/* ── Empty state ────────────────────────────────────────────── */}
+      {!isLoading && !error && data && !data.users.length && (
+        <div className="text-gray-400 py-12 text-center border border-dashed border-gray-300 rounded-lg">
+          <p className="text-base">No se encontraron usuarios</p>
+          {search && (
+            <p className="text-sm mt-1">Probá con otros términos de búsqueda</p>
+          )}
+        </div>
+      )}
+
+      {/* ── Table ──────────────────────────────────────────────────── */}
+      {!isLoading && !error && data && data.users.length > 0 && (
         <>
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b-2 border-gray-200 text-gray-500 text-left">
-                <th className="p-2">Nombre</th>
-                <th className="p-2">Email</th>
-                <th className="p-2">Roles</th>
-                <th className="p-2">Registro</th>
-                <th className="p-2">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.users.map((user) => (
-                <UserRow
-                  key={user.id}
-                  user={user}
-                  onEditRoles={setEditingUser}
-                  onDelete={(id) => deleteMutation.mutate(id)}
-                  onRestore={(id) => restoreMutation.mutate(id)}
-                />
-              ))}
-            </tbody>
-          </table>
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="border-b-2 border-gray-200 text-gray-500 text-left">
+                  <th className="p-3 font-semibold">Nombre</th>
+                  <th className="p-3 font-semibold">Email</th>
+                  <th className="p-3 font-semibold">Roles</th>
+                  <th className="p-3 font-semibold">Registro</th>
+                  <th className="p-3 font-semibold w-[150px]">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.users.map((user) => (
+                  <UserRow
+                    key={user.id}
+                    user={user}
+                    onEditRoles={setEditingUser}
+                    onDelete={setDeleteConfirm}
+                    onRestore={(id) => restoreMutation.mutate(id)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Pagination */}
-          <div className="flex justify-center gap-2 mt-6 items-center">
+          <div className="flex justify-center items-center gap-3 mt-6">
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm ${
-                page <= 1 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm cursor-pointer transition-colors ${
+                page <= 1
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-100'
               }`}
             >
-              Anterior
+              ← Anterior
             </button>
             <span className="text-sm text-gray-500">
-              Página {page} de {totalPages}
+              Página <strong>{page}</strong> de <strong>{totalPages}</strong> — {data.total} usuarios
             </span>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm ${
-                page >= totalPages ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm cursor-pointer transition-colors ${
+                page >= totalPages
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-100'
               }`}
             >
-              Siguiente
+              Siguiente →
             </button>
           </div>
         </>
       )}
 
+      {/* ═══════════════════════════════════════════════════════════════════
+          MODAL: Editar Roles
+          ═══════════════════════════════════════════════════════════════════ */}
       {editingUser && (
         <EditRolesModal
           user={editingUser}
@@ -304,6 +414,48 @@ export function UsersPage() {
             await updateRolesMutation.mutateAsync({ id: editingUser.id, roles });
           }}
         />
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          MODAL: Confirmar Eliminación
+          ═══════════════════════════════════════════════════════════════════ */}
+      {deleteConfirm && (
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setDeleteConfirm(null);
+          }}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-user-modal-title"
+          >
+            <h3 id="delete-user-modal-title" className="text-lg font-semibold text-gray-900 mb-2">
+              Confirmar Eliminación
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              ¿Estás seguro de eliminar a <strong>"{deleteConfirm.nombre}"</strong>?
+              Esta acción no se puede deshacer.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={deleteMutation.isPending}
+                className="px-4 py-2 border-0 rounded-lg bg-red-600 text-white text-sm font-medium cursor-pointer hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

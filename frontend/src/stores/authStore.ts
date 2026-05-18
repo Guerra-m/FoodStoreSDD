@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { User } from '../types/auth';
 
 /**
  * Store para la gestión de autenticación.
@@ -7,8 +8,8 @@ import { persist } from 'zustand/middleware';
  */
 interface AuthState {
   accessToken: string | null;
-  user: any | null;
-  setAuth: (token: string, user: any) => void;
+  user: User | null;
+  setAuth: (token: string, user: User) => void;
   logout: () => void;
 }
 
@@ -22,8 +23,8 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'food-store-auth',
-      // Persiste únicamente el token de acceso para mayor seguridad
-      partialize: (state) => ({ accessToken: state.accessToken }),
+      // Persiste accessToken y user para que sobrevivan a recargas de página
+      partialize: (state) => ({ accessToken: state.accessToken, user: state.user }),
     }
   )
 );

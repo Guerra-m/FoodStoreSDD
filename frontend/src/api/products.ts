@@ -26,6 +26,7 @@ export interface ProductoUpdate {
   descripcion?: string;
   price_in_cents?: number;
   images?: string[];
+  stock?: number;
   is_active?: boolean;
   categoria_ids?: number[];
   ingredientes?: ProductoIngredienteUpdate[];

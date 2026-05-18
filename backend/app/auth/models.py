@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List
 
 
@@ -13,6 +13,8 @@ class User(SQLModel, table=True):
     nombre: str
     password_hash: str  # Campo de contraseña
     telefono: Optional[str] = None
+    foto_url: Optional[str] = None
+    fecha_nacimiento: Optional[date] = None
     # Timestamps
     creado_en: datetime = Field(default_factory=datetime.utcnow)
     actualizado_en: datetime = Field(default_factory=datetime.utcnow)

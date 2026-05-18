@@ -6,8 +6,13 @@ export interface User {
   id: number;
   email: string;
   nombre: string;
-  rol: string;
+  roles: string[];
+  telefono: string | null;
+  foto_url: string | null;
+  fecha_nacimiento: string | null; // ISO date string (YYYY-MM-DD)
   creado_en: string; // ISO date string
+  actualizado_en?: string; // ISO date string (opcional, nuevo auth no lo devuelve)
+  eliminado_en?: string | null; // ISO date string (opcional, solo admin)
 }
 
 export interface AuthToken {

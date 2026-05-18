@@ -35,7 +35,9 @@ export const useUpdateProduct = () => {
     mutationFn: ({ id, data }: { id: number; data: ProductoUpdate }) =>
       productApi.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', 'admin'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['products', 'public'], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ['product'], refetchType: 'all' });
     },
   });
 };
@@ -47,7 +49,8 @@ export const useUpdateStock = () => {
     mutationFn: ({ id, data }: { id: number; data: StockUpdate }) =>
       productApi.updateStock(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['products', 'admin'] });
+      queryClient.invalidateQueries({ queryKey: ['products', 'public'] });
     },
   });
 };
