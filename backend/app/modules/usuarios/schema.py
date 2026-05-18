@@ -54,6 +54,15 @@ class ClientePerfilUpdate(BaseModel):
     fecha_nacimiento: Optional[date] = None
 
 
+class LoginResponse(BaseModel):
+    """Schema completo de login con datos del usuario y tokens."""
+    user: UserResponse
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
 class ChangePasswordRequest(BaseModel):
     """Schema para cambio de contraseña."""
     current_password: str

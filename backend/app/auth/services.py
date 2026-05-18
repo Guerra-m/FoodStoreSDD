@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, date
 from typing import Optional, List
 from sqlmodel import Session, select
-from app.auth.models import User, RefreshToken
+from app.auth.models import RefreshToken
+from app.modules.usuarios.model import Usuario
 from app.auth.schemas import UserResponse, LoginResponse
 from app.auth.roles import ROLE_CLIENTE
 from app.auth.security import (
@@ -79,7 +80,7 @@ class AuthService:
         
         # Verificar que email no existe
         existing_user = self.session.exec(
-            select(User).where(User.email == email)
+            select(Usuario).where(Usuario.email == email)
         ).first()
         
         if existing_user:
@@ -90,7 +91,7 @@ class AuthService:
         
         # Crear usuario con password hasheado
         hashed_pwd = hash_password(password)
-        new_user = User(
+        new_user = Usuario(
             email=email,
             nombre=nombre,
             password_hash=hashed_pwd
@@ -141,7 +142,7 @@ class AuthService:
         """
         # Buscar usuario
         user = self.session.exec(
-            select(User).where(User.email == email)
+            select(Usuario).where(Usuario.email == email)
         ).first()
         
         # Respuesta genérica para privacidad (no revelar si email existe)
@@ -252,7 +253,7 @@ class AuthService:
             )
         
         # Obtener usuario
-        user = self.session.get(User, db_refresh_token.usuario_id)
+        user = self.session.get(Usuario, db_refresh_token.usuario_id)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -382,7 +383,7 @@ class AuthService:
             )
         
         # Obtener usuario
-        user = self.session.get(User, user_id)
+        user = self.session.get(Usuario, user_id)
         
         if not user:
             raise HTTPException(
@@ -421,7 +422,7 @@ class AuthService:
         Raises:
             HTTPException 404: Si usuario no encontrado
         """
-        user = self.session.get(User, user_id)
+        user = self.session.get(Usuario, user_id)
         
         if not user:
             raise HTTPException(
