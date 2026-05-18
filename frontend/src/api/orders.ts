@@ -85,13 +85,13 @@ export const orderApi = {
       })),
       direccion_id: direccionId,
     };
-    const response = await api.post('/api/v1/pedidos', orderData);
+    const response = await api.post('/pedidos', orderData);
     return response.data;
   },
 
   // Listar pedidos del cliente
   list: async (page = 1, perPage = 20): Promise<OrderListResponse> => {
-    const response = await api.get('/api/v1/pedidos', {
+    const response = await api.get('/pedidos', {
       params: { page, per_page: perPage },
     });
     return response.data;
@@ -99,13 +99,13 @@ export const orderApi = {
 
   // Obtener detalle de un pedido
   getById: async (orderId: number): Promise<OrderResponse> => {
-    const response = await api.get(`/api/v1/pedidos/${orderId}`);
+    const response = await api.get(`/pedidos/${orderId}`);
     return response.data;
   },
 
   // Obtener historial de un pedido
   getHistorial: async (orderId: number): Promise<OrderHistorialResponse[]> => {
-    const response = await api.get(`/api/v1/pedidos/${orderId}/historial`);
+    const response = await api.get(`/pedidos/${orderId}/historial`);
     return response.data;
   },
 };

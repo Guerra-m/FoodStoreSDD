@@ -30,10 +30,11 @@ class DireccionService:
             )
 
             # Si es principal, desmarcar las demás
-            if es_principal and total > 0:
-                repo.set_principal(direccion.id, usuario_id)
-
             created = repo.create(direccion)
+            if es_principal and total > 0:
+                repo.set_principal(created.id, usuario_id)
+                repo.session.refresh(created)
+
             return self._to_dict(created)
 
     async def list_by_usuario(self, usuario_id: int) -> List[dict]:

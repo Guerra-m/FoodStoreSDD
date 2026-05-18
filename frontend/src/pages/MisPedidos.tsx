@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useOrders, useOrderById } from '../hooks/useOrders';
 import { formatPrice, formatDate, getEstadoLabel, getEstadoColor, getPaymentStatusLabel, getPaymentStatusColor } from '../api/orders';
 import { SkeletonTable } from '../components/SkeletonTable';
+import { Alert } from '../components/ui/Alert';
+import { Button } from '../components/ui/Button';
 
 export default function MisPedidos() {
   const [page, setPage] = useState(1);
@@ -30,7 +32,7 @@ export default function MisPedidos() {
           <p className="text-gray-500 mb-5">No tenés pedidos aún.</p>
           <Link 
             to="/catalog" 
-            className="px-5 py-3 bg-blue-600 text-white no-underline rounded"
+            className="px-4 py-2 bg-blue-600 text-white no-underline rounded inline-flex items-center justify-center gap-2 font-medium"
           >
             Ir al Catálogo
           </Link>
@@ -77,12 +79,9 @@ export default function MisPedidos() {
                     {formatPrice(pedido.total)}
                   </span>
                   
-                  <button
-                    onClick={() => setSelectedOrderId(pedido.id)}
-                    className="px-4 py-2 bg-blue-600 text-white border-none rounded cursor-pointer"
-                  >
+                  <Button onClick={() => setSelectedOrderId(pedido.id)}>
                     Ver Detalle
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
@@ -90,23 +89,23 @@ export default function MisPedidos() {
 
           {/* Paginación */}
           <div className="flex justify-center gap-3">
-            <button
+            <Button
+              variant="secondary" size="sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-4 py-2"
             >
               Anterior
-            </button>
+            </Button>
             <span className="px-4 py-2">
               Página {page} ({(data?.total || 0)} pedidos)
             </span>
-            <button
+            <Button
+              variant="secondary" size="sm"
               onClick={() => setPage((p) => p + 1)}
               disabled={!data || page * 10 >= data.total}
-              className="px-4 py-2"
             >
               Siguiente
-            </button>
+            </Button>
           </div>
         </>
       )}
@@ -129,12 +128,13 @@ export default function MisPedidos() {
               <>
                 <div className="flex justify-between items-center mb-5">
                   <h2 className="m-0">Pedido #{orderDetail.id}</h2>
-                  <button
+                  <Button
+                    variant="ghost" size="sm"
                     onClick={() => setSelectedOrderId(null)}
-                    className="bg-none border-none text-2xl cursor-pointer"
+                    className="text-2xl"
                   >
                     ×
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="mb-5">
@@ -160,9 +160,9 @@ export default function MisPedidos() {
                 </div>
 
                 {orderDetail.payment_status === 'rejected' && (
-                  <div className="mb-5 p-3 bg-red-100 rounded text-red-800 text-sm">
+                  <Alert variant="error" className="mb-5">
                     El pago fue rechazado. Para reintentar, contactate con soporte o realizá un nuevo pedido.
-                  </div>
+                  </Alert>
                 )}
 
                 <div className="mb-5">

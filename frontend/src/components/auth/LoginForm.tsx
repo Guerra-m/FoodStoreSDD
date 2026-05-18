@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { validateEmail } from "../../lib/auth";
+import { Alert } from "../ui/Alert";
+import { Button } from "../ui/Button";
 
 interface LoginFormProps {
   onSuccess?: () => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, error, clearError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -39,6 +42,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       await login(email, password);
       setEmail("");
@@ -47,6 +51,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al iniciar sesión";
       setFormError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -58,9 +64,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         </h2>
 
         {(error || formError) && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg text-sm text-red-600">
-            {error || formError}
-          </div>
+          <Alert variant="error" className="mb-4">{error || formError}</Alert>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -80,7 +84,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 validationErrors.email ? "border-red-500" : "border-gray-300"
               }`}
-              disabled={isLoading}
+              disabled={isSubmitting}
               autoFocus
             />
             {validationErrors.email && (
@@ -104,20 +108,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 validationErrors.password ? "border-red-500" : "border-gray-300"
               }`}
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
             {validationErrors.password && (
               <span className="text-xs text-red-500">{validationErrors.password}</span>
             )}
           </div>
 
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="mt-2 px-4 py-2.5 bg-blue-500 text-white font-medium rounded-lg text-base transition-colors hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+            className="mt-2"
           >
-            {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
-          </button>
+            Iniciar Sesión
+          </Button>
         </form>
 
         <p className="text-center mt-4 text-sm text-gray-500">

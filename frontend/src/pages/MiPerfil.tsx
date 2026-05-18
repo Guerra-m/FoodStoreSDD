@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { useCustomerProfile, useUpdateProfile } from '../hooks/useCustomerProfile';
 import { useDirecciones, useCreateDireccion, useUpdateDireccion, useDeleteDireccion, useSetDireccionPrincipal } from '../hooks/useDirecciones';
 import AddressCard from '../components/AddressCard';
 import AddressFormModal from '../components/AddressFormModal';
 import type { Direccion, DireccionCreate, DireccionUpdate } from '../api/address';
+import { Alert } from '../components/ui/Alert';
+import { Button } from '../components/ui/Button';
 
 type Tab = 'perfil' | 'direcciones';
 
@@ -67,8 +70,9 @@ export default function MiPerfil() {
       }
       setShowAddressForm(false);
       setEditingAddress(null);
-    } catch {
-      // error handled by hook
+      toast.success(editingAddress ? 'Dirección actualizada' : 'Dirección creada');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.detail || 'Error al guardar la dirección');
     }
   };
 
@@ -76,9 +80,19 @@ export default function MiPerfil() {
     if (window.confirm('¿Estás seguro de eliminar esta dirección?')) {
       try {
         await deleteDireccion.mutateAsync(id);
-      } catch {
-        // error handled by hook
+        toast.success('Dirección eliminada');
+      } catch (err: any) {
+        toast.error(err?.response?.data?.detail || 'Error al eliminar la dirección');
       }
+    }
+  };
+
+  const handleSetPrincipal = async (id: number) => {
+    try {
+      await setPrincipal.mutateAsync(id);
+      toast.success('Dirección principal actualizada');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.detail || 'Error al actualizar dirección principal');
     }
   };
 
@@ -89,9 +103,7 @@ export default function MiPerfil() {
       <h1>Mi Perfil</h1>
 
       {successMsg && (
-        <div className="p-3 bg-green-100 text-green-800 rounded mb-4">
-          {successMsg}
-        </div>
+        <Alert variant="success" className="mb-4">{successMsg}</Alert>
       )}
 
       {/* Tabs */}
@@ -137,12 +149,9 @@ export default function MiPerfil() {
                   <img src={profile.foto_url} alt="Foto de perfil" className="max-w-[150px] rounded-lg" />
                 </div>
               )}
-              <button
-                onClick={() => setIsEditing(true)}
-                className="px-5 py-3 bg-blue-500 text-white border-none rounded cursor-pointer"
-              >
+              <Button onClick={() => setIsEditing(true)}>
                 Editar Perfil
-              </button>
+              </Button>
             </div>
           ) : (
             <form onSubmit={handleProfileSubmit}>
@@ -158,10 +167,12 @@ export default function MiPerfil() {
               <div className="mb-3">
                 <label className="block mb-1 font-bold">Teléfono</label>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
                   value={profileForm.telefono}
-                  onChange={e => setProfileForm({ ...profileForm, telefono: e.target.value })}
+                  onChange={e => setProfileForm({ ...profileForm, telefono: e.target.value.replace(/[^0-9+\-\s]/g, '') })}
                   className="w-full p-2 border border-gray-300 rounded"
+                  placeholder="+54 11 1234-5678"
                 />
               </div>
               <div className="mb-3">
@@ -183,20 +194,20 @@ export default function MiPerfil() {
                 />
               </div>
               <div className="flex gap-2">
-                <button
+                <Button
                   type="submit"
                   disabled={updateProfile.isPending}
-                  className="px-5 py-3 bg-green-500 text-white border-none rounded cursor-pointer"
+                  loading={updateProfile.isPending}
                 >
-                  {updateProfile.isPending ? 'Guardando...' : 'Guardar'}
-                </button>
-                <button
+                  Guardar
+                </Button>
+                <Button
+                  variant="secondary"
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-5 py-3 bg-gray-400 text-white border-none rounded cursor-pointer"
                 >
                   Cancelar
-                </button>
+                </Button>
               </div>
             </form>
           )}
@@ -207,12 +218,9 @@ export default function MiPerfil() {
       {activeTab === 'direcciones' && (
         <div>
           <div className="mb-4 flex justify-end">
-            <button
-              onClick={() => { setEditingAddress(null); setShowAddressForm(true); }}
-              className="px-5 py-3 bg-green-500 text-white border-none rounded cursor-pointer"
-            >
+            <Button onClick={() => { setEditingAddress(null); setShowAddressForm(true); }}>
               + Nueva Dirección
-            </button>
+            </Button>
           </div>
 
           {addressesLoading ? (

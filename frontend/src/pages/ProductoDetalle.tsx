@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { usePublicProductById } from '../hooks/useProducts';
 import AddToCartButton from '../components/shopping-cart/AddToCartButton';
 import type { IngredientOption } from '../components/shopping-cart/AddToCartButton';
+import { Alert } from '../components/ui/Alert';
 import { SkeletonDetail } from '../components/SkeletonDetail';
 
 export default function ProductoDetalle() {
@@ -94,12 +95,11 @@ export default function ProductoDetalle() {
               </table>
 
               {/* Allergen alert */}
-              <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-sm">
-                <strong>⚠️ Información de alérgenos:</strong> Este producto contiene{' '}
-                {product.ingredientes.map((i) => i.nombre).join(', ')}.
+              <Alert variant="warning" title="Alérgenos" className="mt-4">
+                Este producto contiene {product.ingredientes.map((i) => i.nombre).join(', ')}.
                 Consulte con el personal si tiene alguna alergia o intolerancia
                 alimentaria.
-              </div>
+              </Alert>
             </div>
           )}
         </div>

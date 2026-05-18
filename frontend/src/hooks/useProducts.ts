@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productApi, ProductoCreate, ProductoUpdate, ProductoFilters, StockUpdate } from '../api/products';
 
 export const useProducts = (page = 1, perPage = 20) => {
@@ -71,6 +71,7 @@ export const usePublicProducts = (filters?: ProductoFilters) => {
   return useQuery({
     queryKey: ['products', 'public', filters],
     queryFn: () => productApi.getPublic(filters),
+    placeholderData: keepPreviousData,
   });
 };
 

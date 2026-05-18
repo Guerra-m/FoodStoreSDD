@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { getAdminOrderDetail, updateOrderStatus } from '../../api/admin';
+import { Button } from '../../components/ui/Button';
 
 function formatCurrency(cents: number): string {
   return `$${(cents / 100).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
@@ -77,12 +78,13 @@ export function OrderDetailPage() {
 
   return (
     <div>
-      <button
+      <Button
+        variant="secondary" size="sm"
         onClick={() => navigate('/admin/orders')}
-        className="px-3 py-1.5 border border-gray-300 rounded-lg bg-white cursor-pointer mb-4 text-sm"
+        className="mb-4"
       >
         ← Volver a Pedidos
-      </button>
+      </Button>
 
       <div className="flex items-center justify-between mb-6">
         <h2 className="m-0 text-gray-900 text-xl font-bold">
@@ -102,16 +104,16 @@ export function OrderDetailPage() {
           <h4 className="m-0 mb-2 text-sm text-gray-700">Acciones disponibles:</h4>
           <div className="flex gap-2 flex-wrap">
             {availableActions.map((act) => (
-              <button
+              <Button
                 key={act.action}
+                variant="secondary" size="sm"
                 onClick={() => {
                   setSelectedAction(act.action);
                   setShowConfirm(true);
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm"
               >
                 {act.label}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -121,19 +123,19 @@ export function OrderDetailPage() {
                 ¿Estás seguro de aplicar "{availableActions.find(a => a.action === selectedAction)?.label}" al pedido #{order.id}?
               </p>
               <div className="flex gap-2">
-                <button
+                <Button
+                  variant="secondary" size="md"
                   onClick={() => { setShowConfirm(false); setSelectedAction(''); }}
-                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => statusMutation.mutate(selectedAction)}
                   disabled={statusMutation.isPending}
-                  className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white cursor-pointer text-sm disabled:opacity-50"
+                  loading={statusMutation.isPending}
                 >
-                  {statusMutation.isPending ? 'Aplicando...' : 'Confirmar'}
-                </button>
+                  Confirmar
+                </Button>
               </div>
             </div>
           )}

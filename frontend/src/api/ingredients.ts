@@ -31,26 +31,26 @@ export interface IngredienteListResponse {
 
 export const ingredientApi = {
   getAll: async (): Promise<Ingrediente[]> => {
-    const response = await api.get('/api/v1/ingredientes');
+    const response = await api.get('/ingredientes');
     return response.data.ingredientes;
   },
 
   getById: async (id: number): Promise<Ingrediente> => {
-    const response = await api.get(`/api/v1/ingredientes/${id}`);
+    const response = await api.get(`/ingredientes/${id}`);
     return response.data;
   },
 
   create: async (data: IngredienteCreate): Promise<Ingrediente> => {
-    const response = await api.post('/api/v1/ingredientes', data);
+    const response = await api.post('/ingredientes', data);
     return response.data;
   },
 
   update: async (id: number, data: IngredienteUpdate): Promise<Ingrediente> => {
-    const response = await api.patch(`/api/v1/ingredientes/${id}`, data);
+    const response = await api.patch(`/ingredientes/${id}`, data);
     return response.data;
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/v1/ingredientes/${id}`);
+    await api.delete(`/ingredientes/${id}`);
   },
 };

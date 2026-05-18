@@ -8,19 +8,19 @@ const ACCESS_TOKEN_KEY = "auth_access_token";
 const REFRESH_TOKEN_KEY = "auth_refresh_token";
 
 /**
- * Guarda tokens en sessionStorage (volatile, se pierde con el refresh)
+ * Guarda tokens en localStorage (persistente, sobrevive a recargas y pestañas)
  */
 export const saveTokens = (accessToken: string, refreshToken: string): void => {
-  sessionStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-  sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 };
 
 /**
  * Obtiene los tokens guardados
  */
 export const getTokens = (): { accessToken: string | null; refreshToken: string | null } => {
-  const accessToken = sessionStorage.getItem(ACCESS_TOKEN_KEY);
-  const refreshToken = sessionStorage.getItem(REFRESH_TOKEN_KEY);
+  const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
   return { accessToken, refreshToken };
 };
 
@@ -28,22 +28,22 @@ export const getTokens = (): { accessToken: string | null; refreshToken: string 
  * Limpia los tokens guardados
  */
 export const clearTokens = (): void => {
-  sessionStorage.removeItem(ACCESS_TOKEN_KEY);
-  sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
 };
 
 /**
  * Obtiene solo el access token
  */
 export const getAccessToken = (): string | null => {
-  return sessionStorage.getItem(ACCESS_TOKEN_KEY);
+  return localStorage.getItem(ACCESS_TOKEN_KEY);
 };
 
 /**
  * Obtiene solo el refresh token
  */
 export const getRefreshToken = (): string | null => {
-  return sessionStorage.getItem(REFRESH_TOKEN_KEY);
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
 };
 
 /**

@@ -10,6 +10,7 @@ import {
 } from '../hooks/useCategories';
 import { Categoria, CategoriaTree, CategoriaCreate, CategoriaUpdate } from '../api/categories';
 import { SkeletonTable } from '../components/SkeletonTable';
+import { Button } from '../components/ui/Button';
 
 /* ─── Initial form data ───────────────────────────────────────────────── */
 
@@ -130,12 +131,9 @@ export default function Categorias() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-gray-900 text-xl font-bold">Gestión de Categorías</h2>
-        <button
-          onClick={openCreate}
-          className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors"
-        >
+        <Button onClick={openCreate}>
           + Nueva Categoría
-        </button>
+        </Button>
       </div>
 
       {/* ── Loading state ──────────────────────────────────────────── */}
@@ -156,12 +154,9 @@ export default function Categorias() {
       {!isLoading && !error && categorias && categorias.length === 0 && (
         <div className="text-gray-400 py-12 text-center border border-dashed border-gray-300 rounded-lg mb-6">
           <p className="text-base mb-2">No hay categorías todavía</p>
-          <button
-            onClick={openCreate}
-            className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors"
-          >
+          <Button onClick={openCreate}>
             + Crear primera categoría
-          </button>
+          </Button>
         </div>
       )}
 
@@ -187,18 +182,18 @@ export default function Categorias() {
                   <td className="p-3 text-gray-600">{cat.posicion}</td>
                   <td className="p-3">
                     <div className="flex items-center gap-1">
-                      <button
+                      <Button
+                        variant="ghost" size="sm"
                         onClick={() => openEdit(cat)}
-                        className="px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white text-xs cursor-pointer hover:bg-gray-100 transition-colors"
                       >
                         Editar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="danger" size="sm"
                         onClick={() => setDeleteConfirm(cat)}
-                        className="px-2.5 py-1.5 border border-red-300 rounded-lg bg-white text-red-600 text-xs cursor-pointer hover:bg-red-50 transition-colors"
                       >
                         Eliminar
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -240,15 +235,16 @@ export default function Categorias() {
               <h3 id="categoria-modal-title" className="text-lg font-semibold text-gray-900">
                 {editingCategoria ? 'Editar Categoría' : 'Nueva Categoría'}
               </h3>
-              <button
+              <Button
+                variant="ghost" size="sm"
                 onClick={resetForm}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                 aria-label="Cerrar"
+                className="p-1"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
 
             {/* Modal body */}
@@ -296,24 +292,20 @@ export default function Categorias() {
 
               {/* Modal footer */}
               <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-200 -mx-6 px-6 -mb-4 pb-4">
-                <button
+                <Button
+                  variant="secondary" size="md"
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  loading={submitting}
                 >
-                  {submitting
-                    ? 'Guardando...'
-                    : editingCategoria
-                      ? 'Guardar cambios'
-                      : 'Crear categoría'}
-                </button>
+                  {editingCategoria ? 'Guardar cambios' : 'Crear categoría'}
+                </Button>
               </div>
             </form>
           </div>
@@ -344,19 +336,20 @@ export default function Categorias() {
               Esta acción no se puede deshacer.
             </p>
             <div className="flex items-center justify-end gap-3">
-              <button
+              <Button
+                variant="secondary" size="md"
                 onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger" size="md"
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 border-0 rounded-lg bg-red-600 text-white text-sm font-medium cursor-pointer hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                loading={deleteMutation.isPending}
               >
-                {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-              </button>
+                Eliminar
+              </Button>
             </div>
           </div>
         </div>

@@ -18,7 +18,7 @@ function App() {
           <AppRoutes />
           <CartDrawer />
           <ToastContainer
-            position="bottom-right"
+            position="top-right"
             autoClose={3000}
             hideProgressBar={false}
             newestOnTop
@@ -26,7 +26,10 @@ function App() {
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme="light"
+            theme="colored"
+            toastClassName="!rounded-lg !shadow-lg !text-sm !font-medium"
+            progressClassName="!rounded-b-lg"
+            limit={5}
           />
         </AuthProvider>
       </BrowserRouter>

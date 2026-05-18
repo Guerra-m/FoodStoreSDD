@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCartStore } from '../../stores/cartStore';
 import { toast } from 'react-toastify';
+import { Button } from '../ui/Button';
 
 export interface IngredientOption {
   ingredienteId: number;
@@ -58,12 +59,9 @@ export default function AddToCartButton({
 
   return (
     <>
-      <button
-        onClick={handleOpen}
-        className="px-5 py-2.5 bg-green-500 text-white border-0 rounded-md text-base cursor-pointer font-semibold"
-      >
+      <Button onClick={handleOpen}>
         Agregar al carrito
-      </button>
+      </Button>
 
       {/* Modal de exclusión de ingredientes */}
       {showModal && (
@@ -97,18 +95,18 @@ export default function AddToCartButton({
             </div>
 
             <div className="flex justify-end gap-3 mt-5">
-              <button
+              <Button
+                variant="secondary" size="sm"
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-md cursor-pointer text-sm"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                size="sm"
                 onClick={handleAdd}
-                className="px-4 py-2 bg-green-500 text-white border-0 rounded-md cursor-pointer text-sm font-semibold"
               >
                 Agregar al carrito
-              </button>
+              </Button>
             </div>
           </div>
         </>

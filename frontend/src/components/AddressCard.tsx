@@ -1,4 +1,5 @@
 import type { Direccion } from '../api/address';
+import { Button } from './ui/Button';
 
 interface AddressCardProps {
   direccion: Direccion;
@@ -24,25 +25,25 @@ export default function AddressCard({ direccion, onEdit, onDelete, onSetPrincipa
         </div>
         <div className="flex gap-2">
           {!direccion.es_principal && (
-            <button
+            <Button
+              variant="ghost" size="sm"
               onClick={() => onSetPrincipal(direccion.id)}
-              className="px-3 py-1 bg-blue-500 text-white border-0 rounded cursor-pointer"
             >
               Principal
-            </button>
+            </Button>
           )}
-          <button
+          <Button
+            variant="ghost" size="sm"
             onClick={() => onEdit(direccion)}
-            className="px-3 py-1 bg-yellow-500 text-black border-0 rounded cursor-pointer"
           >
             Editar
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="danger" size="sm"
             onClick={() => onDelete(direccion.id)}
-            className="px-3 py-1 bg-red-500 text-white border-0 rounded cursor-pointer"
           >
             Eliminar
-          </button>
+          </Button>
         </div>
       </div>
     </div>

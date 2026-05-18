@@ -10,6 +10,8 @@ export function Sidebar() {
   const items = useCartStore((state) => state.items);
   const count = selectCartItemsCount(items);
   const toggleCart = useUIStore((state) => state.toggleCart);
+  const sidebarOpen = useUIStore((state) => state.sidebarOpen);
+  const closeSidebar = useUIStore((state) => state.closeSidebar);
 
   const handleLogout = async () => {
     await logout();
@@ -17,87 +19,108 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-60 min-h-screen bg-gray-900 text-gray-100 flex flex-col">
-      {/* Brand */}
-      <div className="px-5 py-4 border-b border-gray-700">
-        <Link to="/" className="text-xl font-bold text-white">FoodStore</Link>
-      </div>
+    <>
+      {/* Overlay — solo mobile cuando sidebar está abierto */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={closeSidebar}
+          aria-hidden="true"
+        />
+      )}
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        <NavLink to="/" label="Home" />
-        <NavLink to="/catalog" label="Catálogo" />
+      <aside
+        className={[
+          'w-60 min-h-screen bg-gray-900 text-gray-100 flex flex-col',
+          'fixed inset-y-0 left-0 z-40',
+          'transform transition-transform duration-200 ease-in-out',
+          'lg:relative lg:translate-x-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+        ].join(' ')}
+      >
+        {/* Brand */}
+        <div className="px-5 py-4 border-b border-gray-700">
+          <Link to="/" onClick={closeSidebar} className="text-xl font-bold text-white">FoodStore</Link>
+        </div>
 
-        {user && (
-          <>
-            <NavLink to="/perfil" label="Mi Perfil" />
-            <NavLink to="/mis-pedidos" label="Mis Pedidos" />
-          </>
-        )}
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          <NavLink to="/" label="Home" onClick={closeSidebar} />
+          <NavLink to="/catalog" label="Catálogo" onClick={closeSidebar} />
 
-        {isAdmin && (
-          <>
-            <div className="text-xs text-gray-500 uppercase tracking-wide pt-3 pb-1 px-2">
-              Admin
-            </div>
-            <NavLink to="/admin" label="Dashboard" />
-            <NavLink to="/admin/users" label="Usuarios" />
-            <NavLink to="/admin/orders" label="Pedidos" />
-            <NavLink to="/categorias" label="Categorías" />
-            <NavLink to="/admin/products" label="Productos" />
-          </>
-        )}
-      </nav>
-
-      {/* Cart button */}
-      <div className="px-3 py-3 border-t border-gray-700">
-        <button
-          onClick={toggleCart}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm transition-colors"
-        >
-          <span>🛒 Carrito</span>
-          {count > 0 && (
-            <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {count > 99 ? '99+' : count}
-            </span>
+          {user && (
+            <>
+              <NavLink to="/perfil" label="Mi Perfil" onClick={closeSidebar} />
+              <NavLink to="/mis-pedidos" label="Mis Pedidos" onClick={closeSidebar} />
+            </>
           )}
-        </button>
-      </div>
 
-      {/* User / Login */}
-      <div className="px-3 py-3 border-t border-gray-700">
-        {user ? (
-          <div className="space-y-2">
-            <span className="block text-sm text-gray-400 truncate">
-              {user.nombre || user.email}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        ) : (
-          <Link
-            to="/login"
-            className="block px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+          {isAdmin && (
+            <>
+              <div className="text-xs text-gray-500 uppercase tracking-wide pt-3 pb-1 px-2">
+                Admin
+              </div>
+              <NavLink to="/admin" label="Dashboard" onClick={closeSidebar} />
+              <NavLink to="/admin/users" label="Usuarios" onClick={closeSidebar} />
+              <NavLink to="/admin/orders" label="Pedidos" onClick={closeSidebar} />
+              <NavLink to="/categorias" label="Categorías" onClick={closeSidebar} />
+              <NavLink to="/admin/products" label="Productos" onClick={closeSidebar} />
+            </>
+          )}
+        </nav>
+
+        {/* Cart button */}
+        <div className="px-3 py-3 border-t border-gray-700">
+          <button
+            onClick={() => { toggleCart(); closeSidebar(); }}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm transition-colors"
           >
-            Iniciar Sesión
-          </Link>
-        )}
-      </div>
-    </aside>
+            <span>🛒 Carrito</span>
+            {count > 0 && (
+              <span className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {count > 99 ? '99+' : count}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* User / Login */}
+        <div className="px-3 py-3 border-t border-gray-700">
+          {user ? (
+            <div className="space-y-2">
+              <span className="block text-sm text-gray-400 truncate">
+                {user.nombre || user.email}
+              </span>
+              <button
+                onClick={() => { handleLogout(); closeSidebar(); }}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+              >
+                Cerrar Sesión
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              onClick={closeSidebar}
+              className="block px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+            >
+              Iniciar Sesión
+            </Link>
+          )}
+        </div>
+      </aside>
+    </>
   );
 }
 
-function NavLink({ to, label }: { to: string; label: string }) {
+function NavLink({ to, label, onClick }: { to: string; label: string; onClick?: () => void }) {
   const location = useLocation();
   const isActive = location.pathname === to;
 
   return (
     <Link
       to={to}
+      onClick={onClick}
       className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
         isActive
           ? 'bg-gray-700 text-white font-medium'
