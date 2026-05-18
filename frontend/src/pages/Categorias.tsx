@@ -9,6 +9,9 @@ import {
   useDeleteCategoria,
 } from '../hooks/useCategories';
 import { Categoria, CategoriaTree, CategoriaCreate, CategoriaUpdate } from '../api/categories';
+
+/* CategoriaBasic basta para el form (no necesita product_count / hijos) */
+type CategoriaBasic = Pick<Categoria, 'id' | 'nombre' | 'padre_id' | 'posicion'>;
 import { SkeletonTable } from '../components/SkeletonTable';
 import { Button } from '../components/ui/Button';
 
@@ -27,9 +30,9 @@ export default function Categorias() {
 
   /* Form / modal state */
   const [showForm, setShowForm] = useState(false);
-  const [editingCategoria, setEditingCategoria] = useState<Categoria | null>(null);
+  const [editingCategoria, setEditingCategoria] = useState<CategoriaBasic | null>(null);
   const [formData, setFormData] = useState<CategoriaCreate>(INITIAL_FORM);
-  const [deleteConfirm, setDeleteConfirm] = useState<Categoria | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<CategoriaBasic | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const queryClient = useQueryClient();
@@ -68,9 +71,15 @@ export default function Categorias() {
     setShowForm(true);
   };
 
-  const openEdit = (cat: Categoria) => {
+  const openEdit = (cat: CategoriaBasic) => {
     setEditingCategoria(cat);
     setFormData({ nombre: cat.nombre, padre_id: cat.padre_id });
+    setShowForm(true);
+  };
+
+  const openAddSub = (parent: CategoriaBasic) => {
+    setFormData({ nombre: '', padre_id: parent.id });
+    setEditingCategoria(null);
     setShowForm(true);
   };
 
@@ -123,6 +132,41 @@ export default function Categorias() {
     if (!padreId) return '-';
     return categorias?.find((c) => c.id === padreId)?.nombre || String(padreId);
   };
+
+  /* ── Tree flatten helpers ──────────────────────────────────────── */
+
+  /** Aplana el árbol en una lista plana con profundidad para mostrar indentación */
+  const flattenTree = (
+    nodes: CategoriaTree[],
+    depth = 0,
+  ): { id: number; nombre: string; depth: number }[] => {
+    const result: { id: number; nombre: string; depth: number }[] = [];
+    for (const node of nodes) {
+      result.push({ id: node.id, nombre: node.nombre, depth });
+      if (node.hijos.length > 0) result.push(...flattenTree(node.hijos, depth + 1));
+    }
+    return result;
+  };
+
+  /** Recolecta el ID de un nodo + todos sus descendientes (para excluirlos al editar) */
+  const collectSubtreeIds = (nodes: CategoriaTree[], targetId: number): number[] => {
+    for (const node of nodes) {
+      if (node.id === targetId) return [node.id, ...collectAllChildrenIds(node.hijos)];
+      if (node.hijos.length > 0) {
+        const found = collectSubtreeIds(node.hijos, targetId);
+        if (found.length > 0) return found;
+      }
+    }
+    return [];
+  };
+
+  const collectAllChildrenIds = (nodes: CategoriaTree[]): number[] =>
+    nodes.flatMap((n) => [n.id, ...collectAllChildrenIds(n.hijos)]);
+
+  /** IDs a excluir del selector de padre (al editar: la categoría misma + sus hijas) */
+  const excludedParentIds = editingCategoria
+    ? new Set(collectSubtreeIds(categoriaTree ?? [], editingCategoria.id))
+    : new Set<number>();
 
   /* ── Render ─────────────────────────────────────────────────────── */
 
@@ -207,7 +251,12 @@ export default function Categorias() {
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-gray-900 text-base font-semibold mb-4">Árbol de Categorías</h3>
         {categoriaTree && categoriaTree.length > 0 ? (
-          <TreeView tree={categoriaTree} />
+          <TreeView
+            tree={categoriaTree}
+            onEdit={(cat) => openEdit(cat)}
+            onAddSub={(cat) => openAddSub(cat)}
+            onDelete={(cat) => setDeleteConfirm(cat)}
+          />
         ) : (
           <p className="text-sm text-gray-400">No hay categorías disponibles</p>
         )}
@@ -282,11 +331,16 @@ export default function Categorias() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
                 >
                   <option value="">-- Ninguna (Raíz) --</option>
-                  {categorias?.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nombre}
-                    </option>
-                  ))}
+                  {flattenTree(categoriaTree ?? []).map((item) => {
+                    const disabled = excludedParentIds.has(item.id);
+                    return (
+                      <option key={item.id} value={item.id} disabled={disabled}>
+                        {'\u00A0\u00A0\u00A0\u00A0'.repeat(item.depth)}
+                        {'\u2514\u00A0'}
+                        {item.nombre}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -359,23 +413,35 @@ export default function Categorias() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TreeView: renderiza jerarquía de categorías
+   TreeView: renderiza jerarquía de categorías con acciones
    ═══════════════════════════════════════════════════════════════════════════ */
 
-function TreeView({ tree, level = 0 }: { tree: CategoriaTree[]; level?: number }) {
+function TreeView({
+  tree,
+  level = 0,
+  onEdit,
+  onAddSub,
+  onDelete,
+}: {
+  tree: CategoriaTree[];
+  level?: number;
+  onEdit: (cat: CategoriaTree) => void;
+  onAddSub: (cat: CategoriaTree) => void;
+  onDelete: (cat: CategoriaTree) => void;
+}) {
   return (
     <ul className={`space-y-0.5 ${level > 0 ? 'ml-5 border-l-2 border-gray-100 pl-4' : 'pl-0'}`}>
       {tree.map((node) => {
         const hasChildren = node.hijos.length > 0;
         return (
           <li key={node.id}>
-            <div className="flex items-center gap-2 py-1">
+            <div className="flex items-center gap-2 py-1.5 group">
               <span
                 className={`${
                   hasChildren
                     ? 'text-gray-900 font-semibold'
                     : 'text-gray-600'
-                } text-sm`}
+                } text-sm flex-1`}
               >
                 {node.nombre}
               </span>
@@ -384,8 +450,34 @@ function TreeView({ tree, level = 0 }: { tree: CategoriaTree[]; level?: number }
                   {node.hijos.length}
                 </span>
               )}
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  type="button"
+                  onClick={() => onAddSub(node)}
+                  className="px-2 py-0.5 text-xs font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded border-0 cursor-pointer transition-colors"
+                  title="Agregar subcategoría"
+                >
+                  + Sub
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onEdit(node)}
+                  className="px-2 py-0.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded border-0 cursor-pointer transition-colors"
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(node)}
+                  className="px-2 py-0.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded border-0 cursor-pointer transition-colors"
+                >
+                  Eliminar
+                </button>
+              </div>
             </div>
-            {hasChildren && <TreeView tree={node.hijos} level={level + 1} />}
+            {hasChildren && (
+              <TreeView tree={node.hijos} level={level + 1} onEdit={onEdit} onAddSub={onAddSub} onDelete={onDelete} />
+            )}
           </li>
         );
       })}
