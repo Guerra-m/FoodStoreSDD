@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, Legend,
+  PieChart, Pie, Cell, ResponsiveContainer, Legend,
 } from 'recharts';
 import { toast } from 'react-toastify';
 import {
@@ -20,17 +20,58 @@ function formatCurrency(cents: number): string {
 
 function SummaryCards({ stats }: { stats: { total_users: number; total_orders: number; total_revenue: number } }) {
   const cards = [
-    { label: 'Usuarios', value: stats.total_users, color: 'text-blue-500' },
-    { label: 'Pedidos', value: stats.total_orders, color: 'text-emerald-500' },
-    { label: 'Ingresos', value: formatCurrency(stats.total_revenue), color: 'text-amber-500' },
+    {
+      label: 'Usuarios',
+      value: stats.total_users.toLocaleString('es-AR'),
+      color: 'primary',
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Pedidos',
+      value: stats.total_orders.toLocaleString('es-AR'),
+      color: 'emerald',
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Ingresos Totales',
+      value: formatCurrency(stats.total_revenue),
+      color: 'amber',
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
   ];
 
+  const colorClasses = {
+    primary: 'bg-primary-50 text-primary-600',
+    emerald: 'bg-emerald-50 text-emerald-600',
+    amber: 'bg-amber-50 text-amber-600',
+  };
+
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
       {cards.map((card) => (
-        <div key={card.label} className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-          <div className="text-sm text-gray-500 mb-1">{card.label}</div>
-          <div className={`text-2xl font-bold ${card.color}`}>{card.value}</div>
+        <div
+          key={card.label}
+          className="bg-white rounded-2xl border border-neutral-200/60 p-6 shadow-soft hover:shadow-soft-lg transition-all duration-300"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-medium text-neutral-500">{card.label}</span>
+            <div className={`w-10 h-10 rounded-xl ${colorClasses[card.color as keyof typeof colorClasses]} flex items-center justify-center`}>
+              {card.icon}
+            </div>
+          </div>
+          <div className="text-2xl font-bold text-neutral-900">{card.value}</div>
         </div>
       ))}
     </div>
@@ -39,7 +80,14 @@ function SummaryCards({ stats }: { stats: { total_users: number; total_orders: n
 
 function RevenueChart({ data }: { data: { fecha: string; ingreso_total: number }[] }) {
   if (!data.length) {
-    return <div className="text-gray-400 py-8 text-center">Sin datos de ingresos</div>;
+    return (
+      <div className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Ingresos en el tiempo</h3>
+        <div className="h-[280px] flex items-center justify-center text-neutral-400">
+          Sin datos de ingresos
+        </div>
+      </div>
+    );
   }
 
   const chartData = data.map((d) => ({
@@ -48,15 +96,23 @@ function RevenueChart({ data }: { data: { fecha: string; ingreso_total: number }
   }));
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-      <h3 className="m-0 mb-4 text-base text-gray-900">Ingresos en el tiempo</h3>
+    <div className="bg-white rounded-2xl border border-neutral-200/60 p-6 shadow-soft">
+      <h3 className="text-lg font-semibold text-neutral-900 mb-4">Ingresos en el tiempo</h3>
       <ResponsiveContainer width="100%" height={280}>
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="fecha" fontSize={12} />
-          <YAxis fontSize={12} tickFormatter={(v) => `$${v}`} />
-          <Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, 'Ingresos']} />
-          <Line type="monotone" dataKey="ingresos" stroke="#3b82f6" strokeWidth={2} dot={false} />
+        <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis dataKey="fecha" fontSize={12} stroke="#9ca3af" />
+          <YAxis fontSize={12} stroke="#9ca3af" tickFormatter={(v) => `$${v}`} />
+          <Tooltip
+            formatter={(value: number) => [`$${value.toFixed(2)}`, 'Ingresos']}
+            contentStyle={{
+              backgroundColor: '#fff',
+              border: '1px solid #e5e7eb',
+              borderRadius: '12px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+            }}
+          />
+          <Line type="monotone" dataKey="ingresos" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -65,27 +121,49 @@ function RevenueChart({ data }: { data: { fecha: string; ingreso_total: number }
 
 function OrdersByStatusChart({ data }: { data: { estado: string; cantidad: number }[] }) {
   if (!data.length) {
-    return <div className="text-gray-400 py-8 text-center">Sin pedidos</div>;
+    return (
+      <div className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Pedidos por Estado</h3>
+        <div className="h-[260px] flex items-center justify-center text-neutral-400">
+          Sin pedidos
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-      <h3 className="m-0 mb-4 text-base text-gray-900">Pedidos por Estado</h3>
+    <div className="bg-white rounded-2xl border border-neutral-200/60 p-6 shadow-soft">
+      <h3 className="text-lg font-semibold text-neutral-900 mb-4">Pedidos por Estado</h3>
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie
             data={data}
             dataKey="cantidad"
             nameKey="estado"
-            cx="50%" cy="50%" outerRadius={90}
+            cx="50%"
+            cy="50%"
+            outerRadius={90}
+            innerRadius={50}
+            paddingAngle={4}
             label={({ estado, cantidad }) => `${estado}: ${cantidad}`}
+            labelLine={false}
           >
             {data.map((_, idx) => (
-              <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+              <Cell key={idx} fill={COLORS[idx % COLORS.length]} stroke="none" />
             ))}
           </Pie>
-          <Tooltip />
-          <Legend />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: '#fff',
+              border: '1px solid #e5e7eb',
+              borderRadius: '12px',
+            }}
+          />
+          <Legend
+            verticalAlign="bottom"
+            height={36}
+            iconType="circle"
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -94,32 +172,41 @@ function OrdersByStatusChart({ data }: { data: { estado: string; cantidad: numbe
 
 function TopProductsTable({ data }: { data: { id: number; nombre: string; cantidad_vendida: number; ingreso_total: number }[] }) {
   if (!data.length) {
-    return <div className="text-gray-400 py-8 text-center">Sin ventas aún</div>;
+    return (
+      <div className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Productos más vendidos</h3>
+        <div className="h-[200px] flex items-center justify-center text-neutral-400">
+          Sin ventas aún
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-6">
-      <h3 className="m-0 mb-4 text-base text-gray-900">Productos más vendidos</h3>
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="border-b-2 border-gray-200 text-gray-500 text-left">
-            <th className="p-2">#</th>
-            <th className="p-2">Producto</th>
-            <th className="p-2">Cant.</th>
-            <th className="p-2">Ingreso</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((p, idx) => (
-            <tr key={p.id} className="border-b border-gray-100">
-              <td className="p-2 text-gray-400">{idx + 1}</td>
-              <td className="p-2">{p.nombre}</td>
-              <td className="p-2">{p.cantidad_vendida}</td>
-              <td className="p-2">{formatCurrency(p.ingreso_total)}</td>
+    <div className="bg-white rounded-2xl border border-neutral-200/60 p-6 shadow-soft overflow-hidden">
+      <h3 className="text-lg font-semibold text-neutral-900 mb-4">Productos más vendidos</h3>
+      <div className="table-container">
+        <table className="table-modern">
+          <thead>
+            <tr>
+              <th className="w-12">#</th>
+              <th>Producto</th>
+              <th className="text-right">Cant.</th>
+              <th className="text-right">Ingreso</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((p, idx) => (
+              <tr key={p.id}>
+                <td className="text-neutral-400 font-medium">{idx + 1}</td>
+                <td className="font-medium text-neutral-800">{p.nombre}</td>
+                <td className="text-right">{p.cantidad_vendida}</td>
+                <td className="text-right font-medium text-emerald-600">{formatCurrency(p.ingreso_total)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -147,30 +234,33 @@ export function DashboardPage() {
   if (statsLoading) {
     return (
       <div aria-busy="true" aria-label="Cargando dashboard">
-        <h2 className="mb-4 text-gray-900">Dashboard</h2>
+        <h2 className="page-title">Dashboard</h2>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="border border-gray-200 rounded-lg p-4">
-              <div className="mb-2"><Skeleton width="50%" height={14} /></div>
-              <Skeleton width="40%" height={28} />
+            <div key={i} className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <Skeleton width="40%" height={16} />
+                <div className="w-10 h-10 rounded-xl bg-neutral-100" />
+              </div>
+              <Skeleton width="60%" height={32} />
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="border border-gray-200 rounded-lg p-4">
-            <div className="mb-4"><Skeleton width="40%" height={18} /></div>
-            <Skeleton shape="rect" width="100%" height={260} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+            <Skeleton width="40%" height={20} className="mb-4" />
+            <Skeleton shape="rect" width="100%" height={280} className="rounded-xl" />
           </div>
-          <div className="border border-gray-200 rounded-lg p-4">
-            <div className="mb-4"><Skeleton width="40%" height={18} /></div>
-            <Skeleton shape="rect" width="100%" height={260} />
+          <div className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+            <Skeleton width="40%" height={20} className="mb-4" />
+            <Skeleton shape="rect" width="100%" height={280} className="rounded-xl" />
           </div>
         </div>
 
-        <div className="border border-gray-200 rounded-lg p-4 mt-4">
-          <div className="mb-4"><Skeleton width="40%" height={18} /></div>
+        <div className="bg-white rounded-2xl border border-neutral-200/60 p-6">
+          <Skeleton width="40%" height={20} className="mb-4" />
           <SkeletonTable rows={5} />
         </div>
       </div>
@@ -178,12 +268,13 @@ export function DashboardPage() {
   }
 
   return (
-    <div>
-      <h2 className="mb-6 text-gray-900 text-xl font-bold">Dashboard</h2>
+    <div className="animate-in">
+      <h2 className="page-title">Dashboard</h2>
+      <p className="page-subtitle">Resumen de métricas y estadísticas</p>
 
       {stats && <SummaryCards stats={stats} />}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {revenue && <RevenueChart data={revenue.data} />}
         {stats && <OrdersByStatusChart data={stats.orders_by_status} />}
       </div>

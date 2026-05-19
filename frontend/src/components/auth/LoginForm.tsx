@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { validateEmail } from "../../lib/auth";
 import { Alert } from "../ui/Alert";
@@ -57,82 +58,119 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-gray-100 p-8">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Iniciar Sesión
-        </h2>
-
-        {(error || formError) && (
-          <Alert variant="error" className="mb-4">{error || formError}</Alert>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="font-medium text-gray-700 text-sm">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                clearError();
-              }}
-              placeholder="usuario@example.com"
-              className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                validationErrors.email ? "border-red-500" : "border-gray-300"
-              }`}
-              disabled={isSubmitting}
-              autoFocus
-            />
-            {validationErrors.email && (
-              <span className="text-xs text-red-500">{validationErrors.email}</span>
-            )}
+    <div className="min-h-screen flex">
+      {/* Left side - Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg">
+              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <span className="text-2xl font-bold text-neutral-900">FoodStore</span>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="font-medium text-gray-700 text-sm">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                clearError();
-              }}
-              placeholder="••••••••"
-              className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
-                validationErrors.password ? "border-red-500" : "border-gray-300"
-              }`}
+          <h1 className="text-3xl font-bold text-neutral-900 mb-2">¡Bienvenido de nuevo!</h1>
+          <p className="text-neutral-500 mb-8">Ingresá a tu cuenta para continuar</p>
+
+          {(error || formError) && (
+            <Alert variant="error" className="mb-6">{error || formError}</Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="input-label">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearError();
+                }}
+                placeholder="tu@email.com"
+                className={`input-field ${validationErrors.email ? 'input-field-error' : ''}`}
+                disabled={isSubmitting}
+                autoFocus
+              />
+              {validationErrors.email && (
+                <span className="input-error">{validationErrors.email}</span>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="password" className="input-label">
+                Contraseña
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearError();
+                }}
+                placeholder="••••••••"
+                className={`input-field ${validationErrors.password ? 'input-field-error' : ''}`}
+                disabled={isSubmitting}
+              />
+              {validationErrors.password && (
+                <span className="input-error">{validationErrors.password}</span>
+              )}
+            </div>
+
+            <Button
+              type="submit"
               disabled={isSubmitting}
-            />
-            {validationErrors.password && (
-              <span className="text-xs text-red-500">{validationErrors.password}</span>
-            )}
+              loading={isSubmitting}
+              className="w-full"
+              size="lg"
+            >
+              Iniciar Sesión
+            </Button>
+          </form>
+
+          <p className="text-center mt-8 text-neutral-500">
+            ¿No tenés cuenta?{" "}
+            <Link to="/register" className="link font-medium">
+              Registrate aquí
+            </Link>
+          </p>
+
+          {/* Demo credentials */}
+          <div className="mt-8 p-4 bg-neutral-50 rounded-xl border border-neutral-200">
+            <p className="text-xs font-medium text-neutral-500 mb-2">CREDENCIALS DE PRUEBA</p>
+            <div className="text-sm text-neutral-600 space-y-1">
+              <p><span className="font-medium">Admin:</span> admin@foodstore.com / admin123</p>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            loading={isSubmitting}
-            className="mt-2"
-          >
-            Iniciar Sesión
-          </Button>
-        </form>
+      {/* Right side - Decorative */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 items-center justify-center p-12 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-r from-primary-400/20 to-primary-600/20 rounded-full blur-3xl" />
+        </div>
 
-        <p className="text-center mt-4 text-sm text-gray-500">
-          ¿No tienes cuenta?{" "}
-          <a href="/register" className="text-blue-500 font-medium no-underline hover:underline">
-            Regístrate aquí
-          </a>
-        </p>
-        <p className="text-center mt-4 text-sm text-gray-500">User: admin@foodstore.com</p>
-        <p className="text-center mt-4 text-sm text-gray-500">Password: admin123</p>
+        <div className="relative text-white max-w-lg text-center">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-white/10 backdrop-blur flex items-center justify-center">
+            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-bold mb-4">Tu tienda de comida online</h2>
+          <p className="text-primary-100 text-lg">
+            Disfrutá de los mejores productos con entrega rápida y pago seguro.
+          </p>
+        </div>
       </div>
     </div>
   );

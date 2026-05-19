@@ -19,17 +19,15 @@ function App() {
           <CartDrawer />
           <ToastContainer
             position="top-right"
-            autoClose={3000}
+            autoClose={3500}
             hideProgressBar={false}
             newestOnTop
             closeOnClick
-            pauseOnFocusLoss
-            draggable
+            pauseOnFocusLoss={false}
+            draggable={false}
             pauseOnHover
-            theme="colored"
-            toastClassName="!rounded-lg !shadow-lg !text-sm !font-medium"
-            progressClassName="!rounded-b-lg"
-            limit={5}
+            theme="light"
+            limit={4}
           />
         </AuthProvider>
       </BrowserRouter>
