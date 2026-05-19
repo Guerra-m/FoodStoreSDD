@@ -6,6 +6,7 @@ from app.modules.usuarios.schema import (
     LoginRequest,
     RefreshRequest,
     TokenResponse,
+    LoginResponse,
     UserResponse,
     ClientePerfilUpdate,
     ChangePasswordRequest,
@@ -24,14 +25,14 @@ async def register(data: RegisterRequest):
     return await auth_service.register(data)
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=LoginResponse)
 async def login(data: LoginRequest, request: Request):
-    """Inicia sesión y devuelve access + refresh tokens."""
+    """Inicia sesión y devuelve access + refresh tokens + datos del usuario."""
     user_agent = request.headers.get("user-agent", "")
     return await auth_service.login(data, user_agent=user_agent)
 
 
-@router.post("/refresh", response_model=TokenResponse)
+@router.post("/refresh", response_model=LoginResponse)
 async def refresh(data: RefreshRequest):
     """Refresca el access token usando un refresh token válido (rotación)."""
     return await auth_service.refresh(data.refresh_token)

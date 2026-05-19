@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { validateEmail, validatePassword } from "../../lib/auth";
+import { Alert } from "../ui/Alert";
+import { Button } from "../ui/Button";
 
 interface RegisterFormProps {
   onSuccess?: () => void;
 }
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
-  const { register, isLoading, error, clearError } = useAuth();
+  const { register, error, clearError } = useAuth();
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -58,6 +61,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       await register(email, nombre, password);
       setEmail("");
@@ -68,6 +72,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al registrarse";
       setFormError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -79,9 +85,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
         </h2>
 
         {(error || formError) && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg text-sm text-red-600">
-            {error || formError}
-          </div>
+          <Alert variant="error" className="mb-4">{error || formError}</Alert>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -101,7 +105,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 validationErrors.email ? "border-red-500" : "border-gray-300"
               }`}
-              disabled={isLoading}
+              disabled={isSubmitting}
               autoFocus
             />
             {validationErrors.email && (
@@ -125,7 +129,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 validationErrors.nombre ? "border-red-500" : "border-gray-300"
               }`}
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
             {validationErrors.nombre && (
               <span className="text-xs text-red-500">{validationErrors.nombre}</span>
@@ -148,7 +152,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 validationErrors.password ? "border-red-500" : "border-gray-300"
               }`}
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
             {validationErrors.password && (
               <span className="text-xs text-red-500">{validationErrors.password}</span>
@@ -171,20 +175,21 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
               className={`px-3 py-2.5 border rounded-lg text-base transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 validationErrors.confirmPassword ? "border-red-500" : "border-gray-300"
               }`}
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
             {validationErrors.confirmPassword && (
               <span className="text-xs text-red-500">{validationErrors.confirmPassword}</span>
             )}
           </div>
 
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="mt-2 px-4 py-2.5 bg-green-500 text-white font-medium rounded-lg text-base transition-colors hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+            loading={isSubmitting}
+            className="mt-2"
           >
-            {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
-          </button>
+            Crear Cuenta
+          </Button>
         </form>
 
         <p className="text-center mt-4 text-sm text-gray-500">

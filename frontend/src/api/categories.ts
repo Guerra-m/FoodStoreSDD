@@ -33,31 +33,31 @@ export interface CategoriaTree {
 export const categoryApi = {
   getAll: async (padreId?: number): Promise<Categoria[]> => {
     const params = padreId ? { padre_id: padreId } : {};
-    const response = await api.get('/api/v1/categorias', { params });
+    const response = await api.get('/categorias', { params });
     return response.data.categorias;
   },
 
   getTree: async (): Promise<CategoriaTree[]> => {
-    const response = await api.get('/api/v1/categorias/tree');
+    const response = await api.get('/categorias/tree');
     return response.data;
   },
 
   getById: async (id: number): Promise<Categoria> => {
-    const response = await api.get(`/api/v1/categorias/${id}`);
+    const response = await api.get(`/categorias/${id}`);
     return response.data;
   },
 
   create: async (data: CategoriaCreate): Promise<Categoria> => {
-    const response = await api.post('/api/v1/categorias', data);
+    const response = await api.post('/categorias', data);
     return response.data;
   },
 
   update: async (id: number, data: CategoriaUpdate): Promise<Categoria> => {
-    const response = await api.patch(`/api/v1/categorias/${id}`, data);
+    const response = await api.patch(`/categorias/${id}`, data);
     return response.data;
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/v1/categorias/${id}`);
+    await api.delete(`/categorias/${id}`);
   },
 };

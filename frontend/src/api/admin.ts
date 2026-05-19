@@ -11,6 +11,7 @@ import type {
   AdminOrderDetail,
   UpdateOrderStatusRequest,
 } from '../types/admin';
+import type { Direccion, DireccionCreate, DireccionUpdate } from './address';
 
 // ─── Dashboard ───────────────────────────────────────────────────────────────
 
@@ -70,3 +71,23 @@ export const getAdminOrderDetail = (id: number) =>
 
 export const updateOrderStatus = (id: number, data: UpdateOrderStatusRequest) =>
   api.put<AdminOrderDetail>(`/admin/orders/${id}/status`, data).then((r) => r.data);
+
+// ─── Addresses ───────────────────────────────────────────────────────────────
+
+export const getUserAddresses = (userId: number) =>
+  api.get<Direccion[]>(`/admin/users/${userId}/direcciones`).then((r) => r.data);
+
+export const getUserAddress = (userId: number, addressId: number) =>
+  api.get<Direccion>(`/admin/users/${userId}/direcciones/${addressId}`).then((r) => r.data);
+
+export const createUserAddress = (userId: number, data: DireccionCreate) =>
+  api.post<Direccion>(`/admin/users/${userId}/direcciones`, data).then((r) => r.data);
+
+export const updateUserAddress = (userId: number, addressId: number, data: DireccionUpdate) =>
+  api.put<Direccion>(`/admin/users/${userId}/direcciones/${addressId}`, data).then((r) => r.data);
+
+export const deleteUserAddress = (userId: number, addressId: number) =>
+  api.delete(`/admin/users/${userId}/direcciones/${addressId}`).then(() => {});
+
+export const setUserAddressPrincipal = (userId: number, addressId: number) =>
+  api.patch<Direccion>(`/admin/users/${userId}/direcciones/${addressId}/principal`).then((r) => r.data);

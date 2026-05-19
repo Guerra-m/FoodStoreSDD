@@ -37,26 +37,26 @@ export interface DireccionUpdate {
 
 export const addressApi = {
   list: async (): Promise<Direccion[]> => {
-    const response = await api.get('/api/v1/clientes/direcciones');
+    const response = await api.get('/clientes/direcciones');
     return response.data;
   },
 
   create: async (data: DireccionCreate): Promise<Direccion> => {
-    const response = await api.post('/api/v1/clientes/direcciones', data);
+    const response = await api.post('/clientes/direcciones', data);
     return response.data;
   },
 
   update: async (id: number, data: DireccionUpdate): Promise<Direccion> => {
-    const response = await api.put(`/api/v1/clientes/direcciones/${id}`, data);
+    const response = await api.put(`/clientes/direcciones/${id}`, data);
     return response.data;
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/v1/clientes/direcciones/${id}`);
+    await api.delete(`/clientes/direcciones/${id}`);
   },
 
   setPrincipal: async (id: number): Promise<Direccion> => {
-    const response = await api.patch(`/api/v1/clientes/direcciones/${id}/principal`);
+    const response = await api.patch(`/clientes/direcciones/${id}/principal`);
     return response.data;
   },
 };

@@ -9,6 +9,8 @@ import {
 } from '../../api/admin';
 import type { UserAdmin, UserAdminListResponse } from '../../types/admin';
 import { SkeletonTable } from '../../components/SkeletonTable';
+import { Button } from '../../components/ui/Button';
+import { AdminAddressModal } from '../../components/admin/AdminAddressModal';
 
 const ALL_ROLES = ['Cliente', 'Admin', 'Delivery'];
 
@@ -68,15 +70,16 @@ function EditRolesModal({
           <h3 id="roles-modal-title" className="text-lg font-semibold text-gray-900">
             Editar Roles: {user.nombre}
           </h3>
-          <button
+          <Button
+            variant="ghost" size="sm"
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             aria-label="Cerrar"
+            className="p-1"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         {/* Modal body */}
@@ -102,19 +105,19 @@ function EditRolesModal({
 
         {/* Modal footer */}
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
-          <button
+          <Button
+            variant="secondary" size="md"
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            loading={saving}
           >
-            {saving ? 'Guardando...' : 'Guardar'}
-          </button>
+            Guardar
+          </Button>
         </div>
       </div>
     </div>
@@ -148,11 +151,13 @@ function UserRow({
   onEditRoles,
   onDelete,
   onRestore,
+  onManageAddresses,
 }: {
   user: UserAdmin;
   onEditRoles: (u: UserAdmin) => void;
   onDelete: (u: UserAdmin) => void;
   onRestore: (id: number) => void;
+  onManageAddresses: (u: UserAdmin) => void;
 }) {
   const isDeleted = user.eliminado_en !== null;
 
@@ -172,26 +177,32 @@ function UserRow({
       </td>
       <td className="p-3">
         {isDeleted ? (
-          <button
+          <Button
+            variant="secondary" size="sm"
             onClick={() => onRestore(user.id)}
-            className="px-2.5 py-1.5 border border-emerald-500 rounded-lg bg-emerald-50 text-emerald-800 text-xs cursor-pointer hover:bg-emerald-100 transition-colors"
           >
             Restaurar
-          </button>
+          </Button>
         ) : (
           <div className="flex items-center gap-1">
-            <button
+            <Button
+              variant="ghost" size="sm"
               onClick={() => onEditRoles(user)}
-              className="px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white text-xs cursor-pointer hover:bg-gray-100 transition-colors"
             >
               Roles
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="secondary" size="sm"
+              onClick={() => onManageAddresses(user)}
+            >
+              Direcciones
+            </Button>
+            <Button
+              variant="danger" size="sm"
               onClick={() => onDelete(user)}
-              className="px-2.5 py-1.5 border border-red-300 rounded-lg bg-white text-red-600 text-xs cursor-pointer hover:bg-red-50 transition-colors"
             >
               Eliminar
-            </button>
+            </Button>
           </div>
         )}
       </td>
@@ -209,6 +220,7 @@ export function UsersPage() {
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [editingUser, setEditingUser] = useState<UserAdmin | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<UserAdmin | null>(null);
+  const [addressUser, setAddressUser] = useState<UserAdmin | null>(null);
 
   const queryKey: unknown[] = ['admin', 'users', page, search, roleFilter, includeDeleted];
 
@@ -355,7 +367,7 @@ export function UsersPage() {
                   <th className="p-3 font-semibold">Email</th>
                   <th className="p-3 font-semibold">Roles</th>
                   <th className="p-3 font-semibold">Registro</th>
-                  <th className="p-3 font-semibold w-[150px]">Acciones</th>
+                  <th className="p-3 font-semibold w-[220px]">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -366,6 +378,7 @@ export function UsersPage() {
                     onEditRoles={setEditingUser}
                     onDelete={setDeleteConfirm}
                     onRestore={(id) => restoreMutation.mutate(id)}
+                    onManageAddresses={setAddressUser}
                   />
                 ))}
               </tbody>
@@ -374,31 +387,23 @@ export function UsersPage() {
 
           {/* Pagination */}
           <div className="flex justify-center items-center gap-3 mt-6">
-            <button
+            <Button
+              variant="secondary" size="sm"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm cursor-pointer transition-colors ${
-                page <= 1
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-100'
-              }`}
             >
               ← Anterior
-            </button>
+            </Button>
             <span className="text-sm text-gray-500">
               Página <strong>{page}</strong> de <strong>{totalPages}</strong> — {data.total} usuarios
             </span>
-            <button
+            <Button
+              variant="secondary" size="sm"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm cursor-pointer transition-colors ${
-                page >= totalPages
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-100'
-              }`}
             >
               Siguiente →
-            </button>
+            </Button>
           </div>
         </>
       )}
@@ -440,22 +445,33 @@ export function UsersPage() {
               Esta acción no se puede deshacer.
             </p>
             <div className="flex items-center justify-end gap-3">
-              <button
+              <Button
+                variant="secondary" size="md"
                 onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger" size="md"
                 onClick={handleDeleteConfirm}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 border-0 rounded-lg bg-red-600 text-white text-sm font-medium cursor-pointer hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                loading={deleteMutation.isPending}
               >
-                {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-              </button>
+                Eliminar
+              </Button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          MODAL: Administrar Direcciones
+          ═══════════════════════════════════════════════════════════════════ */}
+      {addressUser && (
+        <AdminAddressModal
+          user={addressUser}
+          onClose={() => setAddressUser(null)}
+        />
       )}
     </div>
   );

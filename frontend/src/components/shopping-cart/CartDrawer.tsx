@@ -12,6 +12,8 @@ import { formatPrice } from '../../api/orders';
 import PaymentForm from '../../components/PaymentForm';
 import CartItemCard from './CartItemCard';
 import CartSummary from './CartSummary';
+import { Alert } from '../ui/Alert';
+import { Button } from '../ui/Button';
 
 export default function CartDrawer() {
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ export default function CartDrawer() {
   const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [pollingEnabled, setPollingEnabled] = useState(false);
+  const [orderTotalInCents, setOrderTotalInCents] = useState(0);
 
   const { data: direcciones } = useDirecciones();
   const createOrder = useCreateOrder();
@@ -49,6 +52,7 @@ export default function CartDrawer() {
         direccionId: selectedAddressId,
       });
       toast.success(`Pedido #${result.id} creado con éxito`);
+      setOrderTotalInCents(total);
       clearCart();
       setShowCheckout(false);
       setOrderSuccess(result.id);
@@ -111,13 +115,14 @@ export default function CartDrawer() {
           <h2 className="m-0 text-lg">
             Carrito ({count} {count === 1 ? 'item' : 'items'})
           </h2>
-          <button
+          <Button
+            variant="ghost" size="sm"
             onClick={handleCloseDrawer}
-            className="bg-transparent border-0 text-[22px] cursor-pointer p-1 leading-none"
             aria-label="Cerrar carrito"
+            className="text-[22px] p-1"
           >
             ✕
-          </button>
+          </Button>
         </div>
 
         {/* Success + Payment section */}
@@ -133,72 +138,73 @@ export default function CartDrawer() {
                   Ahora completá el pago para confirmar tu pedido.
                 </p>
                 <div className="flex gap-2 mt-2.5 flex-wrap">
-                  <button
+                  <Button
                     onClick={() => setShowPayment(true)}
-                    className="px-5 py-2.5 bg-green-600 text-white border-0 rounded cursor-pointer font-bold text-sm"
                   >
                     Pagar ahora
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
                     onClick={() => navigate(`/order-confirmation/${orderSuccess}`)}
-                    className="px-5 py-2.5 bg-transparent text-blue-500 border border-blue-500 rounded cursor-pointer text-sm"
+                    className="text-blue-500 border-blue-500"
                   >
                     Ver detalle
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
                     onClick={() => setOrderSuccess(null)}
-                    className="px-5 py-2.5 bg-transparent text-gray-500 border border-gray-300 rounded cursor-pointer text-sm"
                   >
                     Después
-                  </button>
+                  </Button>
                 </div>
               </>
             )}
 
             {showPayment && orderSuccess && (
               <div className="mt-2.5">
-                <PaymentForm totalInCents={total} onPayment={handlePaymentToken} />
+                <PaymentForm totalInCents={orderTotalInCents} onPayment={handlePaymentToken} />
               </div>
             )}
 
             {pollingEnabled && paymentStatus === 'processing' && (
-              <div className="mt-2.5 p-2.5 bg-yellow-100 rounded text-xs text-yellow-800">
-                ⏳ Verificando pago... Esto puede tomar unos segundos.
-              </div>
+              <Alert variant="info" className="mt-2.5">
+                Verificando pago... Esto puede tomar unos segundos.
+              </Alert>
             )}
 
             {paymentStatus === 'approved' && (
-              <div className="mt-2.5 p-2.5 bg-green-100 rounded text-sm text-green-800">
-                ✅ Pago aprobado. Tu pedido ya está en proceso.
-              </div>
+              <Alert variant="success" className="mt-2.5">
+                Pago aprobado. Tu pedido ya está en proceso.
+              </Alert>
             )}
 
             {paymentStatus === 'rejected' && (
-              <div className="mt-2.5 p-2.5 bg-red-100 rounded text-sm text-red-800">
-                ❌ Pago rechazado. Intentá con otro medio de pago.
-              </div>
+              <Alert variant="error" className="mt-2.5">
+                Pago rechazado. Intentá con otro medio de pago.
+              </Alert>
             )}
 
             {paymentStatus === 'error' && (
-              <div className="mt-2.5 p-2.5 bg-red-100 rounded text-sm text-red-800">
-                ⚠️ Error al procesar el pago. Intentá de nuevo.
-              </div>
+              <Alert variant="error" className="mt-2.5">
+                Error al procesar el pago. Intentá de nuevo.
+              </Alert>
             )}
 
             {(paymentStatus === 'approved' || paymentStatus === 'rejected') && (
               <div className="flex gap-2.5 mt-2.5">
-                <button
+                <Button
                   onClick={() => navigate(`/order-confirmation/${orderSuccess}`)}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white border-0 rounded cursor-pointer text-sm"
+                  className="flex-1"
                 >
                   Ver detalle del pedido
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="secondary"
                   onClick={handleCloseDrawer}
-                  className="flex-1 px-4 py-2 bg-gray-500 text-white border-0 rounded cursor-pointer text-sm"
+                  className="flex-1"
                 >
                   Cerrar
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -243,23 +249,21 @@ export default function CartDrawer() {
             )}
 
             <div className="mt-4 flex gap-2.5">
-              <button
-                onClick={() => setShowCheckout(false)}
-                className="flex-1 p-2.5 bg-gray-500 text-white border-0 rounded cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleCheckout}
-                disabled={!selectedAddressId || createOrder.isPending}
-                className={`flex-1 p-2.5 text-white border-0 rounded ${
-                  !selectedAddressId || createOrder.isPending
-                    ? 'bg-gray-400 cursor-not-allowed opacity-70'
-                    : 'bg-green-600 cursor-pointer'
-                }`}
-              >
-                {createOrder.isPending ? 'Creando...' : `Confirmar ${formatPrice(total)}`}
-              </button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowCheckout(false)}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleCheckout}
+                  disabled={!selectedAddressId || createOrder.isPending}
+                  loading={createOrder.isPending}
+                  className="flex-1"
+                >
+                  {`Confirmar ${formatPrice(total)}`}
+                </Button>
             </div>
           </div>
         )}
@@ -288,7 +292,7 @@ export default function CartDrawer() {
           <CartSummary items={items} />
 
           {!showCheckout && items.length > 0 && !orderSuccess && (
-            <button
+            <Button
               onClick={() => {
                 if (!isAuthenticated) {
                   toast.warning('Necesitás estar logueado para finalizar un pedido');
@@ -296,10 +300,10 @@ export default function CartDrawer() {
                 }
                 setShowCheckout(true);
               }}
-              className="w-full py-3.5 mt-4 bg-blue-500 text-white border-0 rounded-lg text-base font-bold cursor-pointer"
+              className="w-full mt-4"
             >
               Finalizar Pedido
-            </button>
+            </Button>
           )}
         </div>
       </div>

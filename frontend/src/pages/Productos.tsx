@@ -16,6 +16,7 @@ import {
 } from '../api/products';
 import { useCategories } from '../hooks/useCategories';
 import { SkeletonTable } from '../components/SkeletonTable';
+import { Button } from '../components/ui/Button';
 
 /* ─── Helpers ─────────────────────────────────────────────────────────── */
 
@@ -55,6 +56,9 @@ export default function Productos() {
   const [stockEdit, setStockEdit] = useState<{ id: number; value: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  /* Price input — string to avoid cursor jumping with type="number" */
+  const [priceInput, setPriceInput] = useState('0.00');
+
   const { data: categorias } = useCategories();
   const queryClient = useQueryClient();
 
@@ -90,6 +94,7 @@ export default function Productos() {
   const openCreate = () => {
     setFormData(INITIAL_FORM);
     setEditingProduct(null);
+    setPriceInput('0.00');
     setShowForm(true);
   };
 
@@ -108,18 +113,26 @@ export default function Productos() {
         cantidad: i.cantidad,
       })),
     });
+    setPriceInput(centsToDollars(product.price_in_cents));
     setShowForm(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Parse price string -> cents before submitting
+    const priceInCents = Math.round(Number(priceInput) * 100);
+    if (isNaN(priceInCents) || priceInCents < 0) {
+      toast.error('Precio inválido');
+      setSubmitting(false);
+      return;
+    }
     setSubmitting(true);
     try {
       if (editingProduct) {
         const updateData: ProductoUpdate = {
           nombre: formData.nombre,
           descripcion: formData.descripcion,
-          price_in_cents: formData.price_in_cents,
+          price_in_cents: priceInCents,
           images: formData.images,
           is_active: formData.is_active,
           categoria_ids: formData.categoria_ids,
@@ -142,7 +155,7 @@ export default function Productos() {
 
         toast.success('Producto actualizado correctamente');
       } else {
-        await createMutation.mutateAsync(formData);
+        await createMutation.mutateAsync({ ...formData, price_in_cents: priceInCents });
         toast.success('Producto creado correctamente');
       }
       resetForm();
@@ -201,12 +214,9 @@ export default function Productos() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-gray-900 text-xl font-bold">Gestión de Productos</h2>
-        <button
-          onClick={openCreate}
-          className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors"
-        >
+        <Button onClick={openCreate}>
           + Nuevo Producto
-        </button>
+        </Button>
       </div>
 
       {/* ── Loading state ──────────────────────────────────────────── */}
@@ -227,12 +237,9 @@ export default function Productos() {
       {data && !data.productos.length && (
         <div className="text-gray-400 py-12 text-center border border-dashed border-gray-300 rounded-lg">
           <p className="text-base mb-2">No hay productos todavía</p>
-          <button
-            onClick={openCreate}
-            className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors"
-          >
+          <Button onClick={openCreate}>
             + Crear primer producto
-          </button>
+          </Button>
         </div>
       )}
 
@@ -240,26 +247,29 @@ export default function Productos() {
       {data && data.productos.length > 0 && (
         <>
           <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            <table className="w-full border-collapse text-sm">
+            {/* ↓ table-fixed: respeta los w-[...] declarados en <th> */}
+            <table className="w-full border-collapse text-sm table-fixed">
               <thead>
-                <tr className="border-b-2 border-gray-200 text-gray-500 text-left">
+                {/* ↓ text-nowrap: evita que los headers se partan en varias líneas */}
+                <tr className="border-b-2 border-gray-200 text-gray-500 text-left text-nowrap">
                   <th className="p-3 font-semibold w-[60px]">ID</th>
                   <th className="p-3 font-semibold">Nombre</th>
                   <th className="p-3 font-semibold w-[120px]">Precio</th>
                   <th className="p-3 font-semibold w-[180px]">Stock</th>
                   <th className="p-3 font-semibold w-[80px]">Activo</th>
                   <th className="p-3 font-semibold">Categorías</th>
-                  <th className="p-3 font-semibold w-[130px]">Acciones</th>
+                  <th className="p-3 font-semibold w-[150px]">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {data.productos.map((product) => (
                   <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="p-3 text-gray-500">#{product.id}</td>
-                    <td className="p-3 font-medium text-gray-900">
-                      {product.nombre}
+                    {/* ↓ max-w-0 + overflow-hidden: activa el truncate del span interno */}
+                    <td className="p-3 font-medium text-gray-900 max-w-0 overflow-hidden">
+                      <span className="block truncate">{product.nombre}</span>
                       {product.descripcion && (
-                        <span className="block text-xs text-gray-400 font-normal mt-0.5 truncate max-w-[250px]">
+                        <span className="block text-xs text-gray-400 font-normal mt-0.5 truncate">
                           {product.descripcion}
                         </span>
                       )}
@@ -280,20 +290,20 @@ export default function Productos() {
                             min={0}
                             autoFocus
                           />
-                          <button
+                          <Button
+                            variant="secondary" size="sm"
                             onClick={() =>
                               handleStockAction(product.id, 'set', Number(stockEdit.value))
                             }
-                            className="px-2 py-1 border border-gray-300 rounded bg-white text-xs cursor-pointer hover:bg-gray-100"
                           >
                             OK
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="ghost" size="sm"
                             onClick={() => setStockEdit(null)}
-                            className="px-2 py-1 border border-gray-300 rounded bg-white text-xs cursor-pointer hover:bg-gray-100"
                           >
                             ✕
-                          </button>
+                          </Button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5">
@@ -301,32 +311,32 @@ export default function Productos() {
                             {product.stock}
                           </span>
                           <div className="flex items-center gap-0.5 ml-1">
-                            <button
+                            <Button
+                              variant="secondary" size="sm"
                               onClick={() => handleStockAction(product.id, 'increment', 1)}
-                              className="px-1.5 py-0.5 border border-gray-300 rounded bg-white text-xs cursor-pointer hover:bg-gray-100 leading-none"
                               title="Incrementar stock"
                             >
                               +1
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="secondary" size="sm"
                               onClick={() =>
                                 product.stock > 0 && handleStockAction(product.id, 'decrement', 1)
                               }
-                              className="px-1.5 py-0.5 border border-gray-300 rounded bg-white text-xs cursor-pointer hover:bg-gray-100 leading-none disabled:opacity-30"
                               title="Decrementar stock"
                               disabled={product.stock <= 0}
                             >
                               -1
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant="ghost" size="sm"
                               onClick={() =>
                                 setStockEdit({ id: product.id, value: String(product.stock) })
                               }
-                              className="px-1.5 py-0.5 border border-gray-300 rounded bg-white text-xs cursor-pointer hover:bg-gray-100 leading-none"
                               title="Editar stock"
                             >
                               ✎
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       )}
@@ -348,19 +358,19 @@ export default function Productos() {
                         : <span className="text-gray-400">—</span>}
                     </td>
                     <td className="p-3">
-                      <div className="flex items-center gap-1">
-                        <button
+                      <div className="flex items-center flex-wrap gap-1">
+                        <Button
+                          variant="ghost" size="sm"
                           onClick={() => openEdit(product)}
-                          className="px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white text-xs cursor-pointer hover:bg-gray-100 transition-colors"
                         >
                           Editar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="danger" size="sm"
                           onClick={() => setDeleteConfirm(product)}
-                          className="px-2.5 py-1.5 border border-red-300 rounded-lg bg-white text-red-600 text-xs cursor-pointer hover:bg-red-50 transition-colors"
                         >
                           Eliminar
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -371,31 +381,23 @@ export default function Productos() {
 
           {/* ── Pagination ──────────────────────────────────────────── */}
           <div className="flex justify-center items-center gap-3 mt-6">
-            <button
+            <Button
+              variant="secondary" size="sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm cursor-pointer transition-colors ${
-                page <= 1
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-100'
-              }`}
             >
               ← Anterior
-            </button>
+            </Button>
             <span className="text-sm text-gray-500">
               Página <strong>{page}</strong> — {data?.total ?? 0} productos
             </span>
-            <button
+            <Button
+              variant="secondary" size="sm"
               onClick={() => setPage((p) => p + 1)}
               disabled={!data || page * 20 >= data.total}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm cursor-pointer transition-colors ${
-                !data || page * 20 >= data.total
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-gray-100'
-              }`}
             >
               Siguiente →
-            </button>
+            </Button>
           </div>
         </>
       )}
@@ -422,15 +424,16 @@ export default function Productos() {
               <h3 id="product-modal-title" className="text-lg font-semibold text-gray-900">
                 {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
               </h3>
-              <button
+              <Button
+                variant="ghost" size="sm"
                 onClick={resetForm}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                 aria-label="Cerrar"
+                className="p-1"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
 
             {/* Modal body */}
@@ -476,17 +479,24 @@ export default function Productos() {
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                     <input
                       id="prod-price"
-                      type="number"
-                      value={centsToDollars(formData.price_in_cents)}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          price_in_cents: Math.round(Number(e.target.value) * 100),
-                        })
-                      }
+                      type="text"
+                      inputMode="decimal"
+                      value={priceInput}
+                      onChange={(e) => {
+                        // Only allow digits, one dot, and leading minus
+                        const val = e.target.value;
+                        if (/^-?\d*\.?\d{0,2}$/.test(val) || val === '') {
+                          setPriceInput(val);
+                        }
+                      }}
+                      onBlur={() => {
+                        // Format to 2 decimals on blur
+                        const num = Number(priceInput);
+                        if (!isNaN(num)) {
+                          setPriceInput(num.toFixed(2));
+                        }
+                      }}
                       required
-                      min={0}
-                      step="0.01"
                       className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="0.00"
                     />
@@ -578,24 +588,20 @@ export default function Productos() {
 
               {/* Modal footer */}
               <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-200 -mx-6 px-6 -mb-4 pb-4">
-                <button
+                <Button
+                  variant="secondary" size="md"
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                 >
                   Cancelar
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 border-0 rounded-lg bg-blue-600 text-white text-sm font-medium cursor-pointer hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  loading={submitting}
                 >
-                  {submitting
-                    ? 'Guardando...'
-                    : editingProduct
-                      ? 'Guardar cambios'
-                      : 'Crear producto'}
-                </button>
+                  {editingProduct ? 'Guardar cambios' : 'Crear producto'}
+                </Button>
               </div>
             </form>
           </div>
@@ -626,19 +632,20 @@ export default function Productos() {
               Esta acción no se puede deshacer.
             </p>
             <div className="flex items-center justify-end gap-3">
-              <button
+              <Button
+                variant="secondary" size="md"
                 onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger" size="md"
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 border-0 rounded-lg bg-red-600 text-white text-sm font-medium cursor-pointer hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                loading={deleteMutation.isPending}
               >
-                {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-              </button>
+                Eliminar
+              </Button>
             </div>
           </div>
         </div>

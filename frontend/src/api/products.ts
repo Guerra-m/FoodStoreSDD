@@ -92,44 +92,44 @@ export interface ProductoFilters {
 export const productApi = {
   // Admin endpoints
   getAll: async (page = 1, perPage = 20): Promise<ProductoListResponse> => {
-    const response = await api.get('/api/v1/products', {
+    const response = await api.get('/products', {
       params: { page, per_page: perPage },
     });
     return response.data;
   },
 
   getById: async (id: number): Promise<Producto> => {
-    const response = await api.get(`/api/v1/products/${id}`);
+    const response = await api.get(`/products/${id}`);
     return response.data;
   },
 
   create: async (data: ProductoCreate): Promise<Producto> => {
-    const response = await api.post('/api/v1/products', data);
+    const response = await api.post('/products', data);
     return response.data;
   },
 
   update: async (id: number, data: ProductoUpdate): Promise<Producto> => {
-    const response = await api.patch(`/api/v1/products/${id}`, data);
+    const response = await api.patch(`/products/${id}`, data);
     return response.data;
   },
 
   updateStock: async (id: number, data: StockUpdate): Promise<Producto> => {
-    const response = await api.patch(`/api/v1/products/${id}/stock`, data);
+    const response = await api.patch(`/products/${id}/stock`, data);
     return response.data;
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/v1/products/${id}`);
+    await api.delete(`/products/${id}`);
   },
 
   // Public endpoints
   getPublic: async (filters?: ProductoFilters): Promise<ProductoPublicListResponse> => {
-    const response = await api.get('/api/v1/products/public', { params: filters });
+    const response = await api.get('/products/public', { params: filters });
     return response.data;
   },
 
   getPublicById: async (id: number): Promise<ProductoPublic> => {
-    const response = await api.get(`/api/v1/products/public/${id}`);
+    const response = await api.get(`/products/public/${id}`);
     return response.data;
   },
 };

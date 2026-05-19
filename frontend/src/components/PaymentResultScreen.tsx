@@ -1,4 +1,5 @@
 import { usePaymentStore } from '../stores/paymentStore';
+import { Button } from './ui/Button';
 
 interface PaymentResultScreenProps {
   orderId: number | null;
@@ -32,12 +33,12 @@ export function PaymentResultScreen({
           </p>
         )}
         <div className="flex gap-3 justify-center flex-wrap">
-          <button onClick={onViewOrders} className="px-5 py-2.5 bg-blue-500 text-white rounded-lg font-semibold text-sm border-0 cursor-pointer">
+          <Button onClick={onViewOrders}>
             Ver mi pedido
-          </button>
-          <button onClick={onBackToCatalog} className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm border border-gray-300 cursor-pointer">
+          </Button>
+          <Button variant="secondary" onClick={onBackToCatalog}>
             Volver al catálogo
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -57,12 +58,12 @@ export function PaymentResultScreen({
           </p>
         )}
         <div className="flex gap-3 justify-center flex-wrap">
-          <button onClick={onRetry} className="px-5 py-2.5 bg-blue-500 text-white rounded-lg font-semibold text-sm border-0 cursor-pointer">
+          <Button onClick={onRetry}>
             Intentar de nuevo
-          </button>
-          <button onClick={onBackToCatalog} className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm border border-gray-300 cursor-pointer">
+          </Button>
+          <Button variant="secondary" onClick={onBackToCatalog}>
             Volver al carrito
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -80,12 +81,12 @@ export function PaymentResultScreen({
           Si el problema persiste, contactate con soporte.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <button onClick={onRetry} className="px-5 py-2.5 bg-blue-500 text-white rounded-lg font-semibold text-sm border-0 cursor-pointer">
+          <Button onClick={onRetry}>
             Intentar de nuevo
-          </button>
-          <button onClick={onBackToCatalog} className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm border border-gray-300 cursor-pointer">
+          </Button>
+          <Button variant="secondary" onClick={onBackToCatalog}>
             Volver al catálogo
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -100,9 +101,9 @@ export function PaymentResultScreen({
           Tu pago está siendo procesado. Te notificaremos cuando se confirme.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <button onClick={onViewOrders} className="px-5 py-2.5 bg-blue-500 text-white rounded-lg font-semibold text-sm border-0 cursor-pointer">
+          <Button onClick={onViewOrders}>
             Ver mis pedidos
-          </button>
+          </Button>
         </div>
       </div>
     );

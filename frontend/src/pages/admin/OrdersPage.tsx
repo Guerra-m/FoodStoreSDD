@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { listAdminOrders } from '../../api/admin';
 import { SkeletonTable } from '../../components/SkeletonTable';
+import { Button } from '../../components/ui/Button';
 
 const STATUS_COLORS: Record<string, string> = {
   pendiente: '#f59e0b',
@@ -118,7 +119,7 @@ export function OrdersPage() {
                     <td className="p-2">
                       <Link
                         to={`/admin/orders/${order.id}`}
-                        className="px-2.5 py-1 border border-gray-300 rounded-lg bg-white no-underline text-gray-700 text-xs inline-block"
+                        className="px-3 py-1.5 border border-gray-300 rounded-lg bg-white no-underline text-gray-700 text-xs inline-flex items-center justify-center gap-2 font-medium"
                       >
                         Detalle
                       </Link>
@@ -131,27 +132,23 @@ export function OrdersPage() {
 
           {/* Pagination */}
           <div className="flex justify-center gap-2 mt-6 items-center">
-            <button
+            <Button
+              variant="secondary" size="sm"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm ${
-                page <= 1 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-              }`}
             >
               Anterior
-            </button>
+            </Button>
             <span className="text-sm text-gray-500">
               Página {page} de {totalPages}
             </span>
-            <button
+            <Button
+              variant="secondary" size="sm"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-3 py-1.5 border border-gray-300 rounded-lg bg-white text-sm ${
-                page >= totalPages ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-              }`}
             >
               Siguiente
-            </button>
+            </Button>
           </div>
         </>
       )}

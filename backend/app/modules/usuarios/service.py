@@ -18,6 +18,7 @@ from app.modules.usuarios.schema import (
     RegisterRequest,
     LoginRequest,
     TokenResponse,
+    LoginResponse,
     UserResponse,
     ChangePasswordRequest,
 )
@@ -88,8 +89,8 @@ class AuthService:
             actualizado_en=datetime.now(timezone.utc),
         )
 
-    async def login(self, data: LoginRequest, user_agent: str = "") -> TokenResponse:
-        """Autentica usuario y devuelve tokens."""
+    async def login(self, data: LoginRequest, user_agent: str = "") -> LoginResponse:
+        """Autentica usuario y devuelve tokens + datos del usuario."""
         with UnitOfWork() as uow:
             usuario_repo = UsuarioRepository(uow.session)
             usuario = usuario_repo.get_by_email(data.email)
@@ -126,12 +127,27 @@ class AuthService:
                 expires_at=expires_at,
             )
 
-        return TokenResponse(
+            # Leer datos del usuario ANTES de que se cierre la sesión
+            user_response = UserResponse(
+                id=usuario.id,
+                nombre=usuario.nombre,
+                email=usuario.email,
+                telefono=usuario.telefono,
+                foto_url=usuario.foto_url,
+                fecha_nacimiento=usuario.fecha_nacimiento,
+                roles=roles,
+                creado_en=usuario.creado_en,
+                actualizado_en=usuario.actualizado_en,
+            )
+
+        return LoginResponse(
+            user=user_response,
             access_token=access_token,
             refresh_token=raw_refresh,
+            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         )
 
-    async def refresh(self, raw_refresh_token: str) -> TokenResponse:
+    async def refresh(self, raw_refresh_token: str) -> LoginResponse:
         """Refresca el access token con rotación. Detecta reuso de token revocado."""
         with UnitOfWork() as uow:
             refresh_repo = RefreshTokenRepository(uow.session)
@@ -187,9 +203,24 @@ class AuthService:
                 expires_at=new_expires,
             )
 
-        return TokenResponse(
+            # Leer datos del usuario ANTES de que se cierre la sesión
+            user_response = UserResponse(
+                id=usuario.id,
+                nombre=usuario.nombre,
+                email=usuario.email,
+                telefono=usuario.telefono,
+                foto_url=usuario.foto_url,
+                fecha_nacimiento=usuario.fecha_nacimiento,
+                roles=roles,
+                creado_en=usuario.creado_en,
+                actualizado_en=usuario.actualizado_en,
+            )
+
+        return LoginResponse(
+            user=user_response,
             access_token=access_token,
             refresh_token=new_raw,
+            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         )
 
     async def logout(self, raw_refresh_token: str) -> dict:

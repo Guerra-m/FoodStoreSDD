@@ -9,7 +9,7 @@ direccion_service = DireccionService()
 
 
 @router.get("/direcciones", response_model=list[DireccionResponse])
-async def list_direcciones(payload: dict = Depends(require_roles(["Cliente"]))):
+async def list_direcciones(payload: dict = Depends(require_roles(["Cliente", "Admin"]))):
     """Lista todas las direcciones del cliente autenticado."""
     usuario_id = int(payload.get("sub"))
     return await direccion_service.list_by_usuario(usuario_id)
@@ -18,7 +18,7 @@ async def list_direcciones(payload: dict = Depends(require_roles(["Cliente"]))):
 @router.post("/direcciones", response_model=DireccionResponse, status_code=status.HTTP_201_CREATED)
 async def create_direccion(
     data: DireccionCreate,
-    payload: dict = Depends(require_roles(["Cliente"])),
+    payload: dict = Depends(require_roles(["Cliente", "Admin"])),
 ):
     """Crea una nueva dirección de entrega."""
     usuario_id = int(payload.get("sub"))
@@ -29,7 +29,7 @@ async def create_direccion(
 async def update_direccion(
     direccion_id: int,
     data: DireccionUpdate,
-    payload: dict = Depends(require_roles(["Cliente"])),
+    payload: dict = Depends(require_roles(["Cliente", "Admin"])),
 ):
     """Actualiza una dirección existente."""
     usuario_id = int(payload.get("sub"))
@@ -39,7 +39,7 @@ async def update_direccion(
 @router.delete("/direcciones/{direccion_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_direccion(
     direccion_id: int,
-    payload: dict = Depends(require_roles(["Cliente"])),
+    payload: dict = Depends(require_roles(["Cliente", "Admin"])),
 ):
     """Elimina una dirección."""
     usuario_id = int(payload.get("sub"))
@@ -50,7 +50,7 @@ async def delete_direccion(
 @router.patch("/direcciones/{direccion_id}/principal", response_model=DireccionResponse)
 async def set_direccion_principal(
     direccion_id: int,
-    payload: dict = Depends(require_roles(["Cliente"])),
+    payload: dict = Depends(require_roles(["Cliente", "Admin"])),
 ):
     """Marca una dirección como principal."""
     usuario_id = int(payload.get("sub"))

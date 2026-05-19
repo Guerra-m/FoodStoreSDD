@@ -1,28 +1,25 @@
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field
 from datetime import datetime, date
-from typing import Optional, List
+from typing import Optional
 
 
-class User(SQLModel, table=True):
-    __table_args__ = {'extend_existing': True}
-    """Usuario del sistema con soporte para múltiples roles."""
-    __tablename__ = "usuario"
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    email: str = Field()  # Índice y unique definidos en Usuario (misma tabla)
-    nombre: str
-    password_hash: str  # Campo de contraseña
+class User(SQLModel):
+    """Usuario del sistema — modelo no-table para compatibilidad.
+    
+    La tabla real 'usuario' es gestionada por Usuario (app.modules.usuarios.model).
+    """
+    id: Optional[int] = None
+    email: str = ""
+    nombre: str = ""
+    password_hash: str = ""
     telefono: Optional[str] = None
     foto_url: Optional[str] = None
     fecha_nacimiento: Optional[date] = None
     # Timestamps
-    creado_en: datetime = Field(default_factory=datetime.utcnow)
-    actualizado_en: datetime = Field(default_factory=datetime.utcnow)
+    creado_en: Optional[datetime] = None
+    actualizado_en: Optional[datetime] = None
     # Soft delete
     eliminado_en: Optional[datetime] = None
-
-    # Relación con refresh tokens
-    refresh_tokens: List["RefreshToken"] = Relationship(back_populates="usuario")
 
 
 class RefreshToken(SQLModel, table=True):
@@ -37,6 +34,3 @@ class RefreshToken(SQLModel, table=True):
     revocado_en: Optional[datetime] = None  # NULL si no revocado, fecha si revocado
     # Timestamps
     creado_en: datetime = Field(default_factory=datetime.utcnow)
-
-    # Relación con usuario
-    usuario: User = Relationship(back_populates="refresh_tokens")

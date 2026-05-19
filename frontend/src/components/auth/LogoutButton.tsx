@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { Button } from "../ui/Button";
 
 interface LogoutButtonProps {
   className?: string;
@@ -29,13 +30,15 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className }) => {
           {error}
         </div>
       )}
-      <button
+      <Button
+        variant="danger"
         onClick={handleLogout}
         disabled={isLoading}
-        className={`px-4 py-2 bg-red-500 text-white font-medium rounded text-sm transition-colors hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed ${className || ""}`}
+        loading={isLoading}
+        className={className}
       >
-        {isLoading ? "Cerrando sesión..." : "Cerrar Sesión"}
-      </button>
+        Cerrar Sesión
+      </Button>
     </>
   );
 };

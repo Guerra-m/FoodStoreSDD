@@ -30,7 +30,7 @@ from app.admin.services.dashboard_service import DashboardService
 from app.admin.services.user_service import UserAdminService
 from app.admin.services.order_service import OrderAdminService
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -215,6 +215,140 @@ def restore_user(
         from fastapi import HTTPException
         raise HTTPException(status_code=status_code or 400, detail=error)
     return result
+
+
+# ─── Address Management Endpoints ─────────────────────────────────────────
+
+from app.modules.direcciones.schema import DireccionCreate, DireccionUpdate, DireccionResponse
+from app.modules.direcciones.repository import DireccionRepository
+from app.modules.direcciones.model import Direccion
+from typing import List
+
+
+@router.get("/users/{user_id}/direcciones", response_model=List[DireccionResponse])
+def list_user_addresses(
+    user_id: int = Path(..., ge=1),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    session: Session = Depends(get_session),
+):
+    """Lista todas las direcciones de un usuario."""
+    repo = DireccionRepository(session)
+    direcciones = repo.list_by_usuario(user_id)
+    return [DireccionResponse.model_validate(d) for d in direcciones]
+
+
+@router.get("/users/{user_id}/direcciones/{address_id}", response_model=DireccionResponse)
+def get_user_address(
+    user_id: int = Path(..., ge=1),
+    address_id: int = Path(..., ge=1),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    session: Session = Depends(get_session),
+):
+    """Obtiene una dirección específica de un usuario."""
+    from fastapi import HTTPException
+    repo = DireccionRepository(session)
+    direccion = repo.get_by_id(address_id)
+    if not direccion or direccion.usuario_id != user_id:
+        raise HTTPException(status_code=404, detail="Dirección no encontrada")
+    return DireccionResponse.model_validate(direccion)
+
+
+@router.post("/users/{user_id}/direcciones", response_model=DireccionResponse, status_code=status.HTTP_201_CREATED)
+def create_user_address(
+    data: DireccionCreate,
+    user_id: int = Path(..., ge=1),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    session: Session = Depends(get_session),
+):
+    """Crea una nueva dirección para un usuario."""
+    repo = DireccionRepository(session)
+    total = repo.count_by_usuario(user_id)
+
+    direccion = Direccion(
+        usuario_id=user_id,
+        calle=data.calle,
+        numero=data.numero,
+        ciudad=data.ciudad,
+        provincia=data.provincia,
+        codigo_postal=data.codigo_postal,
+        latitud=data.latitud,
+        longitud=data.longitud,
+        es_principal=total == 0,
+    )
+
+    created = repo.create(direccion)
+    return DireccionResponse.model_validate(created)
+
+
+@router.put("/users/{user_id}/direcciones/{address_id}", response_model=DireccionResponse)
+def update_user_address(
+    data: DireccionUpdate,
+    user_id: int = Path(..., ge=1),
+    address_id: int = Path(..., ge=1),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    session: Session = Depends(get_session),
+):
+    """Actualiza una dirección de un usuario."""
+    from fastapi import HTTPException
+    repo = DireccionRepository(session)
+    direccion = repo.get_by_id(address_id)
+    if not direccion or direccion.usuario_id != user_id:
+        raise HTTPException(status_code=404, detail="Dirección no encontrada")
+
+    campos = {"calle", "numero", "ciudad", "provincia", "codigo_postal", "latitud", "longitud"}
+    update_data = data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        if key in campos:
+            setattr(direccion, key, value)
+
+    updated = repo.update(direccion)
+    return DireccionResponse.model_validate(updated)
+
+
+@router.delete("/users/{user_id}/direcciones/{address_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user_address(
+    user_id: int = Path(..., ge=1),
+    address_id: int = Path(..., ge=1),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    session: Session = Depends(get_session),
+):
+    """Elimina una dirección de un usuario."""
+    from fastapi import HTTPException
+    repo = DireccionRepository(session)
+    direccion = repo.get_by_id(address_id)
+    if not direccion or direccion.usuario_id != user_id:
+        raise HTTPException(status_code=404, detail="Dirección no encontrada")
+
+    total = repo.count_by_usuario(user_id)
+    if direccion.es_principal and total > 1:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede eliminar la dirección principal. Establece otra como principal primero.",
+        )
+    if direccion.es_principal and total == 1:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede eliminar la única dirección. Debes tener al menos una dirección registrada.",
+        )
+
+    repo.delete(direccion)
+
+
+@router.patch("/users/{user_id}/direcciones/{address_id}/principal", response_model=DireccionResponse)
+def set_user_address_principal(
+    user_id: int = Path(..., ge=1),
+    address_id: int = Path(..., ge=1),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    session: Session = Depends(get_session),
+):
+    """Marca una dirección como principal."""
+    from fastapi import HTTPException
+    repo = DireccionRepository(session)
+    direccion = repo.get_by_id(address_id)
+    if not direccion or direccion.usuario_id != user_id:
+        raise HTTPException(status_code=404, detail="Dirección no encontrada")
+    updated = repo.set_principal(address_id, user_id)
+    return DireccionResponse.model_validate(updated)
 
 
 # ─── Order Management Endpoints ────────────────────────────────────────────

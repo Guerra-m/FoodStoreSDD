@@ -1,3 +1,4 @@
+import { Alert } from './ui/Alert';
 import { formatPrice, formatDate, getEstadoLabel, getEstadoColor, getPaymentStatusLabel, getPaymentStatusColor } from '../api/orders';
 import type { OrderResponse } from '../api/orders';
 
@@ -38,9 +39,9 @@ export function OrderSummaryCard({ order }: OrderSummaryCardProps) {
 
       {/* Rejected alert */}
       {hasRejectedPayment && (
-        <div className="mb-5 p-2.5 bg-red-100 rounded text-sm text-red-800">
+        <Alert variant="error" className="mb-5">
           El pago fue rechazado. Para reintentar, contactate con soporte o realizá un nuevo pedido.
-        </div>
+        </Alert>
       )}
 
       {/* Dirección */}

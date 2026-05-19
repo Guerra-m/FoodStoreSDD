@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Direccion, DireccionCreate, DireccionUpdate } from '../api/address';
+import { Button } from './ui/Button';
 
 interface AddressFormModalProps {
   direccion?: Direccion | null;
@@ -42,8 +43,10 @@ export default function AddressFormModal({ direccion, onClose, onSave }: Address
             <label className="block mb-1 font-bold">Número</label>
             <input
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.numero}
-              onChange={e => setFormData({ ...formData, numero: e.target.value })}
+              onChange={e => setFormData({ ...formData, numero: e.target.value.replace(/\D/g, '') })}
               required
               className="w-full p-2 border border-gray-300 rounded"
             />
@@ -72,26 +75,27 @@ export default function AddressFormModal({ direccion, onClose, onSave }: Address
             <label className="block mb-1 font-bold">Código Postal</label>
             <input
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.codigo_postal}
-              onChange={e => setFormData({ ...formData, codigo_postal: e.target.value })}
+              onChange={e => setFormData({ ...formData, codigo_postal: e.target.value.replace(/\D/g, '') })}
               required
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
           <div className="flex gap-2 justify-end">
-            <button
+            <Button
+              variant="secondary" size="md"
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-400 text-white border-0 rounded cursor-pointer"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-green-500 text-white border-0 rounded cursor-pointer"
             >
               Guardar
-            </button>
+            </Button>
           </div>
         </form>
       </div>

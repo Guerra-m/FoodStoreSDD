@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 15_000, // 15s timeout — evita que peticiones cuelguen para siempre
 });
 
 api.interceptors.request.use((config) => {
@@ -59,6 +60,10 @@ api.interceptors.response.use(
 
       // Si ya hay un refresh en curso, encolar esta request
       if (isRefreshing) {
+        // Si la request que falló ES el refresh mismo → no encolar (deadlock)
+        if (originalRequest.url?.includes('/auth/refresh')) {
+          return Promise.reject(error);
+        }
         return new Promise<string>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then((token) => {

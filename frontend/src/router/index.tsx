@@ -27,30 +27,21 @@ export function AppRoutes() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Routes con layout completo (sidebar + header + footer) */}
-      <Route element={<Layout />}>
+      {/* Routes con layout completo — requieren autenticación */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<HomePage />} />
         <Route path="/catalog" element={<Catalogo />} />
         <Route path="/catalog/:id" element={<ProductoDetalle />} />
         <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
         <Route path="/payment-result" element={<PaymentResultPage />} />
-
-        <Route
-          path="/perfil"
-          element={
-            <ProtectedRoute>
-              <MiPerfil />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/mis-pedidos"
-          element={
-            <ProtectedRoute>
-              <MisPedidos />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/perfil" element={<MiPerfil />} />
+        <Route path="/mis-pedidos" element={<MisPedidos />} />
 
         <Route
           path="/categorias"
@@ -69,7 +60,7 @@ export function AppRoutes() {
           }
         />
 
-        {/* Admin Routes */}
+        {/* Admin Routes — requieren rol Admin ADEMÁS de autenticación */}
         <Route
           path="/admin"
           element={
