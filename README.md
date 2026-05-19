@@ -7,6 +7,7 @@ https://youtu.be/TSOFzQJn2zI
 ## Como Ejecutar
 
 -Activar el entorno virtual si no está: ..venv\Scripts\Activate.ps1
+
 -Ejecutar: uvicorn main:app --reload --port 8000
 
 
