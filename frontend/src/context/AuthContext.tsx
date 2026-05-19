@@ -73,32 +73,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [handleUnauthorized]);
 
   // ──────────────────────────────────────────
-  // Restaura sesión al montar
+  // Restaura sesión al montar — NUNCA destruye auth state
   // ──────────────────────────────────────────
   useEffect(() => {
     const restoreSession = async () => {
       setIsLoading(true);
       try {
-        const accessToken = useAuthStore.getState().accessToken;
-
+        // 1. Intentar desde zustand (persist), fallback a lib/auth
+        let accessToken = useAuthStore.getState().accessToken;
         if (!accessToken) {
-          return;
+          const tokens = getTokens();
+          if (tokens.accessToken) {
+            accessToken = tokens.accessToken;
+            // Sincronizar a zustand para que futuras recargas lo tengan
+            useAuthStore.getState().setAuth(tokens.accessToken, null);
+          }
         }
 
+        if (!accessToken) {
+          return; // No hay sesión que restaurar
+        }
+
+        // 2. Si expiró, intentar refresh
         if (isTokenExpired(accessToken)) {
           const { refreshToken } = getTokens();
-          if (refreshToken) {
+          if (!refreshToken) return; // Sin refresh token, no se puede — el interceptor lo manejará
+          try {
             await handleRefreshToken();
-          } else {
-            clearAllAuth();
+          } catch {
+            // Refresh falló — no destruimos nada, el interceptor de axios
+            // reintentará reactivamente en la próxima request
           }
           return;
         }
 
-        await setUserFromToken(accessToken);
-      } catch (err) {
-        console.error("Error restoring session:", err);
-        clearAllAuth();
+        // 3. Token válido — verificar contra backend
+        try {
+          await setUserFromToken(accessToken);
+        } catch {
+          // Backend no respondió — nos quedamos como estamos, el usuario
+          // puede recargar o la próxima llamada gatillará refresh vía interceptor
+        }
       } finally {
         setIsLoading(false);
       }
@@ -196,7 +211,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
   }, []);
 
-  const isAuthenticated = user !== null;
+  // Autenticado si tenemos user O un token persistido (aunque aún no se haya cargado el user)
+  const isAuthenticated =
+    user !== null ||
+    !!useAuthStore.getState().accessToken ||
+    !!getTokens().accessToken;
 
   const value: AuthContextType = {
     user,

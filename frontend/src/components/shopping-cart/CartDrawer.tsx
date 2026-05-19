@@ -34,6 +34,7 @@ export default function CartDrawer() {
   const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [pollingEnabled, setPollingEnabled] = useState(false);
+  const [orderTotalInCents, setOrderTotalInCents] = useState(0);
 
   const { data: direcciones } = useDirecciones();
   const createOrder = useCreateOrder();
@@ -51,6 +52,7 @@ export default function CartDrawer() {
         direccionId: selectedAddressId,
       });
       toast.success(`Pedido #${result.id} creado con éxito`);
+      setOrderTotalInCents(total);
       clearCart();
       setShowCheckout(false);
       setOrderSuccess(result.id);
@@ -160,7 +162,7 @@ export default function CartDrawer() {
 
             {showPayment && orderSuccess && (
               <div className="mt-2.5">
-                <PaymentForm totalInCents={total} onPayment={handlePaymentToken} />
+                <PaymentForm totalInCents={orderTotalInCents} onPayment={handlePaymentToken} />
               </div>
             )}
 

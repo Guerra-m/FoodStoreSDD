@@ -91,8 +91,8 @@ class CategoriaService:
             if padre_id is not None:
                 categorias = repo.get_by_parent(padre_id)
             else:
-                # Si no se especifica padre, devolver solo raíces
-                categorias = repo.get_all_root()
+                # Si no se especifica padre, devolver todas las categorías
+                categorias = repo.get_all()
 
             return [
                 CategoriaResponse(

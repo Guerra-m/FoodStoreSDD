@@ -38,8 +38,8 @@ class DireccionResponse(BaseModel):
     latitud: Optional[float] = None
     longitud: Optional[float] = None
     es_principal: bool
-    creado_en: str
-    actualizado_en: str
+    creado_en: datetime
+    actualizado_en: datetime
 
     class Config:
         from_attributes = True

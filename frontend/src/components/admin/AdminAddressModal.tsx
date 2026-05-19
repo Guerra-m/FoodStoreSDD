@@ -104,7 +104,7 @@ export function AdminAddressModal({
 
   const queryKey = ['admin', 'users', user.id, 'direcciones'];
 
-  const { data: addresses, isLoading } = useQuery({
+  const { data: addresses, isLoading, error } = useQuery({
     queryKey,
     queryFn: () => getUserAddresses(user.id),
   });
@@ -172,7 +172,13 @@ export function AdminAddressModal({
             <div className="text-sm text-gray-400 py-6 text-center">Cargando direcciones...</div>
           )}
 
-          {!isLoading && addresses && addresses.length === 0 && (
+          {error && (
+            <div className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+              Error al cargar direcciones. {error instanceof Error ? error.message : 'Intente nuevamente.'}
+            </div>
+          )}
+
+          {!isLoading && !error && addresses && addresses.length === 0 && (
             <div className="text-sm text-gray-400 py-6 text-center border border-dashed border-gray-300 rounded-lg">
               Este usuario no tiene direcciones registradas.
             </div>

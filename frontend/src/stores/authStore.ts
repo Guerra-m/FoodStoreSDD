@@ -9,7 +9,7 @@ import type { User } from '../types/auth';
 interface AuthState {
   accessToken: string | null;
   user: User | null;
-  setAuth: (token: string, user: User) => void;
+  setAuth: (token: string, user: User | null) => void;
   logout: () => void;
 }
 
