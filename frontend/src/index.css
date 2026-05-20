@@ -1,14 +1,528 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Skeleton animation ───────────────────────────────────────────── */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-800;
+  }
+
+  /* Modern scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-neutral-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neutral-400;
+  }
+}
+
+@layer components {
+  /* ——— Card moderna ——— */
+  .card {
+    @apply bg-white rounded-2xl border border-neutral-200/60 shadow-soft transition-all duration-300;
+  }
+
+  .card:hover {
+    @apply shadow-soft-lg border-neutral-300/80;
+  }
+
+  .card-static {
+    @apply bg-white rounded-2xl border border-neutral-200/60 shadow-soft;
+  }
+
+  /* ——— Input moderno ——— */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-neutral-200 bg-white text-neutral-800
+           placeholder:text-neutral-400
+           focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
+           disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed
+           transition-all duration-200;
+  }
+
+  .input-field-error {
+    @apply border-accent-error focus:ring-accent-error/20 focus:border-accent-error;
+  }
+
+  .input-label {
+    @apply block text-sm font-medium text-neutral-700 mb-1.5;
+  }
+
+  .input-error {
+    @apply text-xs text-accent-error mt-1;
+  }
+
+  /* ——— Botón moderno ——— */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium
+           transition-all duration-200 ease-smooth
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500
+           active:scale-[0.98] shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-neutral-700 border border-neutral-200
+           hover:bg-neutral-50 hover:border-neutral-300 focus:ring-neutral-200
+           active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply bg-accent-error text-white hover:bg-red-600 focus:ring-red-500
+           active:scale-[0.98] shadow-sm;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100
+           focus:ring-neutral-200;
+  }
+
+  .btn-sm {
+    @apply px-3.5 py-2 text-sm rounded-lg;
+  }
+
+  .btn-lg {
+    @apply px-7 py-3.5 text-base rounded-2xl;
+  }
+
+  /* ——— Badge moderno ——— */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-primary-100 text-primary-700;
+  }
+
+  .badge-success {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .badge-neutral {
+    @apply bg-neutral-100 text-neutral-600;
+  }
+
+  /* ——— Tabla moderna ——— */
+  .table-container {
+    @apply w-full overflow-x-auto rounded-2xl border border-neutral-200;
+  }
+
+  .table-modern {
+    @apply w-full text-sm;
+  }
+
+  .table-modern thead {
+    @apply bg-neutral-50 border-b border-neutral-200;
+  }
+
+  .table-modern th {
+    @apply px-5 py-4 text-left font-semibold text-neutral-600;
+  }
+
+  .table-modern td {
+    @apply px-5 py-4 border-b border-neutral-100;
+  }
+
+  .table-modern tbody tr {
+    @apply transition-colors duration-150 hover:bg-neutral-50;
+  }
+
+  .table-modern tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* ——— Link moderno ——— */
+  .link {
+    @apply text-primary-600 hover:text-primary-700 underline-offset-4 hover:underline
+           transition-colors duration-200;
+  }
+
+  /* ——— Skeleton shimmer ——— */
+  .skeleton {
+    @apply bg-neutral-200 rounded-lg;
+    background: linear-gradient(90deg, #e5e7eb 25%, #f1f5f9 50%, #e5e7eb 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* ——— Page title ——— */
+  .page-title {
+    @apply text-2xl font-bold text-neutral-900 mb-1;
+  }
+
+  .page-subtitle {
+    @apply text-neutral-500 text-sm mb-6;
+  }
+
+  /* ——— Section spacing ——— */
+  .section {
+    @apply space-y-6;
+  }
+}
+
+@layer utilities {
+  /* Animations */
+  .animate-in {
+    animation: fadeIn 0.3s ease-out, slideUp 0.3s ease-out;
+  }
+
+  .animate-in-fast {
+    animation: fadeIn 0.2s ease-out, scaleIn 0.2s ease-out;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400;
+  }
+
+  /* Focus ring */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2;
+  }
+}
+
+/* ——— Skeleton animation keyframes ——— */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 .animate-skeleton {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
-  background-color: #e5e7eb;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS MODERNAS - Estilo Vercel/Linear/Notion
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Contenedor de toasts - posición superior derecha */
+.Toastify__toast-container {
+  z-index: 9999;
+  pointer-events: none;
+  padding: 0;
+}
+
+.Toastify__toast-container--top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+/* Base del toast */
+.Toastify__toast {
+  min-height: auto;
+  padding: 0;
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow: hidden;
+  max-width: 400px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Toast body */
+.Toastify__toast-body {
+  padding: 0;
+  margin: 0;
+  align-items: flex-start;
+  gap: 0;
+}
+
+/* Icono del toast */
+.Toastify__toast-icon {
+  display: none;
+}
+
+/* Contenido del toast - layout personalizado */
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  min-width: 300px;
+}
+
+/* Icono circular con icono */
+.toast-icon-wrapper {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-icon-wrapper svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Texto del toast */
+.toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-message {
+  font-size: 14px;
+  font-weight: 500;
+  color: #18181b;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+/* Close button */
+.Toastify__close-button {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  transition: opacity 0.15s, background 0.15s;
+  margin-left: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.Toastify__close-button:hover {
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.Toastify__close-button svg {
+  width: 14px;
+  height: 14px;
+  color: #71717a;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST POR TIPO
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Success */
+.Toastify__toast--success {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.1);
+}
+
+.Toastify__toast--success .toast-icon-wrapper {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+/* Error */
+.Toastify__toast--error {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px -2px rgba(239, 68, 68, 0.15), 0 0 0 1px rgba(239, 68, 68, 0.1);
+}
+
+.Toastify__toast--error .toast-icon-wrapper {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Warning */
+.Toastify__toast--warning {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+.Toastify__toast--warning .toast-icon-wrapper {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+/* Info */
+.Toastify__toast--info {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 4px 20px -2px rgba(59, 130, 246, 0.15), 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+.Toastify__toast--info .toast-icon-wrapper {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS BAR - Minimalista y elegante
+   ═══════════════════════════════════════════════════════════════ */
+
+.Toastify__progress-bar {
+  height: 3px;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
+
+.Toastify__progress-bar--success {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.Toastify__progress-bar--error {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.Toastify__progress-bar--warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.Toastify__progress-bar--info {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMACIONES DE ENTRADA Y SALIDA
+   ═══════════════════════════════════════════════════════════════ */
+
+.Toastify__toast-container--animate {
+  transform-origin: top right;
+}
+
+.Toastify__slide-enter--top-right {
+  animation: toast-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.Toastify__slide-exit--top-right {
+  animation: toast-exit 0.2s cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+@keyframes toast-enter {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-exit {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+/* Hover state */
+.Toastify__toast:hover {
+  box-shadow: 0 8px 30px -2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST COLORS - Colores para iconos según tipo
+   ═══════════════════════════════════════════════════════════════ */
+
+.toast-wrapper {
+  width: 100%;
+}
+
+.toast-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.toast-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.toast-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.toast-info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MERCADOPAGO PAYMENT FORM - Estilos específicos
+   ═══════════════════════════════════════════════════════════════ */
+
+.mp-payment-form {
+  width: 100%;
+}
+
+.mp-payment-form .card-payment-container {
+  min-height: 320px !important;
+  width: 100% !important;
+}
+
+.mp-payment-form iframe {
+  min-height: 300px !important;
+}
+
+/* Asegurar que el formulario de MercadoPago sea visible */
+[data-testid="card-payment-form"] {
+  min-height: 320px !important;
+}
+
+.payment-form-wrapper {
+  min-height: 350px;
+  width: 100%;
+}
+
+.payment-form-wrapper iframe {
+  min-height: 320px !important;
+  width: 100% !important;
 }

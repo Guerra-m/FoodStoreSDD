@@ -176,6 +176,14 @@
       "sessions": 2,
       "memories": 3,
       "prompts": 10
+    },
+    {
+      "id": "9db560bc",
+      "created_by": "Lenovo",
+      "created_at": "2026-05-19T12:26:18Z",
+      "sessions": 1,
+      "memories": 0,
+      "prompts": 13
     }
   ]
 }

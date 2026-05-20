@@ -11,19 +11,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 border-transparent',
+    'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 border-transparent shadow-sm hover:shadow-md',
   secondary:
-    'bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-400 border-gray-300',
+    'bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-300 border-neutral-200',
   danger:
-    'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border-transparent',
+    'bg-accent-error text-white hover:bg-red-600 focus:ring-red-500 border-transparent shadow-sm',
   ghost:
-    'bg-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-400 border-transparent',
+    'bg-transparent text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 focus:ring-neutral-300 border-transparent',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
+  sm: 'px-3.5 py-2 text-sm rounded-lg',
+  md: 'px-5 py-2.5 text-sm rounded-xl',
+  lg: 'px-7 py-3.5 text-base rounded-xl',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -44,11 +44,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={[
-          'inline-flex items-center justify-center gap-2 font-medium rounded-lg border',
+          'inline-flex items-center justify-center gap-2 font-medium',
           'focus:outline-none focus:ring-2 focus:ring-offset-2',
-          'transition-colors duration-150 ease-in-out',
-          'disabled:opacity-40 disabled:cursor-not-allowed',
-          'cursor-pointer select-none',
+          'transition-all duration-200 ease-smooth',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+          'disabled:transform-none cursor-pointer select-none',
+          'active:scale-[0.98]',
           variantClasses[variant],
           sizeClasses[size],
           className,
@@ -59,7 +60,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading && (
           <svg
-            className="animate-spin -ml-1 h-4 w-4"
+            className="animate-spin h-4 w-4"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
