@@ -42,6 +42,13 @@ export default {
           error: '#ef4444',
           info: '#06b6d4',
         },
+        // Food/beverage color palette
+        'food-orange': '#FF6B35',
+        'food-orange-light': '#FFB3A0',
+        'food-green': '#2D5016',
+        'food-green-light': '#6FA876',
+        'food-cream': '#FAF7F2',
+        'food-brown': '#8B6F47',
       },
       borderRadius: {
         '2xl': '1rem',
