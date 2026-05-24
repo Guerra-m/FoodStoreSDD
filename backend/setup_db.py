@@ -4,8 +4,8 @@ try:
     conn = psycopg2.connect(
         host='localhost',
         port=5432,
-        user='postgres',
-        password='Ivan4514',
+        user='user',
+        password='pass',
         database='postgres'
     )
     conn.autocommit = True

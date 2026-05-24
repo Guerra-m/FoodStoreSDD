@@ -11,7 +11,8 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from sqlmodel import SQLModel
-from app.modules.usuarios.model import Usuario, Role, UsuarioRole, RefreshToken  # noqa: F401
+from app.modules.usuarios.model import Usuario, Role, UsuarioRole  # noqa: F401
+from app.auth.models import RefreshToken  # noqa: F401
 from app.modules.categorias.model import Categoria
 from app.modules.ingredientes.model import Ingrediente
 from app.modules.productos.model import Producto, ProductoCategoria, ProductoIngrediente

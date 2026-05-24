@@ -21,18 +21,18 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     # Agregar columnas de perfil a usuario
-    op.add_column('usuario', sa.Column('foto_url', sqlmodel.sql.sqltypes.AutoString(), nullable=True))
+    op.add_column('usuario', sa.Column('foto_url', sa.String(), nullable=True))
     op.add_column('usuario', sa.Column('fecha_nacimiento', sa.Date(), nullable=True))
 
     # Crear tabla direccion
     op.create_table('direccion',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('usuario_id', sa.Integer(), nullable=False),
-        sa.Column('calle', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column('numero', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column('ciudad', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column('provincia', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-        sa.Column('codigo_postal', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column('calle', sa.String(), nullable=False),
+        sa.Column('numero', sa.String(), nullable=False),
+        sa.Column('ciudad', sa.String(), nullable=False),
+        sa.Column('provincia', sa.String(), nullable=False),
+        sa.Column('codigo_postal', sa.String(), nullable=False),
         sa.Column('latitud', sa.Float(), nullable=True),
         sa.Column('longitud', sa.Float(), nullable=True),
         sa.Column('es_principal', sa.Boolean(), nullable=False),
