@@ -4,6 +4,7 @@ import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
 import { UnauthorizedPage } from '../pages/auth/UnauthorizedPage';
+import { LandingPage } from '../pages/LandingPage';
 import { HomePage } from '../pages/HomePage';
 import Categorias from '../pages/Categorias';
 import Productos from '../pages/Productos';
@@ -23,6 +24,7 @@ export function AppRoutes() {
   return (
     <Routes>
       {/* Public routes — sin sidebar ni layout */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
