@@ -6,6 +6,8 @@ import type { User } from '../types/auth';
  * Store para la gestión de autenticación.
  * Almacena el token de acceso y la información del usuario autenticado.
  * isRestoringSession previene múltiples llamadas simultáneas a restoreSession.
+ * 
+ * HYDRATION: Zustand auto-hydrates on first render. Use a ref to detect when ready.
  */
 interface AuthState {
   accessToken: string | null;
@@ -34,3 +36,10 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// Track hydration state manually (Zustand auto-hydrates on first render)
+let hydrationAttempted = false;
+export const markHydrationAttempted = () => {
+  hydrationAttempted = true;
+};
+export const isHydrated = () => hydrationAttempted;

@@ -87,8 +87,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ──────────────────────────────────────────
   // Restaura sesión al montar — NUNCA destruye auth state
   // GUARD: isRestoringSession previene múltiples llamadas
+  // HYDRATION: Zustand auto-hydrates on first render
   // ──────────────────────────────────────────
   useEffect(() => {
+    let mounted = true;
+    
     const restoreSession = async () => {
       // Guard: prevent multiple simultaneous restores
       if (useAuthStore.getState().isRestoringSession) {
@@ -135,19 +138,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // puede recargar o la próxima llamada gatillará refresh vía interceptor
         }
       } finally {
-        setIsLoading(false);
-        useAuthStore.getState().setRestoringSession(false);
+        if (mounted) {
+          setIsLoading(false);
+          useAuthStore.getState().setRestoringSession(false);
+        }
       }
     };
 
-    // Esperar a que zustand persist hidrate antes de restaurar sesión
-    if (useAuthStore.persist.hasHydrated()) {
-      restoreSession();
-    } else {
-      useAuthStore.persist.onFinishHydration(() => {
-        restoreSession();
-      });
-    }
+    // Zustand hydrates on first render. Start restore immediately.
+    restoreSession();
+    
+    return () => {
+      mounted = false;
+    };
   }, [handleRefreshToken, setUserFromToken]);
 
   // ──────────────────────────────────────────

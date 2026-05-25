@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 15_000, // 15s timeout — evita que peticiones cuelguen para siempre
+  timeout: 30_000, // 30s timeout — login y otras operaciones pueden tardar más
 });
 
 api.interceptors.request.use((config) => {
