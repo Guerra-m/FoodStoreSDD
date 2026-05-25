@@ -6,11 +6,11 @@ import { Alert } from "../ui/Alert";
 import { Button } from "../ui/Button";
 
 interface LoginFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (user: any) => void;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
-  const { login, error, clearError } = useAuth();
+  const { login, error, clearError, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -48,7 +48,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       await login(email, password);
       setEmail("");
       setPassword("");
-      onSuccess?.();
+      // Pasar el usuario que acaba de ser seteado en el contexto
+      onSuccess?.(user);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al iniciar sesión";
       setFormError(errorMessage);

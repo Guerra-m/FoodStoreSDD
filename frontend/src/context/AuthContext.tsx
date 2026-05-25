@@ -63,9 +63,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Escucha el evento auth:unauthorized disparado por axios interceptor
   const handleUnauthorized = useCallback(() => {
-    toast.warning("Sesión expirada. Iniciá sesión nuevamente.");
+    // Solo mostrar el toast si había una sesión activa (user no es null)
+    // Si user es null, significa que nunca estuvieron logueados
+    if (user !== null) {
+      toast.warning("Sesión expirada. Iniciá sesión nuevamente.");
+    }
     clearAllAuth();
-  }, [clearAllAuth]);
+  }, [user, clearAllAuth]);
 
   useEffect(() => {
     window.addEventListener('auth:unauthorized', handleUnauthorized);
