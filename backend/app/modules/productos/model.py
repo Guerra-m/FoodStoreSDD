@@ -3,6 +3,10 @@ from datetime import datetime
 from typing import Optional, List
 from decimal import Decimal
 
+# Import Categoria para que la relación sea resuelta
+# Esto puede causar un ciclo circular pero SQLModel maneja forward references en strings
+from app.modules.categorias.model import Categoria  # noqa: F401
+
 
 class ProductoCategoria(SQLModel, table=True):
     """Tabla asociativa para relación many-to-many entre Producto y Categoria."""

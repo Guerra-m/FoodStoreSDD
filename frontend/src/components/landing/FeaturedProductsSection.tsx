@@ -59,7 +59,7 @@ export const FeaturedProductsSection = forwardRef<HTMLElement>((_, ref) => {
         setIsLoading(true);
         setError(null);
         
-        const response = await api.get('/productos', {
+        const response = await api.get('/products/public', {
           params: { limit: 4 },
         });
         

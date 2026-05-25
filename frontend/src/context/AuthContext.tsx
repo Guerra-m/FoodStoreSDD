@@ -148,19 +148,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
-<<<<<<< HEAD
     // Zustand v4 auto-hidrata en el primer acceso. Restaurar sesión inmediatamente
-    restoreSession();
-  }, []);
-=======
-    // Zustand hydrates on first render. Start restore immediately.
     restoreSession();
     
     return () => {
       mounted = false;
     };
   }, [handleRefreshToken, setUserFromToken]);
->>>>>>> f1b3651a455b5452ceca748d53f9f9209d87c2e2
 
   // ──────────────────────────────────────────
   // Login

@@ -3,6 +3,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.core.exceptions import global_exception_handler
+from dotenv import load_dotenv
+from sqlmodel import SQLModel
+from app.core.database import engine
+
+# CRITICAL: Import all models BEFORE creating tables to ensure relationships are registered
+from app.modules.usuarios.model import Usuario  # noqa: F401
+from app.modules.categorias.model import Categoria  # noqa: F401
+from app.modules.ingredientes.model import Ingrediente  # noqa: F401
+from app.modules.productos.model import Producto, ProductoCategoria, ProductoIngrediente  # noqa: F401
+from app.modules.direcciones.model import Direccion  # noqa: F401
+from app.modules.pedidos.model import Pedido, PedidoProducto, PedidoHistorial  # noqa: F401
+from app.modules.pagos.model import Pago  # noqa: F401
+
+# Carga de variables de entorno
+load_dotenv()
+
+# Ahora importa routers
 from app.modules.usuarios.router import router as auth_router
 from app.modules.categorias.router import router as categorias_router
 from app.modules.ingredientes.router import router as ingredientes_router
@@ -13,12 +30,6 @@ from app.modules.pagos.router import router as pagos_router
 from app.auth.routes import router as auth_routes_router
 from app.admin.routes import router as admin_router
 from app.core.config import settings
-from dotenv import load_dotenv
-from sqlmodel import SQLModel
-from app.core.database import engine
-
-# Carga de variables de entorno
-load_dotenv()
 
 app = FastAPI(title="Food Store API", version="1.0.0")
 
