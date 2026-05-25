@@ -3,16 +3,20 @@
 echo "🚀 Iniciando FoodStore..."
 
 # Backend
-cd /home/noguedev/FoodStoreSDD/backend
-source venv/bin/activate
 echo "📦 Backend iniciando en puerto 8000..."
-uvicorn main:app --reload --port 8000 &
+(
+  cd /home/noguedev/FoodStoreSDD/backend
+  source venv/bin/activate
+  python -m uvicorn main:app --host 127.0.0.1 --port 8000 --no-access-log
+) &
 BACKEND_PID=$!
 
 # Frontend
-cd /home/noguedev/FoodStoreSDD/frontend
 echo "📱 Frontend iniciando en puerto 5173..."
-npm run dev &
+(
+  cd /home/noguedev/FoodStoreSDD/frontend
+  npm run dev
+) &
 FRONTEND_PID=$!
 
 echo ""

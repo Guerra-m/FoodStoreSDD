@@ -119,14 +119,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
-    // Esperar a que zustand persist hidrate antes de restaurar sesión
-    if (useAuthStore.persist.hasHydrated()) {
-      restoreSession();
-    } else {
-      useAuthStore.persist.onFinishHydration(() => {
-        restoreSession();
-      });
-    }
+    // Zustand v4 auto-hidrata en el primer acceso. Restaurar sesión inmediatamente
+    restoreSession();
   }, []);
 
   // ──────────────────────────────────────────
