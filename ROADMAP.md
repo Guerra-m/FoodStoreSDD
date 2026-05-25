@@ -1,7 +1,22 @@
 # Mapa de Changes: Food Store SDD
 
-| Ord | Change (kebab-case) | Funcionalidad | Historias de Usuario (US) | Dependencias | ¿Por qué? |
-| :--- | :--- | :--- | :--- | :--- | :--- |
+**Status Actual (2026-05-25)**
+- ✅ **Change 20 (fix-session-loop)**: COMPLETADO y VALIDADO
+  - Session loop bug: ARREGLADO
+  - Frontend productos: CARGANDO correctamente
+  - Login/Logout: SIN ERRORES
+  - 401 guards: IMPLEMENTADO
+  - Backend startup: OK
+  
+- 🔜 **Change 21 (order-tracking-realtime)**: PRÓXIMO BLOQUEANTE
+  - Requiere: Websockets + Real-time updates + Client dashboard
+  - Dependencias: Change 20 ✅ + order-fsm ✅
+  - Impacto: UX crítico para cliente
+
+---
+
+| Ord | Change (kebab-case) | Funcionalidad | Historias de Usuario (US) | Dependencias | Status | ¿Por qué? |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | `infra-setup-and-patterns` | Scaffolding monorepo, config backend (FastAPI), frontend (React/Vite/Tailwind), DB (Alembic/Seed), y patrones core (UoW, BaseRepo, Global Error Handler). | US-000, 000a, 000b, 000c, 000d, 000e, 068, 074 | Ninguna | Es la fundación. Sin los patrones BaseRepo y UoW, el resto del código sería inconsistente. |
 | 2 | `auth-and-rbac-system` | Registro, Login (JWT), Refresh Token (con rotación en BD), Logout, Middleware de Autorización por Roles, protección de rutas frontend por rol y manejo global de errores en frontend. | US-001, 002, 003, 004, 005, 006, 073, 075, 076 | infra-setup-and-patterns | Necesitamos saber QUIÉN opera para aplicar reglas de negocio y proteger rutas. |
 | 3 | `category-hierarchy` | Gestión de categorías jerárquicas con CTE recursiva para el árbol de navegación. | US-007, 008, 009, 010 | auth-and-rbac-system | Los productos dependen de las categorías. Sin esto, el catálogo no tiene estructura. |
@@ -21,6 +36,6 @@
 | 17 | `auth-session-persistence` | Fix de persistencia de sesión: navegación SPA con `<Link>`, restore session con loading state, unificación de fuentes de verdad para tokens, y refresh automático en 401. | — | auth-and-rbac-system | La sesión se pierde al navegar entre páginas porque los links usan `<a href>` (full reload), el restoreSession no tiene estado de loading y las fuentes de verdad de tokens están inconsistentes. |
 | 18 | `user-profile-and-auth-consolidation` | Edición de perfil de usuario desde el frontend, corrección del type `User` (rol → roles), consolidación del sistema de auth (usar nuevo `/api/v1/auth/*`), y fix del authStore con tipado fuerte. | US-062, 063 | auth-and-rbac-system, auth-session-persistence | El perfil de usuario no se puede editar porque falta el endpoint PATCH /me. El type User está desactualizado con `rol: string`. Conviven dos sistemas de auth (viejo y nuevo) causando inconsistencia. El authStore usa `any`. |
 | 19 | `landing-page` | Landing page pública (`/`) con 6 secciones (Navbar, Hero, About, Featured Products, How It Works, Contact) con scroll navigation. Punto de entrada sin requerir autenticación. | — | auth-and-rbac-system | Presentar el Food Store a usuarios no autenticados antes de login. Actualmente la app va directo a login sin mostrar la marca. |
-| 20 | `fix-session-loop` | Arreglar loop de sesión expirada: refresh token fallando (401), restoreSession sin guardia, logout incompleto. Unificar fuentes de verdad (localStorage vs Zustand), debounce refresh, mejorar interceptor axios. | — | auth-and-rbac-system | **CRÍTICO**: Usuario recibe "sesión expirada" continuamente, no puede navegar. Backend devuelve 401 en refresh, causando logout infinito. Bloquea toda funcionalidad. |
-| 21 | `order-tracking-realtime` | Sistema de tracking en tiempo real para pedidos: Websockets (o polling) que notifiquen cambios de estado (Pendiente → Confirmado → En Preparación → Enviado → Entregado). Dashboard del cliente muestra posición actual. | — | order-fsm-and-trazability, fix-session-loop | Cliente necesita saber dónde está su pedido. Hoy no tiene visibilidad del progreso. Mejora experiencia y reduce llamadas de soporte. |
+| 20 | `fix-session-loop` | Arreglar loop de sesión expirada: refresh token fallando (401), restoreSession sin guardia, logout incompleto. Unificar fuentes de verdad (localStorage vs Zustand), debounce refresh, mejorar interceptor axios. | — | auth-and-rbac-system | ✅ DONE | **CRÍTICO**: Usuario recibe "sesión expirada" continuamente, no puede navegar. Backend devuelve 401 en refresh, causando logout infinito. Bloquea toda funcionalidad. |
+| 21 | `order-tracking-realtime` | Sistema de tracking en tiempo real para pedidos: Websockets (o polling) que notifiquen cambios de estado (Pendiente → Confirmado → En Preparación → Enviado → Entregado). Dashboard del cliente muestra posición actual. | — | order-fsm-and-trazability, fix-session-loop | 🔜 NEXT (Bloqueante) | Cliente necesita saber dónde está su pedido. Hoy no tiene visibilidad del progreso. Mejora experiencia y reduce llamadas de soporte. |
 | 22 | `notification-system` | Sistema de notificaciones: email, push (opcional), in-app cuando estado del pedido cambia, pago confirmado, o evento administrativo. Queue de notificaciones (Redis o Celery). | — | order-fsm-and-trazability, fix-session-loop | Feedback instantáneo al cliente. Pedido cambió de estado → cliente se entero. Fundamental para confianza y engagement. |
