@@ -5,12 +5,17 @@ import type { User } from '../types/auth';
 /**
  * Store para la gestión de autenticación.
  * Almacena el token de acceso y la información del usuario autenticado.
+ * isRestoringSession previene múltiples llamadas simultáneas a restoreSession.
+ * 
+ * HYDRATION: Zustand auto-hydrates on first render. Use a ref to detect when ready.
  */
 interface AuthState {
   accessToken: string | null;
   user: User | null;
+  isRestoringSession: boolean;
   setAuth: (token: string, user: User | null) => void;
   logout: () => void;
+  setRestoringSession: (restoring: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -18,13 +23,23 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       accessToken: null,
       user: null,
+      isRestoringSession: false,
       setAuth: (token, user) => set({ accessToken: token, user }),
-      logout: () => set({ accessToken: null, user: null }),
+      logout: () => set({ accessToken: null, user: null, isRestoringSession: false }),
+      setRestoringSession: (restoring) => set({ isRestoringSession: restoring }),
     }),
     {
       name: 'food-store-auth',
       // Persiste accessToken y user para que sobrevivan a recargas de página
+      // NO persistir isRestoringSession (es volátil, solo para app lifetime)
       partialize: (state) => ({ accessToken: state.accessToken, user: state.user }),
     }
   )
 );
+
+// Track hydration state manually (Zustand auto-hydrates on first render)
+let hydrationAttempted = false;
+export const markHydrationAttempted = () => {
+  hydrationAttempted = true;
+};
+export const isHydrated = () => hydrationAttempted;
