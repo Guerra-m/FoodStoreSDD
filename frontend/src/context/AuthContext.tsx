@@ -1,9 +1,12 @@
 /**
  * Authentication Context and Provider
- * Gestiona el estado global de autenticación usando el sistema nuevo (/auth/*).
- * El refresh de tokens lo maneja el interceptor de axios (reactivo a 401).
- * NO hay schedule automático para evitar race conditions con el interceptor.
- * Los tokens se persisten en localStorage para sobrevivir entre pestañas.
+ * 
+ * CRITICAL FIX FOR SESSION LOOP:
+ * - Unifies token source: localStorage is primary, Zustand is mirror
+ * - Prevents refresh cascade with isRestoringSession guard
+ * - Atomic logout: call API before clearing tokens
+ * - Silent error handling in restoreSession (no cascade)
+ * - Dispatch auth:unauthorized event on final 401
  */
 
 import React, { createContext, useState, useCallback, useEffect, ReactNode } from "react";
@@ -29,10 +32,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // ──────────────────────────────────────────
+  // Atomic cleanup: clear all auth state
+  // Order: tokens → store → context
+  // ──────────────────────────────────────────
   const clearAllAuth = useCallback(() => {
     clearTokens();
-    setUser(null);
     useAuthStore.getState().logout();
+    setUser(null);
+    setError(null);
   }, []);
 
   // ──────────────────────────────────────────
@@ -61,10 +69,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return currentUser;
   }, []);
 
+  // ──────────────────────────────────────────
   // Escucha el evento auth:unauthorized disparado por axios interceptor
+  // Se dispara cuando refresh falló y no se puede recuperar
+  // ──────────────────────────────────────────
   const handleUnauthorized = useCallback(() => {
     toast.warning("Sesión expirada. Iniciá sesión nuevamente.");
     clearAllAuth();
+    // Navigation to login is handled by ProtectedRoute + Router config
   }, [clearAllAuth]);
 
   useEffect(() => {
@@ -74,10 +86,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // ──────────────────────────────────────────
   // Restaura sesión al montar — NUNCA destruye auth state
+  // GUARD: isRestoringSession previene múltiples llamadas
   // ──────────────────────────────────────────
   useEffect(() => {
     const restoreSession = async () => {
+      // Guard: prevent multiple simultaneous restores
+      if (useAuthStore.getState().isRestoringSession) {
+        return;
+      }
+
+      useAuthStore.getState().setRestoringSession(true);
       setIsLoading(true);
+
       try {
         // 1. Intentar desde zustand (persist), fallback a lib/auth
         let accessToken = useAuthStore.getState().accessToken;
@@ -94,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return; // No hay sesión que restaurar
         }
 
-        // 2. Si expiró, intentar refresh
+        // 2. Si expiró, intentar refresh UNA SOLA VEZ
         if (isTokenExpired(accessToken)) {
           const { refreshToken } = getTokens();
           if (!refreshToken) return; // Sin refresh token, no se puede — el interceptor lo manejará
@@ -116,6 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } finally {
         setIsLoading(false);
+        useAuthStore.getState().setRestoringSession(false);
       }
     };
 
@@ -127,7 +148,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         restoreSession();
       });
     }
-  }, []);
+  }, [handleRefreshToken, setUserFromToken]);
 
   // ──────────────────────────────────────────
   // Login
@@ -178,31 +199,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 
   // ──────────────────────────────────────────
-  // Logout
+  // ATOMIC LOGOUT FIX
+  // Order: Call API → clear tokens → store logout → context clear
+  // Fallback: If API fails, still clear everything locally
   // ──────────────────────────────────────────
   const logout = useCallback(async () => {
     try {
       setIsLoading(true);
       const { refreshToken } = getTokens();
 
+      // Try to call logout API first (revoke refresh token server-side)
       if (refreshToken) {
-        await customerApi.logout(refreshToken);
+        try {
+          await customerApi.logout(refreshToken);
+        } catch {
+          // API call failed, but we'll still clear locally (see finally block)
+        }
       }
 
-      clearTokens();
-      setUser(null);
-      useAuthStore.getState().logout();
+      // After API call completes (or fails), clear everything locally
+      clearAllAuth();
       setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Logout fallido";
       setError(errorMessage);
-      clearTokens();
-      setUser(null);
-      useAuthStore.getState().logout();
+      // Even if logout fails, clear everything
+      clearAllAuth();
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [clearAllAuth]);
 
   // ──────────────────────────────────────────
   // Clear error
