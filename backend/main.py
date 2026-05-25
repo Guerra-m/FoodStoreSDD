@@ -24,7 +24,7 @@ app = FastAPI(title="Food Store API", version="1.0.0")
 
 # Creación de tablas de base de datos al iniciar
 @app.on_event("startup")
-def on_startup():
+async def on_startup():
     SQLModel.metadata.create_all(engine)
 
 # Registro de manejadores de excepciones globales
