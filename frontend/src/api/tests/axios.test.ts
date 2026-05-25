@@ -10,7 +10,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import axios from 'axios';
-import { getTokens, saveTokens } from '../../lib/auth';
+import * as authLib from '../../lib/auth';
 import { customerApi } from '../../api/customers';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -20,12 +20,19 @@ vi.mock('../../api/axios', async () => {
   return actual;
 });
 
+vi.mock('../../lib/auth', () => ({
+  getTokens: vi.fn(),
+  saveTokens: vi.fn(),
+  clearTokens: vi.fn(),
+  isTokenExpired: vi.fn(),
+}));
+
 describe('Axios Interceptor - Refresh Queue Management', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset state
     useAuthStore.setState({ accessToken: null, user: null });
-    vi.spyOn(getTokens).mockReturnValue({
+    vi.mocked(authLib.getTokens).mockReturnValue({
       accessToken: 'valid_token',
       refreshToken: 'valid_refresh',
     });

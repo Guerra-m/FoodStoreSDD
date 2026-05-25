@@ -1,11 +1,35 @@
-.env
-__pycache__/
+# Dependencies
 node_modules/
-.venv/
-*.pyc
-dist/
-.DS_Store
+backend/venv/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+
+# Environment
+.env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
+
+# Build
+dist/
+build/
+.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temp
+*.tmp
+.cache/
