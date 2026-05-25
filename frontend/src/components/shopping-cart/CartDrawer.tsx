@@ -36,7 +36,7 @@ export default function CartDrawer() {
   const [pollingEnabled, setPollingEnabled] = useState(false);
   const [orderTotalInCents, setOrderTotalInCents] = useState(0);
 
-  const { data: direcciones } = useDirecciones();
+  const { data: direcciones } = useDirecciones(isAuthenticated); // Only fetch if authenticated
   const createOrder = useCreateOrder();
   const createPayment = useCreatePayment();
   const { data: pagoData } = usePagoByPedido(orderSuccess, pollingEnabled);

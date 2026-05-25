@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { addressApi, DireccionCreate, DireccionUpdate } from '../api/address';
 
-export const useDirecciones = () => {
+export const useDirecciones = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ['direcciones'],
     queryFn: () => addressApi.list(),
+    enabled, // Only fetch if enabled (e.g., user is authenticated)
   });
 };
 
