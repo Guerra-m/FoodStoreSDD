@@ -13,6 +13,7 @@ import ProductoDetalle from '../pages/ProductoDetalle';
 import MiPerfil from '../pages/MiPerfil';
 import MisPedidos from '../pages/MisPedidos';
 import OrderConfirmationPage from '../pages/OrderConfirmationPage';
+import OrderTrackingPage from '../pages/OrderTrackingPage';
 import PaymentResultPage from '../pages/PaymentResultPage';
 import { AdminLayout } from '../components/admin/AdminLayout';
 import { DashboardPage } from '../pages/admin/DashboardPage';
@@ -44,6 +45,7 @@ export function AppRoutes() {
         <Route path="/payment-result" element={<PaymentResultPage />} />
         <Route path="/perfil" element={<MiPerfil />} />
         <Route path="/mis-pedidos" element={<MisPedidos />} />
+        <Route path="/mis-pedidos/:id/tracking" element={<OrderTrackingPage />} />
 
         <Route
           path="/categorias"

@@ -210,3 +210,45 @@ El webhook de MercadoPago SHALL invocar `transicionar_estado(accion="pagar")` co
 
 - **WHEN** un admin autenticado envía `POST /api/v1/pedidos/{id}/transicion` con `{"accion": "pagar"}`
 - **THEN** el sistema SHALL procesar la transición usando el mismo endpoint y FSM de siempre (sin cambios)
+
+### Requirement: Tracking en tiempo real vía WebSocket
+
+El sistema SHALL exponer un endpoint WebSocket que permita a los clientes suscribirse a cambios de estado de un pedido en tiempo real. Tras cada transición exitosa (`POST /transicion`), el sistema SHALL broadcastear el nuevo estado a todos los clientes suscriptos.
+
+#### Scenario: Cliente se conecta al WebSocket de un pedido propio
+
+- **WHEN** un cliente autenticado conecta `WS /api/v1/pedidos/ws/{pedido_id}?token={jwt}` con un token válido y el pedido le pertenece
+- **THEN** el sistema SHALL aceptar la conexión y suscribir al cliente a cambios de ese pedido
+
+#### Scenario: Token inválido es rechazado
+
+- **WHEN** un cliente intenta conectar al WebSocket con un token JWT inválido o expirado
+- **THEN** el sistema SHALL cerrar la conexión con código 4001
+
+#### Scenario: Cliente no autorizado es rechazado
+
+- **WHEN** un cliente intenta conectar al WebSocket de un pedido que no le pertenece (sin ser Admin)
+- **THEN** el sistema SHALL cerrar la conexión con código 4003
+
+#### Scenario: Admin puede ver cualquier pedido vía WebSocket
+
+- **WHEN** un admin autenticado conecta al WebSocket de cualquier pedido
+- **THEN** el sistema SHALL aceptar la conexión sin verificar propietario
+
+#### Scenario: Transición genera evento WebSocket
+
+- **GIVEN** al menos un cliente conectado al WebSocket del pedido
+- **WHEN** se ejecuta una transición exitosa (`POST /transicion`)
+- **THEN** el sistema SHALL enviar un evento JSON a todos los clientes suscriptos con: `type`, `pedido_id`, `estado_anterior`, `estado_nuevo`, `descripcion`, `timestamp`, `historial`
+
+#### Scenario: Cliente desconectado no recibe broadcast
+
+- **GIVEN** un cliente previamente conectado al WebSocket
+- **WHEN** el cliente se desconecta y luego ocurre una transición
+- **THEN** el sistema SHALL remover la conexión caída de la lista de suscriptores sin error
+
+#### Scenario: Conexión caída con fallback a polling
+
+- **GIVEN** un cliente viendo el tracking de un pedido
+- **WHEN** la conexión WebSocket se pierde y no puede reconectarse tras 5 intentos
+- **THEN** el frontend SHALL activar polling cada 30s como mecanismo de fallback

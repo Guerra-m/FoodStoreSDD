@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { getAdminOrderDetail, updateOrderStatus } from '../../api/admin';
 import { Button } from '../../components/ui/Button';
+import { useOrderWebSocket } from '../../hooks/useOrderWebSocket';
 
 function formatCurrency(cents: number): string {
   return `$${(cents / 100).toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
@@ -50,7 +51,23 @@ export function OrderDetailPage() {
     queryKey: ['admin', 'order', orderId],
     queryFn: () => getAdminOrderDetail(orderId),
     enabled: !!orderId,
+    refetchInterval: 30000, // Polling de fallback si WS no funciona
   });
+
+  // WebSocket para tiempo real
+  const { connectionStatus, lastEvent } = useOrderWebSocket(orderId);
+
+  // Cuando llega un evento WS, invalidar queries admin para refrescar
+  const prevEventId = useRef<string | null>(null);
+  const eventKey = lastEvent ? `${lastEvent.pedido_id}-${lastEvent.timestamp}` : null;
+  if (eventKey && eventKey !== prevEventId.current) {
+    prevEventId.current = eventKey;
+    // Invalidar queries para que React Query refresque los datos
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'order', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+    }, 0);
+  }
 
   const statusMutation = useMutation({
     mutationFn: (accion: string) => updateOrderStatus(orderId, { accion }),
@@ -87,9 +104,27 @@ export function OrderDetailPage() {
       </Button>
 
       <div className="flex items-center justify-between mb-6">
-        <h2 className="m-0 text-gray-900 text-xl font-bold">
-          Pedido #{order.id}
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="m-0 text-gray-900 text-xl font-bold">
+            Pedido #{order.id}
+          </h2>
+          {/* Badge de conexión WS */}
+          <span
+            className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full"
+            style={{
+              backgroundColor: connectionStatus === 'connected' ? '#d1fae5' : '#fef3c7',
+              color: connectionStatus === 'connected' ? '#065f46' : '#92400e',
+            }}
+          >
+            <span
+              className="inline-block w-1.5 h-1.5 rounded-full"
+              style={{
+                backgroundColor: connectionStatus === 'connected' ? '#10b981' : '#f59e0b',
+              }}
+            />
+            {connectionStatus === 'connected' ? 'En vivo' : connectionStatus === 'fallback' ? 'Polling' : 'Conectando...'}
+          </span>
+        </div>
         <span
           className="inline-block px-3.5 py-1 rounded-full text-sm font-semibold"
           style={{ backgroundColor: `${statusColor}20`, color: statusColor }}

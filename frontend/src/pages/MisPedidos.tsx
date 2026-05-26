@@ -6,9 +6,12 @@ import { SkeletonTable } from '../components/SkeletonTable';
 import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 
+/** Estados terminales que no necesitan tracking en vivo */
+const ESTADOS_TERMINALES = ['entregado', 'cancelado'];
+
 export default function MisPedidos() {
   const [page, setPage] = useState(1);
-  const { data, isLoading, error } = useOrders(page, 10);
+  const { data, isLoading, error } = useOrders(page, 10, { refetchInterval: 30000 });
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   
   const { data: orderDetail, isLoading: detailLoading } = useOrderById(selectedOrderId);
@@ -79,6 +82,14 @@ export default function MisPedidos() {
                     {formatPrice(pedido.total)}
                   </span>
                   
+                  {!ESTADOS_TERMINALES.includes(pedido.estado) && (
+                    <Link
+                      to={`/mis-pedidos/${pedido.id}/tracking`}
+                      className="px-4 py-2 bg-green-600 text-white no-underline rounded inline-flex items-center justify-center gap-2 font-medium text-sm"
+                    >
+                      Ver Tracking
+                    </Link>
+                  )}
                   <Button onClick={() => setSelectedOrderId(pedido.id)}>
                     Ver Detalle
                   </Button>

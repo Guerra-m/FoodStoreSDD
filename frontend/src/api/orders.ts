@@ -184,3 +184,16 @@ export const getPaymentStatusColor = (status?: string | null): string => {
   };
   return status ? colors[status] || '#6b7280' : '#6b7280';
 };
+
+// ─── WebSocket ─────────────────────────────────────────────────────────────────
+
+/**
+ * Construye la URL del WebSocket para tracking de un pedido.
+ * Convierte la base HTTP a WS y agrega el token JWT como query param.
+ */
+export const getOrderWebSocketUrl = (pedidoId: number): string => {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8006/api/v1';
+  const wsBase = baseUrl.replace(/^http/, 'ws');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('auth_access_token') : '';
+  return `${wsBase}/pedidos/ws/${pedidoId}?token=${encodeURIComponent(token || '')}`;
+};
