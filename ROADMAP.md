@@ -1,17 +1,23 @@
 # Mapa de Changes: Food Store SDD
 
-**Status Actual (2026-05-25)**
+**Status Actual (2026-05-26)**
 - ✅ **Change 20 (fix-session-loop)**: COMPLETADO y VALIDADO
   - Session loop bug: ARREGLADO
   - Frontend productos: CARGANDO correctamente
   - Login/Logout: SIN ERRORES
   - 401 guards: IMPLEMENTADO
   - Backend startup: OK
-  
-- 🔜 **Change 21 (order-tracking-realtime)**: PRÓXIMO BLOQUEANTE
+   
+- 🔜 **Change 21 (order-tracking-realtime)**: EN PROGRESO
   - Requiere: Websockets + Real-time updates + Client dashboard
   - Dependencias: Change 20 ✅ + order-fsm ✅
   - Impacto: UX crítico para cliente
+
+- 🔜 **Change 22 (admin-orders-kanban)**: IMPLEMENTADO
+  - Admin Kanban board con drag & drop
+  - Broadcast WS a todos los admins
+  - Reemplazo total de OrdersPage por AdminOrdersKanban
+  - Dependencias: Change 21 (WS infra)
 
 ---
 
@@ -38,4 +44,5 @@
 | 19 | `landing-page` | Landing page pública (`/`) con 6 secciones (Navbar, Hero, About, Featured Products, How It Works, Contact) con scroll navigation. Punto de entrada sin requerir autenticación. | — | auth-and-rbac-system | Presentar el Food Store a usuarios no autenticados antes de login. Actualmente la app va directo a login sin mostrar la marca. |
 | 20 | `fix-session-loop` | Arreglar loop de sesión expirada: refresh token fallando (401), restoreSession sin guardia, logout incompleto. Unificar fuentes de verdad (localStorage vs Zustand), debounce refresh, mejorar interceptor axios. | — | auth-and-rbac-system | ✅ DONE | **CRÍTICO**: Usuario recibe "sesión expirada" continuamente, no puede navegar. Backend devuelve 401 en refresh, causando logout infinito. Bloquea toda funcionalidad. |
 | 21 | `order-tracking-realtime` | Sistema de tracking en tiempo real para pedidos: Websockets (o polling) que notifiquen cambios de estado (Pendiente → Confirmado → En Preparación → Enviado → Entregado). Dashboard del cliente muestra posición actual. | — | order-fsm-and-trazability, fix-session-loop | 🔜 NEXT (Bloqueante) | Cliente necesita saber dónde está su pedido. Hoy no tiene visibilidad del progreso. Mejora experiencia y reduce llamadas de soporte. |
-| 22 | `notification-system` | Sistema de notificaciones: email, push (opcional), in-app cuando estado del pedido cambia, pago confirmado, o evento administrativo. Queue de notificaciones (Redis o Celery). | — | order-fsm-and-trazability, fix-session-loop | Feedback instantáneo al cliente. Pedido cambió de estado → cliente se entero. Fundamental para confianza y engagement. |
+| 22 | `admin-orders-kanban` | Kanban board para admin con drag & drop entre columnas de estado. Broadcast WS en vivo a todos los admins conectados. Reemplazo total de tabla por columnas estilo Trello. | — | order-tracking-realtime (WS infra) | Admin necesita gestionar decenas de pedidos/día. Tabla actual requiere 3 clicks por transición. Kanban permite arrastrar y soltar en un solo gesto. |
+| 23 | `notification-system` | Sistema de notificaciones: email, push (opcional), in-app cuando estado del pedido cambia, pago confirmado, o evento administrativo. Queue de notificaciones (Redis o Celery). | — | order-fsm-and-trazability, fix-session-loop | Feedback instantáneo al cliente. Pedido cambió de estado → cliente se entero. Fundamental para confianza y engagement. |

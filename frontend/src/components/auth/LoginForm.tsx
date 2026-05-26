@@ -149,6 +149,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             <p className="text-xs font-medium text-neutral-500 mb-2">CREDENCIALS DE PRUEBA</p>
             <div className="text-sm text-neutral-600 space-y-1">
               <p><span className="font-medium">Admin:</span> admin@foodstore.com / admin123</p>
+              <p><span className="font-medium">Cliente:</span> cliente@test.com / password123</p>
             </div>
           </div>
         </div>

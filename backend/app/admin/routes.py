@@ -5,8 +5,10 @@ Mantiene los endpoints legacy para compatibilidad.
 """
 from fastapi import APIRouter, Depends, status, Query, Path, Body
 from sqlmodel import Session
+from datetime import datetime
 
 from app.core.database import get_session
+from app.core.websocket_manager import manager
 from app.auth.dependencies import require_roles, get_current_user
 from app.auth.schemas import UserResponse
 from app.auth.roles import ROLE_ADMIN, ROLE_DELIVERY
@@ -390,7 +392,7 @@ def get_admin_order_detail(
 
 
 @router.put("/orders/{order_id}/status", response_model=AdminOrderDetail)
-def update_order_status(
+async def update_order_status(
     status_data: UpdateOrderStatusRequest,
     order_id: int = Path(..., ge=1),
     current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
@@ -408,4 +410,19 @@ def update_order_status(
     if error:
         from fastapi import HTTPException
         raise HTTPException(status_code=status_code or 400, detail=error)
+
+    # Broadcast al canal global de admins (Kanban board)
+    await manager.broadcast_admin(data={
+        "type": "order_updated",
+        "order": {
+            "id": order_id,
+            "estado": result.estado,
+            "estado_anterior": "",  # admin route no trackea anterior
+            "cliente_nombre": result.cliente_nombre if hasattr(result, "cliente_nombre") else "",
+            "total": result.total,
+            "items_count": len(result.items) if hasattr(result, "items") and result.items else 0,
+            "creado_en": result.creado_en.isoformat() if hasattr(result.creado_en, "isoformat") else str(result.creado_en),
+        },
+    })
+
     return result

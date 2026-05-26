@@ -98,6 +98,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const restoreSession = async () => {
       // Guard: prevent multiple simultaneous restores
       if (useAuthStore.getState().isRestoringSession) {
+        // Si el guard nos bloquea, significa que otra instancia ya está
+        // restaurando (o se trabó). Reseteamos loading para no colgar la UI.
+        if (mounted) {
+          setIsLoading(false);
+        }
         return;
       }
 
@@ -143,8 +148,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } finally {
         if (mounted) {
           setIsLoading(false);
-          useAuthStore.getState().setRestoringSession(false);
         }
+        // Siempre liberar el guard global, incluso si el componente se desmontó
+        // (React.StrictMode double-mount puede dejarlo true para siempre)
+        useAuthStore.getState().setRestoringSession(false);
       }
     };
 
