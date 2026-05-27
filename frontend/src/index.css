@@ -496,33 +496,11 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   MERCADOPAGO PAYMENT FORM - Estilos específicos
+   MERCADOPAGO PAYMENT FORM - Mínimo indispensable
+   El brick de MP carga su propio CSS interno via iframe.
    ═══════════════════════════════════════════════════════════════ */
 
-.mp-payment-form {
+.card-payment-container {
+  min-height: 320px;
   width: 100%;
-}
-
-.mp-payment-form .card-payment-container {
-  min-height: 320px !important;
-  width: 100% !important;
-}
-
-.mp-payment-form iframe {
-  min-height: 300px !important;
-}
-
-/* Asegurar que el formulario de MercadoPago sea visible */
-[data-testid="card-payment-form"] {
-  min-height: 320px !important;
-}
-
-.payment-form-wrapper {
-  min-height: 350px;
-  width: 100%;
-}
-
-.payment-form-wrapper iframe {
-  min-height: 320px !important;
-  width: 100% !important;
 }

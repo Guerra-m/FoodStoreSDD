@@ -65,7 +65,6 @@ export default function PaymentForm({ totalInCents, onPayment }: PaymentFormProp
 
   const amount = totalInCents / 100;
 
-  // Verificar que haya una key configurada
   const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY;
   if (!publicKey || publicKey === '' || publicKey === 'TEST-1234567890') {
     return (
@@ -79,7 +78,8 @@ export default function PaymentForm({ totalInCents, onPayment }: PaymentFormProp
           <div>
             <h4 className="font-semibold text-neutral-800 mb-1">Configuración de pago necesaria</h4>
             <p className="text-sm text-neutral-600 mb-2">
-              Para procesar pagos, necesitás configurar una clave pública válida de MercadoPago en el archivo <code className="text-xs bg-neutral-200 px-1 rounded">.env</code>.
+              Para procesar pagos, necesitás configurar una clave pública válida de MercadoPago en el archivo{' '}
+              <code className="text-xs bg-neutral-200 px-1 rounded">.env</code>.
             </p>
             <p className="text-xs text-neutral-500">
               Variable: <code className="bg-neutral-200 px-1 rounded">VITE_MERCADOPAGO_PUBLIC_KEY</code>
@@ -91,7 +91,7 @@ export default function PaymentForm({ totalInCents, onPayment }: PaymentFormProp
   }
 
   return (
-    <div className="payment-form-wrapper">
+    <div className="card-payment-container">
       <p className="text-neutral-600 text-sm mb-4 font-medium">
         Total a pagar: <strong className="text-neutral-900 text-lg">${amount.toFixed(2)}</strong>
       </p>
@@ -103,24 +103,36 @@ export default function PaymentForm({ totalInCents, onPayment }: PaymentFormProp
         </div>
       )}
 
-      <div className="min-h-[320px] border border-neutral-200 rounded-xl overflow-hidden">
-        <CardPayment
-          initialization={{ amount }}
-          onSubmit={async (param) => {
-            setBrickError(null);
-            try {
-              await onPayment(param.token);
-            } catch (err) {
-              console.error('Payment submit error:', err);
-            }
-          }}
-          locale="es-AR"
-          onError={(mpError) => {
-            console.error('MercadoPago CardPayment error:', mpError);
-            setBrickError(mpError?.message || 'Error al cargar el formulario de pago');
-          }}
-        />
-      </div>
+      <CardPayment
+        initialization={{ amount }}
+        onSubmit={async (param) => {
+          setBrickError(null);
+          try {
+            await onPayment(param.token);
+          } catch (err) {
+            console.error('Payment submit error:', err);
+          }
+        }}
+        locale="es-AR"
+        customization={{
+          visual: {
+            hideFormTitle: true,
+            style: {
+              customVariables: {
+                textPrimaryColor: '#171717',
+                textSecondaryColor: '#737373',
+                baseColor: '#2563eb',
+                errorColor: '#dc2626',
+                successColor: '#059669',
+              },
+            },
+          },
+        }}
+        onError={(mpError) => {
+          console.error('MercadoPago CardPayment error:', mpError);
+          setBrickError(mpError?.message || 'Error al cargar el formulario de pago');
+        }}
+      />
 
       {status === 'processing' && (
         <div className="flex items-center justify-center gap-2 mt-4 p-4 bg-primary-50 rounded-xl">
