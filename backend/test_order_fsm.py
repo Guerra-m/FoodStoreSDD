@@ -30,14 +30,14 @@ class OrderFSM:
     TRANSITION_MAP: Dict[str, Dict[str, tuple]] = {
         "pendiente": {
             "pagar": ("pagado", ["Admin", "Sistema"]),
-            "cancelar": ("cancelado", ["Cliente", "Admin"]),
+            "cancelar": ("cancelado", ["Cliente", "Admin", "Cocinero"]),
         },
         "pagado": {
-            "preparar": ("preparando", ["Admin"]),
-            "cancelar": ("cancelado", ["Admin"]),
+            "preparar": ("preparando", ["Admin", "Cocinero"]),
+            "cancelar": ("cancelado", ["Admin", "Cocinero"]),
         },
         "preparando": {
-            "enviar": ("enviado", ["Admin"]),
+            "enviar": ("enviado", ["Admin", "Cocinero"]),
             "cancelar": ("cancelado", ["Admin"]),
         },
         "enviado": {
@@ -152,6 +152,25 @@ test("Admin en cancelado: 0 acciones", len(OrderFSM.get_allowed_actions("cancela
 sistema_pendiente = OrderFSM.get_allowed_actions("pendiente", "Sistema")
 test("Sistema en pendiente puede pagar", "pagar" in sistema_pendiente)
 test("Sistema en pendiente: solo 1 acciÃ³n", len(sistema_pendiente) == 1)
+
+cocinero_pendiente = OrderFSM.get_allowed_actions("pendiente", "Cocinero")
+test("Cocinero en pendiente puede cancelar", "cancelar" in cocinero_pendiente)
+test("Cocinero en pendiente NO puede pagar", "pagar" not in cocinero_pendiente)
+test("Cocinero en pendiente: solo 1 acciÃ³n", len(cocinero_pendiente) == 1)
+
+cocinero_pagado = OrderFSM.get_allowed_actions("pagado", "Cocinero")
+test("Cocinero en pagado puede preparar", "preparar" in cocinero_pagado)
+test("Cocinero en pagado puede cancelar", "cancelar" in cocinero_pagado)
+test("Cocinero en pagado: 2 acciones", len(cocinero_pagado) == 2)
+
+cocinero_preparando = OrderFSM.get_allowed_actions("preparando", "Cocinero")
+test("Cocinero en preparando puede enviar", "enviar" in cocinero_preparando)
+test("Cocinero en preparando NO puede cancelar", "cancelar" not in cocinero_preparando)
+test("Cocinero en preparando: solo 1 acciÃ³n", len(cocinero_preparando) == 1)
+
+cocinero_enviado = OrderFSM.get_allowed_actions("enviado", "Cocinero")
+test("Cocinero en enviado NO puede entregar", "entregar" not in cocinero_enviado)
+test("Cocinero en enviado: 0 acciones", len(cocinero_enviado) == 0)
 
 # 5. is_terminal_state
 print("\n5. is_terminal_state")

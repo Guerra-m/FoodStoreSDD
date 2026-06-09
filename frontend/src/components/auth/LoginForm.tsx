@@ -146,9 +146,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
 
           {/* Demo credentials */}
           <div className="mt-8 p-4 bg-neutral-50 rounded-xl border border-neutral-200">
-            <p className="text-xs font-medium text-neutral-500 mb-2">CREDENCIALS DE PRUEBA</p>
+            <p className="text-xs font-medium text-neutral-500 mb-2">CREDENCIALES DE PRUEBA</p>
             <div className="text-sm text-neutral-600 space-y-1">
               <p><span className="font-medium">Admin:</span> admin@foodstore.com / admin123</p>
+              <p><span className="font-medium">Cocinero:</span> cocinero@test.com / password123</p>
               <p><span className="font-medium">Cliente:</span> cliente@test.com / password123</p>
             </div>
           </div>

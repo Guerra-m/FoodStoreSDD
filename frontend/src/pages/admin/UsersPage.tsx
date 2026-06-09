@@ -12,7 +12,7 @@ import { SkeletonTable } from '../../components/SkeletonTable';
 import { Button } from '../../components/ui/Button';
 import { AdminAddressModal } from '../../components/admin/AdminAddressModal';
 
-const ALL_ROLES = ['Cliente', 'Admin', 'Delivery'];
+const ALL_ROLES = ['Cliente', 'Admin', 'Delivery', 'Cocinero'];
 
 /* ─── Edit Roles Modal ──────────────────────────────────────────────────── */
 
@@ -130,6 +130,7 @@ const ROLE_COLORS: Record<string, string> = {
   Admin: 'bg-blue-100 text-blue-800',
   Delivery: 'bg-yellow-100 text-yellow-800',
   Cliente: 'bg-sky-100 text-sky-700',
+  Cocinero: 'bg-purple-100 text-purple-800',
 };
 
 function RoleBadge({ role }: { role: string }) {

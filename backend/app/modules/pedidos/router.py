@@ -114,14 +114,20 @@ async def transicionar_estado(
     y al estado actual del pedido según la FSM.
 
     - **Cliente**: solo puede cancelar pedidos propios en estado "pendiente"
+    - **Cocinero**: puede preparar (pagado→preparando), enviar (preparando→enviado) y cancelar (pendiente/pagado)
     - **Admin**: puede ejecutar todas las acciones válidas
     - **Sistema**: puede ejecutar "pagar" (para integración con webhooks)
     """
     from fastapi import HTTPException
 
-    # Determinar el rol efectivo: si tiene "Admin", se comporta como admin
-    # Caso contrario, se comporta como cliente
-    usuario_rol = "Admin" if "Admin" in current_user.roles else "Cliente"
+    # Determinar el rol efectivo para la FSM según los roles del usuario
+    # El orden de prioridad define qué rol se usa si tiene múltiples roles
+    if "Admin" in current_user.roles:
+        usuario_rol = "Admin"
+    elif "Cocinero" in current_user.roles:
+        usuario_rol = "Cocinero"
+    else:
+        usuario_rol = "Cliente"
 
     # Guardar estado anterior antes de la transición
     estado_anterior = None
@@ -292,7 +298,7 @@ async def websocket_admin(
 
     Endpoint: WS /api/v1/pedidos/admin/ws?token={jwt}
 
-    Solo usuarios con rol Admin pueden conectarse.
+    Solo usuarios con rol Admin o Cocinero pueden conectarse.
     Reciben mensajes type "order_updated" cuando cualquier pedido cambia.
 
     Formato del mensaje:
@@ -317,10 +323,10 @@ async def websocket_admin(
         await websocket.close(code=4001, reason="Token inválido o expirado")
         return
 
-    # 2. Verificar rol admin
+    # 2. Verificar rol admin o cocinero
     roles = extract_roles_from_token(payload)
-    if "Admin" not in roles:
-        await websocket.close(code=4003, reason="Se requiere rol Admin")
+    if "Admin" not in roles and "Cocinero" not in roles:
+        await websocket.close(code=4003, reason="Se requiere rol Admin o Cocinero")
         return
 
     # 3. Conectar al canal global de admins

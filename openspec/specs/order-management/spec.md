@@ -99,6 +99,26 @@ El sistema SHALL implementar una máquina de estados finitos (FSM) que controle 
 - **WHEN** un admin autenticado solicita transicionar un pedido en estado "pagado" con acción "preparar"
 - **THEN** el sistema SHALL cambiar el estado del pedido a "preparando" y registrar el historial con descripción "Preparación iniciada"
 
+#### Scenario: Cocinero puede iniciar preparación
+
+- **WHEN** un usuario con rol Cocinero autenticado solicita transicionar un pedido en estado "pagado" con acción "preparar"
+- **THEN** el sistema SHALL cambiar el estado del pedido a "preparando" y registrar el historial con descripción "Preparación iniciada"
+
+#### Scenario: Cocinero puede marcar pedido como enviado
+
+- **WHEN** un usuario con rol Cocinero autenticado solicita transicionar un pedido en estado "preparando" con acción "enviar"
+- **THEN** el sistema SHALL cambiar el estado del pedido a "enviado" y registrar el historial con descripción "Pedido enviado"
+
+#### Scenario: Cocinero no puede entregar pedidos
+
+- **WHEN** un usuario con rol Cocinero autenticado solicita transicionar un pedido en estado "enviado" con acción "entregar"
+- **THEN** el sistema SHALL rechazar la operación con error 403
+
+#### Scenario: Cocinero no puede cancelar pedidos en preparación
+
+- **WHEN** un usuario con rol Cocinero autenticado solicita transicionar un pedido en estado "preparando" con acción "cancelar"
+- **THEN** el sistema SHALL rechazar la operación con error 403
+
 #### Scenario: Transición válida desde pagado a cancelado
 
 - **WHEN** un admin autenticado solicita transicionar un pedido en estado "pagado" con acción "cancelar"
@@ -158,6 +178,16 @@ El sistema SHALL validar que el usuario que solicita una transición tenga el ro
 
 - **WHEN** un admin autenticado solicita cualquier transición válida sobre cualquier pedido
 - **THEN** el sistema SHALL permitir la operación (sujeto a que la transición sea válida para el estado actual)
+
+#### Scenario: Cocinero puede cancelar pedidos en pendiente
+
+- **WHEN** un usuario con rol Cocinero autenticado solicita cancelar un pedido en estado "pendiente"
+- **THEN** el sistema SHALL permitir la operación y restaurar el stock
+
+#### Scenario: Cocinero puede cancelar pedidos en pagado
+
+- **WHEN** un usuario con rol Cocinero autenticado solicita cancelar un pedido en estado "pagado"
+- **THEN** el sistema SHALL permitir la operación y restaurar el stock
 ### Requirement: Restauración de stock al cancelar
 El sistema SHALL restaurar el stock de todos los productos de un pedido cuando este se cancela desde los estados "pendiente", "pagado" o "preparando".
 

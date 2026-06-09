@@ -11,7 +11,7 @@ from app.core.database import get_session
 from app.core.websocket_manager import manager
 from app.auth.dependencies import require_roles, get_current_user
 from app.auth.schemas import UserResponse
-from app.auth.roles import ROLE_ADMIN, ROLE_DELIVERY
+from app.auth.roles import ROLE_ADMIN, ROLE_DELIVERY, ROLE_COCINERO
 
 # Schemas
 from app.admin.schemas import (
@@ -363,7 +363,7 @@ def list_admin_orders(
     date_from: str = Query(None, description="Fecha desde (YYYY-MM-DD)"),
     date_to: str = Query(None, description="Fecha hasta (YYYY-MM-DD)"),
     cliente_id: int = Query(None, ge=1, description="Filtrar por cliente"),
-    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN, ROLE_COCINERO])),
     order_service: OrderAdminService = Depends(get_order_admin_service),
 ):
     """Lista pedidos con paginación y filtros."""
@@ -380,7 +380,7 @@ def list_admin_orders(
 @router.get("/orders/{order_id}", response_model=AdminOrderDetail)
 def get_admin_order_detail(
     order_id: int = Path(..., ge=1),
-    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN, ROLE_COCINERO])),
     order_service: OrderAdminService = Depends(get_order_admin_service),
 ):
     """Obtiene detalle completo de un pedido."""
@@ -395,17 +395,26 @@ def get_admin_order_detail(
 async def update_order_status(
     status_data: UpdateOrderStatusRequest,
     order_id: int = Path(..., ge=1),
-    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN])),
+    current_user: UserResponse = Depends(require_roles([ROLE_ADMIN, ROLE_COCINERO])),
     order_service: OrderAdminService = Depends(get_order_admin_service),
 ):
     """
     Cambia el estado de un pedido usando acciones FSM.
     Acciones válidas: pagar, preparar, enviar, entregar, cancelar.
     """
+    # Mapear el rol efectivo para la FSM (misma lógica que en pedidos/router.py)
+    if "Admin" in current_user.roles:
+        usuario_rol = "Admin"
+    elif "Cocinero" in current_user.roles:
+        usuario_rol = "Cocinero"
+    else:
+        usuario_rol = "Cliente"
+
     result, error, status_code = order_service.update_order_status(
         pedido_id=order_id,
         accion=status_data.accion,
         usuario_id=current_user.id,
+        usuario_rol=usuario_rol,
     )
     if error:
         from fastapi import HTTPException

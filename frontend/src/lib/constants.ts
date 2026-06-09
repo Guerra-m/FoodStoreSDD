@@ -5,7 +5,7 @@
 // ─── API ───────────────────────────────────────────
 /** Base URL for API requests (from env) */
 export const API_BASE_URL: string =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8006/api/v1";
 
 /** MercadoPago public key (from env) */
 export const MERCADOPAGO_PUBLIC_KEY: string | undefined =

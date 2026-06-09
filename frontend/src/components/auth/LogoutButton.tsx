@@ -16,7 +16,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className }) => {
     try {
       setError(null);
       await logout();
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Error al cerrar sesión";
       setError(errorMessage);
