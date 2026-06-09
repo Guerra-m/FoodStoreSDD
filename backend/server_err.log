@@ -77,3 +77,224 @@ ERROR:    Traceback (most recent call last):
 UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
 
 ERROR:    Application startup failed. Exiting.
+WARNING:  WatchFiles detected changes in 'scripts\seed.py'. Reloading...
+INFO:     Started server process [11868]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'scripts\seed.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11868]
+INFO:     Started server process [13036]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'scripts\seed.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13036]
+INFO:     Started server process [15484]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'scripts\seed.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [15484]
+INFO:     Started server process [6872]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'scripts\seed.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [6872]
+INFO:     Started server process [9136]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app\admin\routes.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [9136]
+WARNING:  WatchFiles detected changes in 'app\admin\routes.py', 'app\admin\services\order_service.py'. Reloading...
+INFO:     Started server process [14836]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 132, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 741, in lifespan
+    await receive()
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+INFO:     Started server process [18088]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+.
+INFO:     Application startup complete.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 132, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 741, in lifespan
+    await receive()
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+INFO:     Started server process [2932]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     ('127.0.0.1', 54367) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiQWRtaW4iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAxODk4Nn0.Lo3PDpKjNT2X7Bu-K69RGMzodz5IKlizjr0u87TSs4k" [accepted]
+INFO:     connection open
+INFO:     connection closed
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+INFO:     ('127.0.0.1', 49742) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZXMiOlsiQ29jaW5lcm8iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAxOTE4MH0.k2BZA0nohOhMiGuxZQChyeKxbQQYm4q9mssMBEmygkI" [accepted]
+INFO:     connection open
+INFO:     connection closed
+WARNING:  WatchFiles detected changes in 'app\admin\routes.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2932]
+WARNING:  WatchFiles detected changes in 'app\admin\services\order_service.py', 'app\admin\routes.py'. Reloading...
+INFO:     Started server process [9160]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\base_events.py", line 719, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\runners.py", line 132, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 741, in lifespan
+    await receive()
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\asyncio\queues.py", line 186, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+INFO:     Started server process [1460]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+(trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+INFO:     ('127.0.0.1', 51242) - "WebSocket /api/v1/pedidos/ws/1?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZXMiOlsiQ2xpZW50ZSJdLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDE5OTE4fQ.xkqeuwf8PRgvuRSVrv619WxOPUYgK6gnu5a4DJwxzAw" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 65337) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZXMiOlsiQ29jaW5lcm8iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAxOTk1NH0.QAlwpbB6tB4lJ64VGAqD7BWeun2qPiPSHJO129n1InQ" [accepted]
+INFO:     connection open
+INFO:     ('127.0.0.1', 57810) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZXMiOlsiQ29jaW5lcm8iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMDEwMn0.Vt4c2bKwYmKiTJBRe-mCbDFz0kJiRTzHWXaRfZsX3sI" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 51511) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiQWRtaW4iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMDExNX0.GMFDLow0bbH1XKHIXnT_c3B4pLHJEPIAnAHm1lL3V0Q" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 61581) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZXMiOlsiQ29jaW5lcm8iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMDEzMH0.DEsmafbz2rgaeWVXoKo8ycaKRlpzzSXudyDKOB2-7xc" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     connection closed
+INFO:     ('127.0.0.1', 50759) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZXMiOlsiQ2xpZW50ZSJdLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIwMTcyfQ.mQZG5k2EwifMv3qsr9zP2PJHiO_9mIdClgdaSV6m-Zs" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('127.0.0.1', 57441) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZXMiOlsiQ2xpZW50ZSJdLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIwMTcyfQ.mQZG5k2EwifMv3qsr9zP2PJHiO_9mIdClgdaSV6m-Zs" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('127.0.0.1', 51572) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZXMiOlsiQ2xpZW50ZSJdLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIwMTcyfQ.mQZG5k2EwifMv3qsr9zP2PJHiO_9mIdClgdaSV6m-Zs" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('127.0.0.1', 51820) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZXMiOlsiQ2xpZW50ZSJdLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIwMTcyfQ.mQZG5k2EwifMv3qsr9zP2PJHiO_9mIdClgdaSV6m-Zs" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+INFO:     ('127.0.0.1', 60328) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiQWRtaW4iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMDQ0MH0.PwNrN5NZxr0l298s-p1HopKSuqfgcJ_kTiPSdX0HJiA" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 58656) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiQWRtaW4iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMDU2M30.P4l9EUprNazWLDFr-vOWPINlpL1u-CMxr1S3m9lc7vE" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 50359) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0Iiwicm9sZXMiOlsiQ29jaW5lcm8iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMDU3OX0.ZVDA-NJbhw5b03wtyKh-clErbqu_eu7wKVwNwwHBwf4" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 55325) - "WebSocket /api/v1/pedidos/ws/3?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwicm9sZXMiOlsiQ2xpZW50ZSJdLCJ0eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgxMDIwNTk2fQ.NXhfGBmY8g4QJ9rjRC-v2N-iTEfg0Fr2Vs2-YQoC4bU" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 56249) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiQWRtaW4iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMTEwMX0.TmCyGULHE7MILu1ldInLJcmFg_8tnUBe-o1csX9cYrA" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     ('127.0.0.1', 56011) - "WebSocket /api/v1/pedidos/admin/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiQWRtaW4iXSwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTc4MTAyMTE5NH0.c8fblgJSIjmXEOmbnXx19JFdBVe1kAh6tysPsgJByW8" [accepted]
+INFO:     connection open
+INFO:     connection closed
