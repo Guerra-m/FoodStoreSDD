@@ -231,7 +231,7 @@ class OrderAdminService:
         ), None, None
 
     def update_order_status(
-        self, pedido_id: int, accion: str, usuario_id: int
+        self, pedido_id: int, accion: str, usuario_id: int, usuario_rol: str = "Admin"
     ) -> Tuple[Optional[AdminOrderDetail], Optional[str], Optional[int]]:
         """
         Cambia el estado de un pedido reutilizando PedidoService.transicionar_estado().
@@ -240,6 +240,7 @@ class OrderAdminService:
             pedido_id: ID del pedido.
             accion: Acción FSM (pagar, preparar, enviar, entregar, cancelar).
             usuario_id: ID del admin que ejecuta la acción.
+            usuario_rol: Rol del usuario para la FSM (Admin, Cocinero, etc.).
 
         Returns:
             (AdminOrderDetail, None, None) si exitoso.
@@ -250,7 +251,7 @@ class OrderAdminService:
             pedido_id=pedido_id,
             accion=accion,
             usuario_id=usuario_id,
-            usuario_rol="Admin",
+            usuario_rol=usuario_rol,
         )
 
         if error:

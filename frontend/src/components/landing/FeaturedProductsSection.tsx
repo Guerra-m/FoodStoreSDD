@@ -1,5 +1,7 @@
 import React, { useEffect, useState, forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ProductoPublic } from '../../api/products';
+import { useAuthStore } from '../../stores/authStore';
 import api from '../../api/axios';
 
 /**
@@ -48,6 +50,8 @@ const FALLBACK_PRODUCTS: ProductoPublic[] = [
 ];
 
 export const FeaturedProductsSection = forwardRef<HTMLElement>((_, ref) => {
+  const navigate = useNavigate();
+  const isAuthenticated = useAuthStore((s) => !!s.accessToken);
   const [products, setProducts] = useState<ProductoPublic[]>(FALLBACK_PRODUCTS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -154,6 +158,13 @@ export const FeaturedProductsSection = forwardRef<HTMLElement>((_, ref) => {
                         {formatPrice(product.price_in_cents)}
                       </span>
                       <button
+                        onClick={() => {
+                          if (isAuthenticated) {
+                            navigate('/catalog');
+                          } else {
+                            navigate('/login');
+                          }
+                        }}
                         className="px-4 py-2 bg-food-orange text-white rounded-lg font-medium hover:bg-food-orange/90 transition-colors duration-200"
                         aria-label={`Agregar ${product.nombre} al carrito`}
                       >

@@ -19,18 +19,18 @@ class OrderFSM:
     """
 
     # Mapa de transiciones: {estado_actual: {accion: (estado_destino, [roles_autorizados])}}
-    # Los roles son: "Cliente", "Admin", "Sistema"
+    # Los roles son: "Cliente", "Admin", "Cocinero", "Delivery", "Sistema"
     TRANSITION_MAP: Dict[str, Dict[str, tuple]] = {
         "pendiente": {
             "pagar": ("pagado", ["Admin", "Sistema"]),
-            "cancelar": ("cancelado", ["Cliente", "Admin"]),
+            "cancelar": ("cancelado", ["Cliente", "Admin", "Cocinero"]),
         },
         "pagado": {
-            "preparar": ("preparando", ["Admin"]),
-            "cancelar": ("cancelado", ["Admin"]),
+            "preparar": ("preparando", ["Admin", "Cocinero"]),
+            "cancelar": ("cancelado", ["Admin", "Cocinero"]),
         },
         "preparando": {
-            "enviar": ("enviado", ["Admin"]),
+            "enviar": ("enviado", ["Admin", "Cocinero"]),
             "cancelar": ("cancelado", ["Admin"]),
         },
         "enviado": {

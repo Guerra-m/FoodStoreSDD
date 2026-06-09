@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
+import { ClientLayout } from '../components/layout/ClientLayout';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
@@ -24,21 +25,15 @@ import { OrderDetailPage } from '../pages/admin/OrderDetailPage';
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Public routes — sin sidebar ni layout */}
+      {/* ─── Public routes — sin navbar ni sidebar ─────────────── */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      {/* Routes con layout completo — requieren autenticación */}
-      <Route
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/" element={<HomePage />} />
+      {/* ─── Client routes — con navbar tipo landing ──────────── */}
+      <Route element={<ProtectedRoute><ClientLayout /></ProtectedRoute>}>
+        <Route path="/home" element={<HomePage />} />
         <Route path="/catalog" element={<Catalogo />} />
         <Route path="/catalog/:id" element={<ProductoDetalle />} />
         <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
@@ -46,6 +41,27 @@ export function AppRoutes() {
         <Route path="/perfil" element={<MiPerfil />} />
         <Route path="/mis-pedidos" element={<MisPedidos />} />
         <Route path="/mis-pedidos/:id/tracking" element={<OrderTrackingPage />} />
+      </Route>
+
+      {/* ─── Admin routes — con sidebar ───────────────────────── */}
+      <Route element={<ProtectedRoute allowedRoles={['Admin', 'Cocinero']}><Layout /></ProtectedRoute>}>
+        <Route
+          path="/admin"
+          element={<AdminLayout />}
+        >
+          <Route index element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="users" element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <UsersPage />
+            </ProtectedRoute>
+          } />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="orders/:id" element={<OrderDetailPage />} />
+        </Route>
 
         <Route
           path="/categorias"
@@ -63,21 +79,6 @@ export function AppRoutes() {
             </ProtectedRoute>
           }
         />
-
-        {/* Admin Routes — requieren rol Admin ADEMÁS de autenticación */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={['Admin']}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardPage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="orders" element={<OrdersPage />} />
-          <Route path="orders/:id" element={<OrderDetailPage />} />
-        </Route>
       </Route>
     </Routes>
   );

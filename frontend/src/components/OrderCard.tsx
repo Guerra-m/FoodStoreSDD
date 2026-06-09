@@ -1,5 +1,4 @@
 import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 import type { AdminOrderSummary } from '../types/admin';
 import { getEstadoLabel, getEstadoColor } from '../api/orders';
 
@@ -30,7 +29,7 @@ export function OrderCard({ order, isDragOverlay }: OrderCardProps) {
   });
 
   const style = transform
-    ? { transform: CSS.Translate.toString(transform) }
+    ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
     : undefined;
 
   const color = getEstadoColor(order.estado);

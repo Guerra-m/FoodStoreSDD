@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { useCartStore, selectCartItemsCount } from '../../stores/cartStore';
 import { useUIStore } from '../../stores/uiStore';
 
 interface NavItem {
@@ -22,106 +20,61 @@ export function Sidebar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const isAdmin = user?.roles?.includes('Admin') ?? false;
-  const items = useCartStore((state) => state.items);
-  const count = selectCartItemsCount(items);
-  const toggleCart = useUIStore((state) => state.toggleCart);
+  const isCocinero = user?.roles?.includes('Cocinero') ?? false;
+  const canManageOrders = isAdmin || isCocinero;
   const sidebarOpen = useUIStore((state) => state.sidebarOpen);
   const closeSidebar = useUIStore((state) => state.closeSidebar);
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const isActive = (path: string) => {
-    if (path === '/') return location.pathname === '/';
+    if (path === '/admin') return location.pathname === '/admin';
     return location.pathname.startsWith(path);
   };
 
-  const mainNav: NavSection[] = [
-    {
-      items: [
-        {
-          label: 'Home',
-          to: '/',
-          icon: <SidebarIcon.Home />,
-        },
-        {
-          label: 'Catálogo',
-          to: '/catalog',
-          icon: <SidebarIcon.Grid />,
-        },
-      ],
-    },
-  ];
-
-  const userNav: NavSection[] = user
-    ? [
-        {
-          title: 'Cuenta',
-          items: [
-            {
-              label: 'Mi Perfil',
-              to: '/perfil',
-              icon: <SidebarIcon.User />,
-            },
-            {
-              label: 'Mis Pedidos',
-              to: '/mis-pedidos',
-              icon: <SidebarIcon.Package />,
-              badge: undefined,
-            },
-            {
-              label: 'Carrito',
-              to: '#',
-              icon: <SidebarIcon.Cart />,
-              badge: count > 0 ? count : undefined,
-              action: () => {
-                toggleCart();
-                closeSidebar();
-              },
-            },
-          ],
-        },
-      ]
-    : [];
-
-  const adminNav: NavSection[] = isAdmin
+  const adminNav: NavSection[] = canManageOrders
     ? [
         {
           title: 'Administración',
           items: [
-            {
-              label: 'Dashboard',
-              to: '/admin',
-              icon: <SidebarIcon.Chart />,
-            },
-            {
-              label: 'Usuarios',
-              to: '/admin/users',
-              icon: <SidebarIcon.Users />,
-            },
+            ...(isAdmin
+              ? [
+                  {
+                    label: 'Dashboard' as const,
+                    to: '/admin' as const,
+                    icon: <SidebarIcon.Chart />,
+                  },
+                  {
+                    label: 'Usuarios' as const,
+                    to: '/admin/users' as const,
+                    icon: <SidebarIcon.Users />,
+                  },
+                  {
+                    label: 'Categorías' as const,
+                    to: '/categorias' as const,
+                    icon: <SidebarIcon.Folder />,
+                  },
+                  {
+                    label: 'Productos' as const,
+                    to: '/admin/products' as const,
+                    icon: <SidebarIcon.Box />,
+                  },
+                ]
+              : []),
             {
               label: 'Pedidos',
               to: '/admin/orders',
               icon: <SidebarIcon.FileText />,
             },
-            {
-              label: 'Categorías',
-              to: '/categorias',
-              icon: <SidebarIcon.Folder />,
-            },
-            {
-              label: 'Productos',
-              to: '/admin/products',
-              icon: <SidebarIcon.Box />,
-            },
           ],
         },
       ]
     : [];
 
-  const allSections = [...mainNav, ...userNav, ...adminNav];
+  const allSections = [...adminNav];
 
   return (
     <>
@@ -138,7 +91,7 @@ export function Sidebar() {
         {/* Logo */}
         <div className="h-16 px-5 flex items-center border-b border-neutral-100 flex-shrink-0">
           <Link
-            to="/"
+            to="/admin"
             onClick={closeSidebar}
             className="flex items-center gap-3 group"
           >

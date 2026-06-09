@@ -4,8 +4,10 @@ import { customerApi } from './customers';
 import { getTokens, saveTokens } from '../lib/auth';
 import { toast } from 'react-toastify';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8006/api/v1';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: API_BASE,
   timeout: 30_000, // 30s timeout — login y otras operaciones pueden tardar más
 });
 

@@ -6,11 +6,11 @@ Sistema de autorización basado en roles (RBAC). Define los roles del sistema, l
 ## ADDED Requirements
 
 ### Requirement: Roles del sistema
-El sistema SHALL definir roles en una tabla `Role` con los valores base: Cliente, Admin y Delivery.
+El sistema SHALL definir roles en una tabla `Role` con los valores base: Cliente, Admin, Delivery y Cocinero.
 
 #### Scenario: Seed de roles
 - **WHEN** se ejecuta el script de seed
-- **THEN** el sistema SHALL crear los roles "Cliente", "Admin" y "Delivery" si no existen (idempotente)
+- **THEN** el sistema SHALL crear los roles "Cliente", "Admin", "Delivery" y "Cocinero" si no existen (idempotente)
 
 #### Scenario: Usuario con múltiples roles
 - **WHEN** un usuario es asignado a múltiples roles

@@ -6,6 +6,7 @@ import { AboutSection } from '../components/landing/AboutSection';
 import { FeaturedProductsSection } from '../components/landing/FeaturedProductsSection';
 import { HowItWorksSection } from '../components/landing/HowItWorksSection';
 import { ContactSection } from '../components/landing/ContactSection';
+import { useAuthStore } from '../stores/authStore';
 
 /**
  * LandingPage component
@@ -15,6 +16,14 @@ import { ContactSection } from '../components/landing/ContactSection';
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>('hero');
+  const isAuthenticated = useAuthStore((s) => !!s.accessToken);
+
+  // Si ya está autenticado, redirigir
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/catalog', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // Create refs for each section
   const sectionRefs = {

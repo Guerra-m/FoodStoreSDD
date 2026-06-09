@@ -106,10 +106,55 @@ Admin A arrastra card ──→ PATCH /api/v1/pedidos/{id}/estado
 - `@dnd-kit/core` (^6.x)
 - `@dnd-kit/sortable` (^6.x)
 
+### Nuevo Rol: Cocinero — Diseño Técnico
+
+**Archivos a modificar:**
+
+| Archivo | Acción |
+|---------|--------|
+| `backend/app/auth/roles.py` | Modificar: +ROLE_COCINERO constante, +ALL_ROLES, +ROLE_DESCRIPTIONS |
+| `backend/scripts/seed.py` | Modificar: +rol Cocinero en ROLES array |
+| `backend/app/modules/pedidos/fsm.py` | Modificar: +"Cocinero" en TRANSITION_MAP para preparar, enviar y cancelar |
+| `backend/app/modules/pedidos/router.py` | Modificar: mapeo de rol en transición + WS admin permitir Cocinero |
+
+**Reglas de Transición FSM — Cocinero:**
+
+| Estado Actual | Acción | Estado Destino | Roles Autorizados (cambio) |
+|--------------|--------|----------------|---------------------------|
+| pagado | preparar | preparando | `["Admin", "Cocinero"]` ← +Cocinero |
+| preparando | enviar | enviado | `["Admin", "Cocinero"]` ← +Cocinero |
+| pendiente | cancelar | cancelado | `["Cliente", "Admin", "Cocinero"]` ← +Cocinero |
+| pagado | cancelar | cancelado | `["Admin", "Cocinero"]` ← +Cocinero |
+
+**Mapeo de rol en `router.py` (línea 124):**
+
+Actual (binario):
+```python
+usuario_rol = "Admin" if "Admin" in current_user.roles else "Cliente"
+```
+
+Nuevo (multi-rol):
+```python
+if "Admin" in current_user.roles:
+    usuario_rol = "Admin"
+elif "Cocinero" in current_user.roles:
+    usuario_rol = "Cocinero"
+else:
+    usuario_rol = "Cliente"
+```
+
+**WebSocket de administradores (`/admin/ws`):**
+- Actual: solo `"Admin"` puede conectar
+- Nuevo: `"Admin"` o `"Cocinero"` pueden conectar (ambos necesitan ver el Kanban)
+
 ### Archivos a modificar/crear
 
 | Archivo | Acción |
 |---------|--------|
+| `backend/app/auth/roles.py` | Modificar: +ROLE_COCINERO |
+| `backend/scripts/seed.py` | Modificar: +rol Cocinero |
+| `backend/app/modules/pedidos/fsm.py` | Modificar: permisos Cocinero en TRANSITION_MAP |
+| `backend/app/modules/pedidos/router.py` | Modificar: mapeo de rol + WS |
 | `backend/app/core/websocket_manager.py` | Modificar: +admin_connections, +broadcast_admin, +add_admin, +remove_admin |
 | `backend/app/modules/pedidos/router.py` | Modificar: +WS endpoint /admin/pedidos/ws, +broadcast_admin post-transición |
 | `frontend/src/pages/admin/OrdersPage.tsx` | Reemplazar: contenido completo con AdminOrdersKanban |

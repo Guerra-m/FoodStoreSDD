@@ -7,11 +7,13 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLoginSuccess = (user: User | null) => {
-    // Redirigir a dashboard si es Admin, a home si no
+    // Redirigir según el rol del usuario
     if (user?.roles?.includes("Admin")) {
       navigate("/admin");
+    } else if (user?.roles?.includes("Cocinero")) {
+      navigate("/admin/orders");
     } else {
-      navigate("/");
+      navigate("/catalog");
     }
   };
 

@@ -1,433 +1,79 @@
-INFO:     Will watch for changes in these directories: ['C:\\Users\\Emanuel\\Documents\\UTN - Local\\Gestion - Robledo\\SDD\\FoodStoreSDD\\backend']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [13512] using WatchFiles
-INFO:     Started server process [3880]
+INFO:     Will watch for changes in these directories: ['C:\\Users\\marti\\Documents\\martinguerra\\UTN cuarto semestre\\Gestión de software\\FoodStoreSDD\\backend']
+INFO:     Uvicorn running on http://127.0.0.1:8006 (Press CTRL+C to quit)
+INFO:     Started reloader process [7684] using WatchFiles
+INFO:     Started server process [3008]
 INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-(trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-WARNING:  WatchFiles detected changes in 'app\modules\usuarios\router.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [3880]
-INFO:     Started server process [18240]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\sqlmodel\orm\session.py:127: SAWarning: SELECT statement has a cartesian product between FROM element(s) "usuario" and FROM element "role".  Apply join condition(s) between each element to resolve.
-  return super().execute(
-(trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.scope, self.receive, self.send
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ERROR:    Traceback (most recent call last):
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 732, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 608, in __aenter__
+    await self._router.startup()
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\starlette\routing.py", line 709, in startup
+    await handler()
+  File "C:\Users\marti\Documents\martinguerra\UTN cuarto semestre\Gestión de software\FoodStoreSDD\backend\main.py", line 39, in on_startup
+    SQLModel.metadata.create_all(engine)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\sql\schema.py", line 5930, in create_all
+    bind._run_ddl_visitor(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        ddl.SchemaGenerator, self, checkfirst=checkfirst, tables=tables
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     )
     ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        dependant=dependant, values=values, is_coroutine=is_coroutine
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\router.py", line 37, in refresh
-    return await auth_service.refresh(data.refresh_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\service.py", line 156, in refresh
-    if stored.expires_at < datetime.now(timezone.utc):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: can't compare offset-naive and offset-aware datetimes
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.scope, self.receive, self.send
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        dependant=dependant, values=values, is_coroutine=is_coroutine
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\router.py", line 37, in refresh
-    return await auth_service.refresh(data.refresh_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\service.py", line 156, in refresh
-    if stored.expires_at < datetime.now(timezone.utc):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: can't compare offset-naive and offset-aware datetimes
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.scope, self.receive, self.send
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        dependant=dependant, values=values, is_coroutine=is_coroutine
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\router.py", line 37, in refresh
-    return await auth_service.refresh(data.refresh_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\service.py", line 156, in refresh
-    if stored.expires_at < datetime.now(timezone.utc):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: can't compare offset-naive and offset-aware datetimes
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.scope, self.receive, self.send
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        dependant=dependant, values=values, is_coroutine=is_coroutine
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\router.py", line 37, in refresh
-    return await auth_service.refresh(data.refresh_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\service.py", line 156, in refresh
-    if stored.expires_at < datetime.now(timezone.utc):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: can't compare offset-naive and offset-aware datetimes
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.scope, self.receive, self.send
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        dependant=dependant, values=values, is_coroutine=is_coroutine
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\router.py", line 37, in refresh
-    return await auth_service.refresh(data.refresh_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\service.py", line 156, in refresh
-    if stored.expires_at < datetime.now(timezone.utc):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: can't compare offset-naive and offset-aware datetimes
-ERROR:    Exception in ASGI application
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 399, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        self.scope, self.receive, self.send
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 70, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\applications.py", line 123, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
-    await self.app(scope, receive, _send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\cors.py", line 148, in simple_response
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 65, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 756, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 776, in app
-    await route.handle(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 297, in handle
-    await self.app(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 77, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 64, in wrapped_app
-    raise exc
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
-    await app(scope, receive, sender)
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\starlette\routing.py", line 72, in app
-    response = await func(request)
-               ^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 278, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        dependant=dependant, values=values, is_coroutine=is_coroutine
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\fastapi\routing.py", line 191, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\router.py", line 37, in refresh
-    return await auth_service.refresh(data.refresh_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\app\modules\usuarios\service.py", line 156, in refresh
-    if stored.expires_at < datetime.now(timezone.utc):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: can't compare offset-naive and offset-aware datetimes
-WARNING:  WatchFiles detected changes in 'app\modules\usuarios\service.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [18240]
-INFO:     Started server process [14524]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\sqlmodel\orm\session.py:127: SAWarning: SELECT statement has a cartesian product between FROM element(s) "usuario" and FROM element "usuarios_roles_1".  Apply join condition(s) between each element to resolve.
-  return super().execute(
-(trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-WARNING:  WatchFiles detected changes in 'app\auth\dependencies.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [14524]
-WARNING:  WatchFiles detected changes in 'app\auth\models.py', 'app\auth\dependencies.py', 'app\auth\services.py', 'app\auth\schemas.py', 'app\auth\routes.py'. Reloading...
-INFO:     Started server process [20312]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-(trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-C:\Users\Emanuel\Documents\UTN - Local\Gestion - Robledo\SDD\FoodStoreSDD\backend\venv\Lib\site-packages\sqlmodel\orm\session.py:127: SAWarning: SELECT statement has a cartesian product between FROM element(s) "usuario" and FROM element "usuarios_roles_1".  Apply join condition(s) between each element to resolve.
-  return super().execute(
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\base.py", line 3269, in _run_ddl_visitor
+    with self.begin() as conn:
+         ~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\base.py", line 3259, in begin
+    with self.connect() as conn:
+         ~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\base.py", line 3295, in connect
+    return self._connection_cls(self)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\base.py", line 144, in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\base.py", line 3319, in raw_connection
+    return self.pool.connect()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 448, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 1272, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\impl.py", line 178, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\impl.py", line 176, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 389, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 900, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\create.py", line 667, in connect
+    return dialect.connect(*cargs_tup, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\sqlalchemy\engine\default.py", line 630, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\marti\AppData\Local\Programs\Python\Python314\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
+
+ERROR:    Application startup failed. Exiting.

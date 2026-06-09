@@ -16,6 +16,7 @@ El Kanban board permite:
 
 ## Alcance
 
+### Kanban Board
 - Reemplazo TOTAL de `OrdersPage.tsx` por `AdminOrdersKanban`
 - Columnas: Pendiente | Pagado | Preparando | Enviado | Entregado | Cancelado
 - Drag & drop entre columnas → llama al endpoint de transición existente
@@ -23,3 +24,13 @@ El Kanban board permite:
 - Cards con: ID, cliente, total, items, tiempo transcurrido
 - Filtros: por fecha (desde/hasta)
 - Sin paginación (scroll por columna)
+
+### Nuevo Rol: Cocinero
+- Se agrega el rol **Cocinero** al sistema RBAC
+- Mismos permisos operativos que PEDIDOS pero enfocado en cocina:
+  - Avanzar pedidos: Pagado → Preparando → Enviado
+  - Cancelar pedidos en estado Pendiente o Pagado
+- NO puede entregar pedidos (Enviado → Entregado)
+- NO puede cancelar pedidos en Preparando (solo Admin)
+- Acceso al WebSocket de administradores para ver cambios en vivo
+- Autenticación JWT estándar (como todos los roles)
